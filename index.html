@@ -1,0 +1,3975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pulse — Guest Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..900&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #131313;
+    --surface-2: #1a1a1a;
+    --surface-3: #222222;
+    --surface-4: #2a2a2a;
+    --border: #1f1f1f;
+    --border-strong: #2e2e2e;
+    --text: #fafafa;
+    --text-dim: #a1a1a1;
+    --text-faint: #5a5a5a;
+    --red: #f87171;
+    --red-deep: #ef4444;
+    --red-bg: #2a1414;
+    --amber: #fbbf24;
+    --amber-bg: #2a1f10;
+    --green: #34d399;
+    --green-bg: #0f2520;
+    --blue: #60a5fa;
+    --blue-bg: #102030;
+    --purple: #c084fc;
+    --purple-bg: #1f1530;
+    --gold: #2dd4bf;
+    --gold-bg: #0e2e2b;
+    --accent: #2dd4bf;
+    --accent-ink: #04302b;
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 13.5px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    height: 100%;
+    overflow: hidden;
+    letter-spacing: -0.01em;
+    font-feature-settings: "cv11","ss01","ss03";
+  }
+  /* app shell: column layout so the scroll area always fills the exact leftover height */
+  body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  .topbar, .phase-strip { flex: 0 0 auto; }
+  .serif { font-family: "Geist", system-ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
+  .mono { font-family: "Geist Mono", ui-monospace, monospace; font-feature-settings: "tnum"; }
+  i[data-lucide] { width: 16px; height: 16px; display: inline-flex; flex-shrink: 0; }
+  i.lg[data-lucide] { width: 20px; height: 20px; }
+  i.xl[data-lucide] { width: 24px; height: 24px; }
+  i.sm[data-lucide] { width: 14px; height: 14px; }
+  i.xs[data-lucide] { width: 12px; height: 12px; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, textarea, select { font-family: inherit; }
+
+  /* ─── Topbar ─── */
+  .topbar {
+    height: 56px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 14px;
+    position: relative;
+    z-index: 10;
+  }
+  .logo {
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: 20px;
+  }
+  .nav-tab {
+    padding: 8px 14px;
+    border-radius: 9px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .nav-tab:hover { color: var(--text); background: var(--surface-2); }
+  .nav-tab.active { background: var(--surface-3); color: var(--text); }
+  .nav-tab.locked {
+    opacity: 0.32;
+    cursor: pointer;
+  }
+  .nav-tab.locked::after {
+    content: '🔒';
+    font-size: 9px;
+    margin-left: 6px;
+    opacity: 0.8;
+  }
+  .spacer { flex: 1; }
+
+  .phase-switch {
+    display: flex;
+    background: var(--surface-2);
+    border-radius: 9px;
+    padding: 3px;
+    border: 1px solid var(--border);
+  }
+  .phase-switch button {
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    transition: all 0.18s;
+  }
+  .phase-switch button.active {
+    background: var(--accent);
+    color: #1a1a1a;
+  }
+
+  .clock {
+    color: var(--text-dim);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    padding: 0 6px;
+    font-weight: 500;
+  }
+
+  .add-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    padding: 8px 14px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s;
+  }
+  .add-btn:hover { background: var(--surface-3); border-color: var(--border-strong); }
+  .add-btn .plus { color: var(--accent); font-weight: 600; font-size: 14px; }
+
+  /* ─── Main Layout ─── */
+  .main {
+    flex: 1 1 auto;
+    min-height: 0;            /* let it shrink inside the flex column so it scrolls */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    z-index: 1;
+  }
+  .view { display: none; padding: 28px 32px; max-width: 1600px; margin: 0 auto; }
+  .view.active { display: block; }
+
+  /* ─── Floor Header ─── */
+  .floor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 28px;
+  }
+  .floor-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .floor-subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .floor-stats { display: flex; gap: 24px; align-items: center; }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .stat-num {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+  .stat.alert .stat-num { color: var(--amber); }
+
+  .zone-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .zone-tab {
+    padding: 12px 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.18s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .zone-tab:hover { color: var(--text); }
+  .zone-tab.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+  .zone-count {
+    background: var(--surface-2);
+    color: var(--text-dim);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .zone-tab.active .zone-count { background: var(--accent); color: #1a1a1a; }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 7px 13px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+  .filter-chip:hover { color: var(--text); border-color: var(--border-strong); }
+  .filter-chip.active { background: var(--surface-3); color: var(--text); border-color: var(--border-strong); }
+  .filter-chip .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+
+  /* ─── Tables ─── */
+  .zone-section { margin-bottom: 36px; }
+  .zone-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-faint);
+    margin-bottom: 14px;
+    font-weight: 700;
+  }
+  .table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  /* ─── View toggle (Grid / Map) ─── */
+  .view-toggle {
+    display: inline-flex; background: var(--surface-2);
+    border: 1px solid var(--border); border-radius: 9px; padding: 3px;
+    gap: 2px;
+  }
+  .view-toggle button {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 12px; border-radius: 7px;
+    font-size: 12px; font-weight: 600; color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .view-toggle button i[data-lucide] { width: 14px; height: 14px; }
+  .view-toggle button.active { background: var(--surface-4); color: var(--text); }
+
+  /* ─── Realistic Floor Plan ─── */
+  .map-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .map-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--text-dim); font-weight: 500; }
+  .map-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .map-legend .swatch { width: 12px; height: 12px; border-radius: 4px; border: 2px solid; }
+
+  .floor-rooms { display:flex; flex-direction:column; gap:18px; }
+  .room {
+    position: relative;
+    background:
+      linear-gradient(0deg, rgba(255,255,255,0.012), rgba(255,255,255,0.012)),
+      var(--bg);
+    border: 2px solid var(--border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .room.patio { background: #0c1410; }     /* greenish — outdoor feel */
+  .room.outdoor { background: #0e1212; }
+  .room-tag {
+    position:absolute; top:12px; left:14px; z-index:2;
+    font-size:10px; text-transform:uppercase; letter-spacing:1.6px; font-weight:700;
+    color:var(--text-faint); display:flex; align-items:center; gap:6px;
+  }
+  .room-tag i[data-lucide]{ width:13px; height:13px; }
+  /* fixtures */
+  .fixture {
+    position:absolute; display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--text-faint);
+  }
+  .fixture.bar { background: var(--surface-3); border:1px solid var(--border-strong); border-radius:8px; }
+  .fixture.wall { background: var(--surface-4); }
+  .fixture.door { border-bottom:3px dashed var(--border-strong); }
+  .fixture.plant { font-size:20px; }
+  .fixture.plant svg, .fixture.plant i { color:#3a7d5c; }
+
+  /* a table object on the plan */
+  .tbl { position:absolute; cursor:pointer; }
+  .tbl-surface {
+    position:absolute; inset:8px;
+    background: var(--surface-2);
+    border: 2px solid var(--border-strong);
+    display:flex; align-items:center; justify-content:center;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+  .tbl.rect .tbl-surface { border-radius: 9px; }
+  .tbl.round .tbl-surface { border-radius: 50%; }
+  .tbl.seated  .tbl-surface { border-color: var(--blue); background:#0f1722; }
+  .tbl.ordered .tbl-surface { border-color: var(--green); background:#0d1a15; }
+  .tbl.attention .tbl-surface { border-color: var(--amber); background:#1c1708; }
+  .tbl.overdue .tbl-surface { border-color: var(--red); background:#1d1010; }
+  .tbl.paid .tbl-surface { border-color: var(--green); border-style:dashed; background:rgba(52,211,153,0.06); }
+  .tbl.empty .tbl-surface { border-style: dashed; opacity:.55; }
+  .tbl:hover .tbl-surface { box-shadow: 0 0 0 3px rgba(45,212,191,0.18); }
+  .tbl-num { font-family:"Geist Mono",monospace; font-size:16px; font-weight:600; letter-spacing:-0.03em; z-index:1; }
+  .tbl-pax-b {
+    position:absolute; bottom:1px; left:50%; transform:translateX(-50%);
+    background:var(--surface-4); border:1px solid var(--border); border-radius:9px;
+    font-size:9px; font-weight:700; padding:0 6px; display:inline-flex; align-items:center; gap:3px; white-space:nowrap; z-index:2;
+  }
+  .tbl-pax-b i[data-lucide]{ width:8px; height:8px; }
+  .tbl-badge {
+    position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; z-index:3; border:2px solid var(--bg);
+  }
+  .tbl-badge i[data-lucide]{ width:9px; height:9px; }
+  .tbl-badge.red{ background:var(--red); color:#1a0a0a; }
+  .tbl-badge.amber{ background:var(--amber); color:#1a1500; }
+  .tbl-badge.gold{ background:var(--accent); color:#04302b; }
+  .tbl-badge.green{ background:var(--green); color:#04302b; }
+  /* chairs */
+  .chair { position:absolute; background:var(--surface-4); border-radius:3px; }
+  .tbl.seated .chair,.tbl.ordered .chair,.tbl.attention .chair,.tbl.overdue .chair,.tbl.paid .chair { background:#3a3a44; }
+
+  /* edit / merge mode */
+  .room.editing .tbl { cursor: crosshair; }
+  .tbl.sel .tbl-surface { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(45,212,191,0.3); }
+  .tbl-check { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#04302b; display:none; align-items:center; justify-content:center; z-index:4; }
+  .tbl-check i[data-lucide]{ width:11px; height:11px; }
+  .tbl.sel .tbl-check { display:flex; }
+  .merge-plate {
+    position:absolute; border:2px dashed var(--accent); border-radius:14px;
+    background:rgba(45,212,191,0.07); z-index:0;
+  }
+  .merge-tag {
+    position:absolute; top:-10px; left:10px; background:var(--accent); color:#04302b;
+    font-size:9px; font-weight:800; letter-spacing:.5px; padding:2px 7px; border-radius:6px;
+  }
+  .merge-bar {
+    display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:12px;
+    background:var(--gold-bg); border:1px solid #1b4a44; border-radius:10px; font-size:13px; color:var(--text);
+  }
+  .merge-bar .sp { flex:1; }
+  .table-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+    min-height: 138px;
+    display: flex;
+    flex-direction: column;
+  }
+  .table-tile:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+  }
+  .table-tile.empty {
+    background: transparent;
+    border-style: dashed;
+    opacity: 0.45;
+  }
+  .table-tile.empty:hover { opacity: 0.7; }
+  .table-tile.seated { border-color: #1c2a3d; }
+  .table-tile.ordered { border-color: #1c2e26; }
+  .table-tile.attention { border-color: #3a2d10; }
+  .table-tile.overdue { border-color: #3a1818; }
+  /* Bill paid — distinct, calm, "ready to turn" */
+  .table-tile.paid {
+    border-style: dashed;
+    border-color: var(--green);
+    background:
+      repeating-linear-gradient(45deg, transparent, transparent 9px, rgba(52,211,153,0.04) 9px, rgba(52,211,153,0.04) 18px);
+  }
+  .paid-stamp {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-bg); color: var(--green);
+    border: 1px solid #16352c; border-radius: 8px;
+    padding: 4px 9px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 8px; align-self: flex-start;
+  }
+  .paid-stamp i[data-lucide] { width: 13px; height: 13px; }
+  .paid-turn { font-size: 11px; color: var(--text-dim); font-weight: 500; margin-top: auto; }
+
+  .tile-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .tile-num {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .tile-glyphs { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; max-width: 70px; }
+  .tile-glyph {
+    padding: 4px;
+    background: var(--surface-3);
+    border-radius: 6px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tile-glyph i[data-lucide] { width: 13px; height: 13px; }
+  .tile-glyph.red { background: var(--red-bg); color: var(--red); }
+  .tile-glyph.amber { background: var(--amber-bg); color: var(--amber); }
+  .tile-glyph.purple { background: var(--purple-bg); color: var(--purple); }
+  .tile-glyph.gold { background: var(--gold-bg); color: var(--gold); }
+
+  .tile-party {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 4px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tile-pax {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--text-dim); font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .tile-pax i[data-lucide] { width: 12px; height: 12px; }
+  .pax-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--surface-3); color: var(--text);
+    padding: 4px 10px; border-radius: 16px;
+    font-size: 12px; font-weight: 600;
+  }
+  .pax-pill i[data-lucide] { width: 13px; height: 13px; color: var(--text-dim); }
+  .tile-rating {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .tile-progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .cpip {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-3); color: var(--text-faint);
+  }
+  .cpip i[data-lucide] { width: 15px; height: 15px; }
+  .cpip.done { background: var(--green-bg); color: var(--green); }
+  .cpip.active { background: var(--blue-bg); color: var(--blue); box-shadow: inset 0 0 0 1.5px var(--blue); }
+  /* legacy dots (still used by older mini views) */
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-strong); }
+  .progress-dot.done { background: var(--green); }
+  .progress-dot.active { background: var(--blue); }
+  .tile-bottom {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+  }
+  .tile-bottom.overdue { color: var(--red); font-weight: 700; }
+  .tile-bottom.warn { color: var(--amber); font-weight: 600; }
+  .tile-server {
+    color: var(--text-faint);
+    font-size: 10px;
+  }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    max-width: 920px;
+    width: 100%;
+    max-height: 94vh;
+    overflow: auto;
+    box-shadow: var(--shadow-lg);
+  }
+  .modal.small { max-width: 580px; }
+  .modal-head {
+    padding: 20px 26px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 5;
+  }
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+  .modal-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; font-weight: 500; }
+  .modal-close {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: all 0.18s;
+  }
+  .modal-close:hover { background: var(--surface-2); color: var(--text); }
+  .modal-body { padding: 24px 26px 28px; }
+
+  /* ─── Table View — concerns banner ─── */
+  /* Compact, wrapping alert chips — balanced, never break the row */
+  .alert-strip {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .alert-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 13px; border-radius: 10px;
+    font-size: 13px; font-weight: 600;
+    border: 1px solid transparent;
+    max-width: 100%;
+  }
+  .alert-chip i[data-lucide] { width: 16px; height: 16px; flex-shrink: 0; }
+  .alert-chip .em { color: var(--text); font-weight: 500; font-size: 12px; }
+  .alert-chip.red { background: var(--red-bg); color: var(--red); border-color: #3a1818; }
+  .alert-chip.amber { background: var(--amber-bg); color: var(--amber); border-color: #3a2d10; }
+  .alert-chip.gold { background: var(--gold-bg); color: var(--gold); border-color: #1b4a44; }
+  .alert-chip.purple { background: var(--purple-bg); color: var(--purple); border-color: #2a1f3a; }
+  /* a critical allergy chip spans full width so it always reads first */
+  .alert-chip.full { width: 100%; }
+
+  /* ─── Party header ─── */
+  .party-header {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .party-avatar-stack { display: flex; }
+  .party-avatar {
+    width: 44px; height: 44px;
+    background: var(--surface-3);
+    border: 2px solid var(--surface);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-left: -10px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .party-avatar:first-child { margin-left: 0; }
+  .party-avatar:hover { transform: translateY(-2px); border-color: var(--accent); z-index: 2; }
+  .party-avatar.add { color: var(--text-faint); background: var(--surface-2); border-style: dashed; font-size: 18px; font-weight: 400; }
+  .party-info { flex: 1; }
+  .party-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+  .party-name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  .party-extras { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+  .party-meta-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .meta-chip strong { color: var(--text); font-weight: 600; }
+  .rating-display {
+    color: var(--accent);
+    letter-spacing: 2px;
+    font-size: 13px;
+  }
+  .rating-empty { color: var(--surface-4); }
+  .rating-num { color: var(--text); font-weight: 600; margin-left: 4px; font-size: 13px; letter-spacing: 0; }
+
+  /* ─── Recommendations block ─── */
+  .reco-block {
+    background: var(--gold-bg);
+    border: 1px solid #1b4a44;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 18px;
+  }
+  .reco-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .reco-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .reco-badge {
+    font-size: 10px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+  .reco-list { display: flex; flex-direction: column; gap: 8px; }
+  .reco-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: border-color 0.15s;
+  }
+  .reco-item:hover { border-color: var(--border-strong); }
+  .reco-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: var(--surface-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .reco-icon i[data-lucide] { width: 18px; height: 18px; }
+  .reco-item.predictive { border-color: #2a1f3a; }
+  .reco-item.predictive .reco-icon { background: var(--purple-bg); color: var(--purple); }
+  .reco-content { flex: 1; min-width: 0; }
+  .reco-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.005em;
+  }
+  .reco-meta {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+  .reco-tag {
+    font-size: 9px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    background: var(--surface);
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+    margin-left: 8px;
+    border: 1px solid var(--border-strong);
+  }
+  .reco-tag.now { background: var(--accent); color: #1a1a1a; border-color: var(--accent); }
+  .reco-tag.predict { background: var(--purple-bg); color: var(--purple); border-color: rgba(192,132,252,0.3); }
+  .reco-tag.safe { background: var(--red-bg); color: var(--red); border-color: rgba(248,113,113,0.3); }
+
+  /* ─── Service lanes ─── */
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--text-faint);
+    font-weight: 600;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lanes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .lane {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .lane-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .lane-icon { font-size: 16px; }
+  .lane-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .lane-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+  }
+  .step-bullet {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .step-bullet.done { background: var(--green); border-color: var(--green); }
+  .step-bullet.active { background: var(--blue); border-color: var(--blue); }
+  .step-label {
+    width: 70px;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: capitalize;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .step-items {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.4;
+    min-width: 0;
+  }
+  .step-items .served { color: var(--text); }
+  .step-items .pending { color: var(--amber); }
+  .step-items .empty { color: var(--text-faint); font-style: italic; font-size: 12px; }
+  .step-time {
+    font-size: 10px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* ═══ TABLE DETAIL — two columns ═══ */
+  .tdetail {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 14px;
+  }
+  .tcol {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tcol.plan { background: var(--surface); }
+  .tcol-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .tcol-head-l { display: flex; align-items: center; gap: 8px; }
+  .tcol-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .tcol-title.accent { color: var(--accent); }
+  .tcol-sub { font-size: 11px; color: var(--text-faint); font-weight: 500; }
+  .tcol-body { padding: 14px 16px; }
+
+  /* ─── Journey bar ─── */
+  .journey {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px 4px;
+    margin-bottom: 4px;
+  }
+  .journey-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 0 0 auto; }
+  .journey-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--surface-3);
+    border: 2px solid var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-faint);
+  }
+  .journey-dot i[data-lucide] { width: 12px; height: 12px; }
+  .journey-node.done .journey-dot { background: var(--green); border-color: var(--green); color: #0a0a0a; }
+  .journey-node.current .journey-dot { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+  .journey-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-faint); font-weight: 600; }
+  .journey-node.done .journey-label, .journey-node.current .journey-label { color: var(--text-dim); }
+  .journey-line { flex: 1; height: 2px; background: var(--border-strong); margin: 0 4px; margin-bottom: 16px; }
+  .journey-line.done { background: var(--green); }
+
+  /* ─── On-the-table combined list ─── */
+  .ot-group { margin-bottom: 14px; }
+  .ot-group:last-child { margin-bottom: 0; }
+  .ot-group-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-faint); font-weight: 700; margin-bottom: 8px;
+  }
+  .ot-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0;
+  }
+  .ot-qty {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 12px; font-weight: 600;
+    color: var(--text-dim);
+    width: 22px; flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .ot-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .ot-status {
+    font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700;
+    padding: 3px 7px; border-radius: 5px; flex-shrink: 0;
+  }
+  .ot-status.served { background: var(--green-bg); color: var(--green); }
+  .ot-status.fired { background: var(--blue-bg); color: var(--blue); }
+  .ot-status.pending { background: var(--amber-bg); color: var(--amber); }
+  .ot-empty { color: var(--text-faint); font-size: 12px; font-style: italic; padding: 6px 0; }
+
+  /* ─── Bring-next plan cards (course-grouped) ─── */
+  .plan-card {
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 13px 14px;
+    margin-bottom: 10px;
+    background: var(--surface-2);
+  }
+  .plan-card:last-child { margin-bottom: 0; }
+  .plan-card.lead { border-color: var(--accent); background: var(--gold-bg); }
+  .plan-card.predict { border-color: #2a1f3a; background: var(--purple-bg); }
+  .plan-course {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
+    font-weight: 700; color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+  .plan-course i[data-lucide] { width: 14px; height: 14px; color: var(--accent); }
+  .plan-card.predict .plan-course i[data-lucide] { color: var(--purple); }
+  .plan-items { display: flex; flex-direction: column; gap: 7px; margin-bottom: 9px; }
+  .plan-item {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .plan-item-qty {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 16px; font-weight: 700; color: var(--accent);
+    flex-shrink: 0; min-width: 26px;
+    font-variant-numeric: tabular-nums;
+  }
+  .plan-item-name { font-size: 14.5px; font-weight: 600; color: var(--text); }
+  .plan-item-spread { flex: 1; }
+  .tag {
+    font-size: 9px; padding: 3px 7px; border-radius: 5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 3px;
+    border: 1px solid transparent;
+  }
+  .tag i[data-lucide] { width: 10px; height: 10px; }
+  .tag.usual { background: var(--green-bg); color: var(--green); border-color: #16352c; }
+  .tag.try { background: var(--blue-bg); color: var(--blue); border-color: #16273a; }
+  .tag.safe { background: var(--red-bg); color: var(--red); border-color: #3a1818; }
+  .tag.repeat { background: var(--gold-bg); color: var(--accent); border-color: #1b4a44; }
+  .plan-note {
+    font-size: 12px; color: var(--text-dim); font-weight: 500;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ─── Balance checks ─── */
+  .balance-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 0;
+    font-size: 12px; font-weight: 500;
+    border-top: 1px solid var(--border);
+  }
+  .balance-row:first-child { border-top: none; }
+  .balance-icon { width: 16px; height: 16px; flex-shrink: 0; display: inline-flex; }
+  .balance-row.ok { color: var(--text-dim); }
+  .balance-row.ok .balance-icon { color: var(--green); }
+  .balance-row.gap { color: var(--text); }
+  .balance-row.gap .balance-icon { color: var(--amber); }
+  .balance-count {
+    margin-left: auto;
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums;
+  }
+
+  /* Demo trigger */
+  .demo-btn {
+    font-size: 11px; color: var(--text-dim);
+    border: 1px dashed var(--border-strong); border-radius: 8px;
+    padding: 6px 11px; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s; font-weight: 500;
+  }
+  .demo-btn:hover { color: var(--text); border-color: var(--accent); }
+  .live-pill {
+    font-size: 10px; color: var(--green); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green-bg); padding: 4px 9px; border-radius: 20px;
+  }
+  .live-pill .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 1.6s ease-in-out infinite; }
+
+  /* ─── Seat-a-guest modal (Phase 2) ─── */
+  .seat-intro {
+    text-align: center;
+    padding: 4px 0 18px;
+  }
+  .seat-assign-label { font-size:10px; text-transform:uppercase; letter-spacing:2px; font-weight:700; color:var(--text-faint); margin-bottom:6px; }
+  .seat-table-num {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 52px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    margin-bottom: 6px;
+    color: var(--accent);
+  }
+  .move-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
+  .move-opt {
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s;
+  }
+  .move-opt:hover { border-color:var(--accent); background:var(--surface-3); }
+  .move-opt .mo-num { font-family:"Geist Mono",monospace; font-size:22px; font-weight:600; color:var(--accent); }
+  .move-opt .mo-sub { font-size:10px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.8px; margin-top:3px; }
+  .seat-table-sub { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .seat-match-card {
+    background: var(--gold-bg);
+    border: 1px solid #1b4a44;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    display: none;
+  }
+  .seat-match-card.show { display: block; }
+  .seat-match-card.new { background: var(--surface-2); border-color: var(--border); }
+  .seat-match-name { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .seat-match-meta { font-size: 12px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .seat-match-meta strong { color: var(--text); }
+  .seat-or { text-align: center; color: var(--text-faint); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 16px 0 12px; position: relative; font-weight: 600; }
+  .seat-or::before, .seat-or::after { content: ''; position: absolute; top: 50%; width: 38%; height: 1px; background: var(--border); }
+  .seat-or::before { left: 0; }
+  .seat-or::after { right: 0; }
+
+  /* ─── Actions ─── */
+  .actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 12px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    background: var(--surface-3);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    transition: all 0.18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { background: var(--surface-4); }
+  .btn.primary {
+    background: var(--accent);
+    color: #1a1a1a;
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { background: #e0b683; }
+  .btn.ghost { background: transparent; }
+
+  /* ─── Briefing card (guest modal) ─── */
+  .briefing-head {
+    padding: 22px 24px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .briefing-name {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .briefing-tier {
+    font-size: 10px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .briefing-tier.gold { background: var(--gold-bg); color: var(--gold); border: 1px solid #1b4a44; }
+  .briefing-tier.platinum { background: var(--purple-bg); color: var(--purple); border: 1px solid #2a1f3a; }
+  .briefing-tier.vip { background: var(--red-bg); color: var(--red); border: 1px solid #3a1818; }
+  .briefing-meta {
+    color: var(--text-dim);
+    font-size: 13px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-weight: 500;
+  }
+  .briefing-meta strong { color: var(--text); font-weight: 600; }
+
+  .cue {
+    padding: 16px 26px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .cue:hover { background: var(--surface-2); }
+  .cue:last-child { border-bottom: none; }
+  .cue-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--surface-3);
+    color: var(--text-dim);
+  }
+  .cue-icon i[data-lucide] { width: 18px; height: 18px; }
+  .cue.red .cue-icon { color: var(--red); }
+  .cue.amber .cue-icon { color: var(--amber); }
+  .cue.green .cue-icon { color: var(--green); }
+  .cue.blue .cue-icon { color: var(--blue); }
+  .cue.purple .cue-icon { color: var(--purple); }
+  .cue.red .cue-icon { background: var(--red-bg); }
+  .cue.amber .cue-icon { background: var(--amber-bg); }
+  .cue.green .cue-icon { background: var(--green-bg); }
+  .cue.blue .cue-icon { background: var(--blue-bg); }
+  .cue.purple .cue-icon { background: var(--purple-bg); }
+  .cue-text {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+  .cue.red .cue-text { color: var(--red); }
+  .cue.amber .cue-text { color: var(--amber); }
+  .cue-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; font-weight: 500; }
+
+  .briefing-stats {
+    padding: 18px 26px;
+    background: var(--surface-2);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  .briefing-stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .briefing-stat-value { font-size: 13px; font-weight: 600; }
+  .briefing-stat-sub { color: var(--text-dim); font-size: 11px; font-weight: 500; margin-top: 2px; }
+  .spend-tier {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+
+  /* ─── Reservations ─── */
+  .res-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+  }
+  .res-list { display: flex; flex-direction: column; gap: 10px; }
+  .res-time-block {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+  .res-time {
+    width: 62px;
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 14px;
+    font-weight: 600;
+    padding-top: 16px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .res-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .res-card:hover { border-color: var(--border-strong); transform: translateX(2px); }
+  .res-card.known { border-left: 3px solid var(--accent); }
+  .res-card.network { border-left: 3px solid var(--purple); }
+  .res-card.new { border-left: 3px solid var(--text-faint); }
+  .res-row-1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .res-name {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.015em;
+  }
+  .res-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .res-badge.known { background: var(--gold-bg); color: var(--accent); }
+  .res-badge.network { background: var(--purple-bg); color: var(--purple); }
+  .res-badge.new { background: var(--surface-3); color: var(--text-dim); }
+  .res-detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 14px;
+    font-weight: 500;
+  }
+  .res-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .res-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
+  .res-actions .btn i[data-lucide] { width: 13px; height: 13px; }
+  .res-tag {
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 5px;
+    background: var(--surface-3);
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .res-tag.allergy { background: var(--red-bg); color: var(--red); font-weight: 600; }
+  .res-tag.occasion { background: var(--amber-bg); color: var(--amber); font-weight: 600; }
+
+  .briefing-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    height: fit-content;
+    position: sticky;
+    top: 0;
+  }
+  .briefing-panel-head {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+  .briefing-section {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .briefing-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .briefing-section-title {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .briefing-item {
+    font-size: 12px;
+    padding: 5px 0;
+    color: var(--text);
+  }
+  .briefing-item .em { color: var(--text-dim); font-size: 11px; margin-left: 6px; }
+
+  /* ─── Form ─── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .form-grid.single { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  .field.full { grid-column: 1 / -1; }
+  .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    font-weight: 700;
+  }
+  .label .req { color: var(--red); }
+  .input, .textarea, .select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 14px;
+    transition: all 0.18s;
+  }
+  .input:focus, .textarea:focus, .select:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface-3);
+  }
+  .textarea { resize: vertical; min-height: 72px; }
+  .chip-select {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chip-opt {
+    padding: 8px 13px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    font-weight: 500;
+  }
+  .chip-opt:hover { color: var(--text); }
+  .chip-opt.selected {
+    background: var(--accent);
+    color: #1a1a1a;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  .chip-opt.red.selected { background: var(--red-deep); border-color: var(--red-deep); color: #fff; }
+  .chip-opt.amber.selected { background: var(--amber); border-color: var(--amber); color: #1a1a1a; }
+
+  /* ─── Concierge / Manager ─── */
+  .concierge-search {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .concierge-search input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 15px;
+    padding: 14px 18px;
+  }
+  .concierge-search input::placeholder { color: var(--text-faint); }
+  .concierge-icon {
+    width: 36px; height: 36px;
+    background: var(--purple-bg);
+    color: var(--purple);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-left: 8px;
+  }
+  .concierge-suggest { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+  .suggest-chip {
+    padding: 9px 14px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+  .suggest-chip:hover { color: var(--text); border-color: var(--purple); }
+  .concierge-answer {
+    background: var(--purple-bg);
+    border: 1px solid #2a1f3a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+  .concierge-answer-q {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  .concierge-answer-a {
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+  .concierge-answer-a strong { color: var(--accent); }
+  .concierge-answer-meta {
+    color: var(--text-faint);
+    font-size: 11px;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+
+  .manager-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .metric-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .metric-val {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
+  }
+  .metric-trend { font-size: 12px; color: var(--green); margin-top: 6px; font-weight: 500; }
+  .metric-trend.down { color: var(--red); }
+  .leaderboard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .leaderboard-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: -0.015em;
+  }
+  .leader-row {
+    display: grid;
+    grid-template-columns: 30px 1fr 80px 80px 80px;
+    padding: 11px 0;
+    gap: 12px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .leader-row:last-child { border-bottom: none; }
+  .leader-row.head { color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+  .score-pill {
+    padding: 4px 10px;
+    background: var(--surface-3);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .score-pill.high { background: var(--green-bg); color: var(--green); }
+  .score-pill.med { background: var(--amber-bg); color: var(--amber); }
+  .score-pill.low { background: var(--red-bg); color: var(--red); }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface-3);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.success { border-left: 3px solid var(--green); }
+  .toast.info { border-left: 3px solid var(--blue); }
+  .toast.warn { border-left: 3px solid var(--amber); }
+
+  /* ─── Phase strip ─── */
+  .phase-strip {
+    padding: 8px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
+  }
+  .phase-strip strong { color: var(--accent); font-weight: 600; }
+
+  /* ─── Empty / overlay states for locked content ─── */
+  .locked-view {
+    padding: 70px 40px;
+    text-align: center;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  .locked-icon {
+    margin: 0 auto 16px;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--surface-3);
+    border-radius: 12px;
+    color: var(--text-dim);
+  }
+  .locked-icon i[data-lucide] { width: 26px; height: 26px; }
+  .locked-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+  .locked-sub { color: var(--text-dim); font-size: 14px; max-width: 460px; margin: 0 auto 24px; line-height: 1.5; }
+
+  /* ═══════════ TUTORIAL / GUIDED TOUR ═══════════ */
+  .tut-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(5,5,6,0.82);
+    display: none; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .tut-overlay.show { display: flex; }
+  .tut-card {
+    width: 100%; max-width: 720px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column;
+    max-height: 92vh;
+  }
+  .tut-progress {
+    display: flex; gap: 6px; padding: 16px 22px 0;
+  }
+  .tut-progress .pip {
+    height: 3px; flex: 1; border-radius: 2px; background: var(--surface-4);
+    overflow: hidden; position: relative;
+  }
+  .tut-progress .pip.done { background: var(--accent); }
+  .tut-progress .pip.active::after {
+    content: ''; position: absolute; inset: 0; background: var(--accent);
+    transform-origin: left; animation: pipFill 0.5s ease forwards;
+  }
+  @keyframes pipFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .tut-stage {
+    min-height: 300px;
+    padding: 28px 28px 8px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .tut-stage-inner { width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
+
+  .tut-body { padding: 8px 32px 4px; text-align: center; }
+  .tut-kicker {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.6px;
+    font-weight: 700; color: var(--accent); margin-bottom: 10px;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .tut-kicker i[data-lucide] { width: 14px; height: 14px; }
+  .tut-title { font-size: 23px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 10px; }
+  .tut-narr { font-size: 14.5px; color: var(--text-dim); line-height: 1.6; max-width: 540px; margin: 0 auto; }
+  .tut-narr strong { color: var(--text); font-weight: 600; }
+
+  .tut-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 24px 22px; gap: 12px;
+  }
+  .tut-skip { font-size: 12px; color: var(--text-faint); font-weight: 500; }
+  .tut-skip:hover { color: var(--text-dim); }
+  .tut-nav { display: flex; gap: 8px; align-items: center; }
+  .tut-step-count { font-size: 12px; color: var(--text-faint); font-variant-numeric: tabular-nums; margin-right: 6px; }
+
+  /* scene entrance + staggered pops */
+  .tut-anim { animation: tutIn 0.42s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes tutIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .pop { animation: popIn 0.45s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes popIn { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+  /* welcome scene */
+  .tut-hero-dot {
+    width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 24px var(--accent); animation: pulse 2s ease-in-out infinite; margin-bottom: 6px;
+  }
+  .tut-logo { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+
+  /* mini reservation rows for the tour */
+  .tut-resrow { display: flex; gap: 12px; align-items: center; width: 100%; max-width: 460px; }
+  .tut-restime { font-family:"Geist Mono",monospace; font-size: 13px; color: var(--text-dim); width: 46px; flex-shrink:0; }
+
+  /* symbol legend grid */
+  .tut-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; width: 560px; max-width: 100%; }
+  .tut-leg { display: flex; align-items: center; gap: 11px; font-size: 13px; color: var(--text-dim); }
+  .tut-leg strong { color: var(--text); font-weight: 600; }
+  .tut-leg-ic {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; background: var(--surface-3);
+  }
+  .tut-leg-ic i[data-lucide] { width: 15px; height: 15px; }
+  .tut-leg-ic.red { background: var(--red-bg); color: var(--red); }
+  .tut-leg-ic.amber { background: var(--amber-bg); color: var(--amber); }
+  .tut-leg-ic.gold { background: var(--gold-bg); color: var(--accent); }
+  .tut-leg-ic.green { background: var(--green-bg); color: var(--green); }
+  .tut-leg-ic.blue { background: var(--blue-bg); color: var(--blue); }
+  .tut-leg-ic.purple { background: var(--purple-bg); color: var(--purple); }
+
+  /* a guided "states" rail */
+  .tut-rail { display: flex; align-items: stretch; gap: 0; width: 100%; max-width: 580px; }
+  .tut-statecard {
+    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; text-align: left;
+  }
+  .tut-help-btn {
+    background: transparent; border: 1px solid var(--border-strong);
+    width: 34px; height: 34px; border-radius: 9px; color: var(--text-dim);
+    display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .tut-help-btn:hover { color: var(--text); border-color: var(--accent); }
+  .tut-help-btn i[data-lucide] { width: 17px; height: 17px; }
+
+  /* mini phone-match card for the open-table scene */
+  .tut-match {
+    background: var(--gold-bg); border: 1px solid #1b4a44; border-radius: 12px;
+    padding: 14px 16px; width: 420px; max-width: 100%; text-align: left;
+  }
+  .tut-input {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 14px; font-size: 14px; color: var(--text); width: 420px; max-width: 100%; text-align: left;
+  }
+  .tut-input .cursor { display:inline-block; width:1px; background:var(--accent); animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ═══════════ FOLLOW-ALONG COACH MARKS ═══════════ */
+  .coach-panel { position: fixed; background: rgba(6,6,8,0.74); z-index: 340; transition: all 0.25s ease; }
+  .coach-ring {
+    position: fixed; z-index: 341; border: 2px solid var(--accent); border-radius: 12px;
+    box-shadow: 0 0 0 4px rgba(45,212,191,0.22); pointer-events: none; transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .coach-ring.click { animation: ringPulse 1.4s ease-in-out infinite; }
+  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(45,212,191,0.22); } 50% { box-shadow: 0 0 0 8px rgba(45,212,191,0.10); } }
+  .coach-tip {
+    position: fixed; z-index: 342; background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: 14px; padding: 16px 18px; width: 300px; box-shadow: var(--shadow-lg);
+    transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .coach-k { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; font-weight: 700; color: var(--accent); display:flex; align-items:center; gap:6px; margin-bottom: 8px; }
+  .coach-k i[data-lucide] { width: 13px; height: 13px; }
+  .coach-tip h4 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .coach-tip p { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .coach-tip p strong { color: var(--text); font-weight: 600; }
+  .coach-foot { display:flex; align-items:center; justify-content:space-between; margin-top: 14px; gap: 10px; }
+  .coach-count { font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+  .coach-hint { font-size: 12px; color: var(--accent); font-weight: 600; display:inline-flex; align-items:center; gap:6px; }
+  .coach-hint i[data-lucide] { width: 13px; height: 13px; animation: tapNudge 1.2s ease-in-out infinite; }
+  @keyframes tapNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
+  .coach-skip { font-size: 12px; color: var(--text-faint); }
+  .coach-skip:hover { color: var(--text-dim); }
+  .coach-next { background: var(--accent); color: #04302b; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 9px; }
+
+  /* ═══════════════ TABLET (touch-first) ═══════════════ */
+  @media (max-width: 1180px) {
+    html, body { font-size: 14px; }
+    .view { padding: 20px 18px; max-width: 100%; }
+    .topbar { padding: 0 14px; gap: 10px; }
+    .nav-tabs { margin-left: 8px; }
+    .nav-tab { padding: 11px 16px; font-size: 14px; }
+    .clock { display: none; }
+    /* bigger touch targets */
+    .btn { min-height: 46px; }
+    .zone-tab { padding: 14px 18px; font-size: 14px; }
+    .view-toggle button { padding: 9px 14px; }
+    .phase-switch button { padding: 9px 14px; }
+    .filter-chip, .chip-opt { padding: 10px 14px; }
+    .table-tile { min-height: 156px; padding: 16px; }
+    .tut-help-btn { width: 40px; height: 40px; }
+    .add-btn { padding: 10px 14px; }
+    /* full-screen sheets for modals — easier on a tablet */
+    .modal-overlay { padding: 0; align-items: stretch; justify-content: stretch; }
+    .modal, .modal.small, .modal.large { max-width: 100%; width: 100%; max-height: 100vh; border-radius: 0; }
+    .modal-head { padding: 18px 20px; position: sticky; top: 0; }
+    .modal-body { padding: 20px 20px 32px; }
+    .modal-close { width: 40px; height: 40px; }
+  }
+
+  /* Portrait tablet — stack the two-column areas */
+  @media (max-width: 920px) {
+    .tdetail { grid-template-columns: 1fr; gap: 12px; }
+    .res-grid { grid-template-columns: 1fr; }
+    .briefing-panel { position: static; }
+    .lanes { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .floor-header { flex-wrap: wrap; gap: 14px; }
+    .floor-title { font-size: 24px; }
+    .briefing-stats { grid-template-columns: repeat(2, 1fr); }
+    .btn-lbl { display: none; }            /* Add Guest Info → icon only */
+    .table-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+  }
+
+  @media (max-width: 680px) {
+    .table-grid { grid-template-columns: 1fr 1fr; }
+    .floor-stats { width: 100%; justify-content: space-between; }
+  }
+
+  /* coarse-pointer (touch) — kill hover transforms that feel laggy */
+  @media (hover: none) {
+    .table-tile:hover, .reco-item:hover, .res-card:hover, .map-table:hover, .tbl:hover .tbl-surface { transform: none; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span class="logo-dot"></span>Pulse</div>
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-tab active" data-view="floor">Floor</button>
+    <button class="nav-tab" data-view="reservations">Reservations</button>
+  </div>
+  <div class="spacer"></div>
+  <button class="tut-help-btn" onclick="startFollow()" title="Follow-along walkthrough"><i data-lucide="help-circle"></i></button>
+  <button class="add-btn" onclick="openGuestInfoModal()"><i data-lucide="user-plus" class="sm"></i> <span class="btn-lbl">Add Guest Info</span></button>
+  <div class="clock" id="clock">19:24</div>
+  <div class="phase-switch" id="phase-switch">
+    <button data-phase="1" class="active">PHASE 1</button>
+    <button data-phase="2">PHASE 2</button>
+  </div>
+</div>
+
+<div class="phase-strip" id="phase-strip">
+  <div><strong id="phase-name">Phase 1 — The Briefing</strong> · <span id="phase-desc">Existing QR data only · floor view, briefing card, course nudges</span></div>
+  <div>Bella Notte · Orchard Rd, Singapore</div>
+</div>
+
+<div class="main">
+
+  <!-- ─── FLOOR ─── -->
+  <div class="view active" id="view-floor">
+    <div class="floor-header">
+      <div>
+        <div class="floor-title serif">Tonight's Service</div>
+        <div class="floor-subtitle" id="floor-subtitle">Friday, 7 June · existing diners detected from QR orders</div>
+      </div>
+      <div class="floor-stats">
+        <button class="btn primary" id="seat-cta" style="margin-right: 8px; display: none;" onclick="openSeatPicker()"><i data-lucide="user-plus" class="sm"></i> Seat a Guest</button>
+        <div class="stat"><div class="stat-num" id="stat-seated">14</div><div class="stat-label">Seated</div></div>
+        <div class="stat"><div class="stat-num" id="stat-free">9</div><div class="stat-label">Free</div></div>
+        <div class="stat alert"><div class="stat-num" id="stat-attention">3</div><div class="stat-label">Attention</div></div>
+      </div>
+    </div>
+
+    <!-- Concierge bar — Phase 3 only, folded into Floor -->
+    <div id="floor-concierge" style="display:none;">
+      <div class="concierge-search">
+        <div class="concierge-icon"><i data-lucide="sparkles"></i></div>
+        <input type="text" id="concierge-input" placeholder="Ask Pulse — “what wine for Anika's lamb?” · “who'll order dessert?”" onkeydown="if(event.key==='Enter')askConcierge()" />
+        <button class="btn primary" style="margin-right: 4px;" onclick="askConcierge()">Ask</button>
+      </div>
+      <div id="concierge-results"></div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; border-bottom:1px solid var(--border); margin-bottom: 24px;">
+      <div class="zone-tabs" id="zone-tabs" style="border-bottom:none; margin-bottom:0;">
+        <button class="zone-tab active" data-zone="all">All Zones <span class="zone-count">23</span></button>
+        <button class="zone-tab" data-zone="indoor">Indoor <span class="zone-count">12</span></button>
+        <button class="zone-tab" data-zone="patio">Patio <span class="zone-count">7</span></button>
+        <button class="zone-tab" data-zone="outdoor">Outdoor <span class="zone-count">4</span></button>
+      </div>
+      <div class="view-toggle" id="view-toggle" style="margin-bottom:8px;">
+        <button class="active" data-layout="grid"><i data-lucide="layout-grid"></i> Grid</button>
+        <button data-layout="map"><i data-lucide="map"></i> Map</button>
+      </div>
+    </div>
+
+    <div id="floor-content"></div>
+  </div>
+
+  <!-- ─── RESERVATIONS ─── -->
+  <div class="view" id="view-reservations">
+    <div id="reservations-content"></div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="table-modal"><div class="modal" id="table-modal-content"></div></div>
+<div class="modal-overlay" id="guest-modal"><div class="modal small" id="guest-modal-content"></div></div>
+
+<!-- New Reservation -->
+<div class="modal-overlay" id="res-form-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">New Reservation</div>
+        <div class="modal-sub">Phone recognises a returning guest and pulls their profile</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('res-form-modal')"><i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full">
+          <div class="label">Phone <span class="req">*</span></div>
+          <input class="input" id="res-phone" placeholder="+65 9123 4567" oninput="resLookup(this.value)" />
+          <div id="res-match" style="font-size: 12px; margin-top: 4px;"></div>
+        </div>
+        <div class="field"><div class="label">Name</div><input class="input" id="res-name" placeholder="Guest name" /></div>
+        <div class="field"><div class="label">Pax</div><input class="input" id="res-party" type="number" min="1" value="2" /></div>
+        <div class="field"><div class="label">Date</div><input class="input" id="res-date" type="date" value="2026-06-07" /></div>
+        <div class="field"><div class="label">Time</div><input class="input" id="res-time" type="time" value="19:30" /></div>
+        <div class="field full">
+          <div class="label">Table <span style="color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:500;">— assign now or on arrival</span></div>
+          <select class="input" id="res-table"></select>
+        </div>
+        <div class="field full">
+          <div class="label">Occasion</div>
+          <div class="chip-select" data-group="res-occasion">
+            <div class="chip-opt amber" data-val="birthday"><i data-lucide="cake" class="xs"></i> Birthday</div>
+            <div class="chip-opt amber" data-val="anniversary"><i data-lucide="gem" class="xs"></i> Anniversary</div>
+            <div class="chip-opt" data-val="celebration"><i data-lucide="sparkles" class="xs"></i> Celebration</div>
+            <div class="chip-opt" data-val="business"><i data-lucide="briefcase" class="xs"></i> Business</div>
+            <div class="chip-opt" data-val="date"><i data-lucide="heart" class="xs"></i> Date</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Allergies / Dietary</div>
+          <div class="chip-select" data-group="res-allergy">
+            <div class="chip-opt red" data-val="nuts"><i data-lucide="triangle-alert" class="xs"></i> Nuts</div>
+            <div class="chip-opt red" data-val="shellfish"><i data-lucide="shell" class="xs"></i> Shellfish</div>
+            <div class="chip-opt red" data-val="dairy"><i data-lucide="milk" class="xs"></i> Dairy</div>
+            <div class="chip-opt red" data-val="gluten"><i data-lucide="wheat" class="xs"></i> Gluten</div>
+            <div class="chip-opt" data-val="vegetarian"><i data-lucide="salad" class="xs"></i> Vegetarian</div>
+            <div class="chip-opt" data-val="vegan"><i data-lucide="sprout" class="xs"></i> Vegan</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Notes</div>
+          <textarea class="textarea" id="res-notes" placeholder="Window seat · regular's friend · anything we should know"></textarea>
+        </div>
+      </div>
+      <div class="actions-row" style="justify-content: flex-end;">
+        <button class="btn ghost" onclick="closeModal('res-form-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveReservation()">Save Reservation</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Seat a Guest (Phase 2+) -->
+<div class="modal-overlay" id="seat-modal">
+  <div class="modal small">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title" id="seat-title">Open Table</div>
+        <div class="modal-sub" id="seat-sub">No login — phone or name auto-pulls a returning guest's profile</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('seat-modal')"><i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="seat-intro">
+        <div class="seat-assign-label">Assigning</div>
+        <div class="seat-table-num" id="seat-table-num">5</div>
+        <div class="seat-table-sub"><span id="seat-table-zone">patio</span> · <span id="seat-table-cap">4-top</span></div>
+        <select class="input" id="seat-table-select" style="max-width:260px;margin:12px auto 0;text-align-last:center;" onchange="changeSeatTable(this.value)"></select>
+        <div id="seat-msg" style="margin-top:10px; display:flex; flex-direction:column; gap:5px; align-items:center; font-size:12px; font-weight:500;"></div>
+      </div>
+      <div class="field full">
+        <div class="label">Phone <span style="color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:500;">— recognises returning guests</span></div>
+        <input class="input" id="seat-phone" placeholder="+65 9123 4567" oninput="seatLookup(this.value, 'phone')" />
+      </div>
+      <div class="seat-match-card" id="seat-match-card"></div>
+      <div class="form-grid" style="margin-top: 14px;">
+        <div class="field">
+          <div class="label">Guest name</div>
+          <input class="input" id="seat-name" placeholder="Name" oninput="seatLookup(this.value, 'name')" />
+        </div>
+        <div class="field">
+          <div class="label">Pax</div>
+          <input class="input" id="seat-party" type="number" min="1" value="2" oninput="refreshSeatMsg()" />
+        </div>
+        <div class="field full">
+          <div class="label">Occasion</div>
+          <div class="chip-select" data-group="seat-occasion">
+            <div class="chip-opt amber" data-val="birthday"><i data-lucide="cake" class="xs"></i> Birthday</div>
+            <div class="chip-opt amber" data-val="anniversary"><i data-lucide="gem" class="xs"></i> Anniversary</div>
+            <div class="chip-opt" data-val="celebration"><i data-lucide="sparkles" class="xs"></i> Celebration</div>
+            <div class="chip-opt" data-val="business"><i data-lucide="briefcase" class="xs"></i> Business</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Allergies / Dietary</div>
+          <div class="chip-select" data-group="seat-allergy">
+            <div class="chip-opt red" data-val="nuts"><i data-lucide="triangle-alert" class="xs"></i> Nuts</div>
+            <div class="chip-opt red" data-val="shellfish"><i data-lucide="shell" class="xs"></i> Shellfish</div>
+            <div class="chip-opt red" data-val="dairy"><i data-lucide="milk" class="xs"></i> Dairy</div>
+            <div class="chip-opt red" data-val="gluten"><i data-lucide="wheat" class="xs"></i> Gluten</div>
+            <div class="chip-opt" data-val="vegetarian"><i data-lucide="salad" class="xs"></i> Vegetarian</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Additional info <span style="color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:500;">— optional</span></div>
+          <textarea class="textarea" id="seat-info" placeholder="e.g. window seat · regular's friend"></textarea>
+        </div>
+      </div>
+      <div class="actions-row" style="justify-content: flex-end; margin-top: 18px;">
+        <button class="btn ghost" onclick="seatAnonymous()">Walk-in (skip)</button>
+        <button class="btn primary" onclick="confirmSeat()">Open Table <span id="seat-confirm-num"></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Move guest to another table -->
+<div class="modal-overlay" id="move-modal">
+  <div class="modal small">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Move table</div>
+        <div class="modal-sub" id="move-sub">Move this party to an open table</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('move-modal')"><i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="label" style="margin-bottom:10px;">Pick the new table</div>
+      <div id="move-options" class="move-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Guest Info (always available) -->
+<div class="modal-overlay" id="guest-info-modal">
+  <div class="modal small">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Add Guest Info</div>
+        <div class="modal-sub">Capture anywhere — pre-arrival, at the table, or post-meal</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('guest-info-modal')"<i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid single">
+        <div class="field full">
+          <div class="label">Phone <span class="req">*</span></div>
+          <input class="input" id="gi-phone" placeholder="+65 9123 4567" oninput="lookupGuest(this.value)" />
+          <div id="gi-match" style="font-size: 12px; margin-top: 4px;"></div>
+        </div>
+        <div class="field"><div class="label">Name</div><input class="input" id="gi-name" placeholder="Optional" /></div>
+        <div class="field full">
+          <div class="label">Allergies</div>
+          <div class="chip-select" data-group="gi-allergy">
+            <div class="chip-opt red" data-val="nuts">🥜 Nuts</div>
+            <div class="chip-opt red" data-val="shellfish">🦐 Shellfish</div>
+            <div class="chip-opt red" data-val="dairy">🥛 Dairy</div>
+            <div class="chip-opt red" data-val="gluten">🌾 Gluten</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Preferences</div>
+          <div class="chip-select" data-group="gi-pref">
+            <div class="chip-opt" data-val="red-wine">🍷 Red wine</div>
+            <div class="chip-opt" data-val="white-wine">🥂 White wine</div>
+            <div class="chip-opt" data-val="cocktails">🍸 Cocktails</div>
+            <div class="chip-opt" data-val="spicy">🌶️ Loves spice</div>
+            <div class="chip-opt" data-val="nospicy">No spice</div>
+            <div class="chip-opt" data-val="vip">⭐ Treat as VIP</div>
+          </div>
+        </div>
+        <div class="field full" id="gi-occasion-wrap">
+          <div class="label">Occasion <span style="text-transform:none; letter-spacing:0; color: var(--text-faint); font-weight: 500;">(Phase 2+)</span></div>
+          <div class="chip-select" data-group="gi-occasion">
+            <div class="chip-opt amber" data-val="birthday">🎂 Birthday</div>
+            <div class="chip-opt amber" data-val="anniversary">💍 Anniversary</div>
+            <div class="chip-opt" data-val="business">💼 Business</div>
+          </div>
+        </div>
+        <div class="field full">
+          <div class="label">Notes</div>
+          <textarea class="textarea" id="gi-notes" placeholder='e.g. "Husband doesn'"'"'t drink", "Always wants extra bread", "Slow eater"'></textarea>
+        </div>
+      </div>
+      <div class="actions-row" style="justify-content: flex-end;">
+        <button class="btn ghost" onclick="closeModal('guest-info-modal')">Cancel</button>
+        <button class="btn primary" onclick="saveGuestInfo()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ GUIDED TOUR ═══ -->
+<div class="tut-overlay" id="tut-overlay">
+  <div class="tut-card">
+    <div class="tut-progress" id="tut-progress"></div>
+    <div class="tut-stage"><div class="tut-stage-inner" id="tut-stage"></div></div>
+    <div class="tut-body">
+      <div class="tut-kicker" id="tut-kicker"></div>
+      <div class="tut-title" id="tut-title"></div>
+      <div class="tut-narr" id="tut-narr"></div>
+    </div>
+    <div class="tut-foot">
+      <button class="tut-skip" onclick="endTutorial()">Skip tour</button>
+      <div class="tut-nav">
+        <span class="tut-step-count" id="tut-count"></span>
+        <button class="btn ghost" id="tut-back" onclick="tutPrev()">Back</button>
+        <button class="btn primary" id="tut-next" onclick="tutNext()">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   MOCK DATA
+   ════════════════════════════════════════════════════════ */
+const guests = {
+  'g1': { id:'g1', name:'Anika Sharma', initials:'AS', phone:'+65 9123 4567',
+    visits:4, networkVisits:14, lastVisit:'12 days ago',
+    spend:4, avgPerCover:2400,
+    favFood:['Burrata','Lamb Shank','Tiramisu'],
+    favDrinks:['Barolo 2018','Espresso Martini'],
+    suggestedDrink:{name:'Barolo 2018',type:'wine',reason:'Ordered every visit · 5★ last time'},
+    suggestedStarter:{name:'Burrata',reason:'Ordered 3/4 visits'},
+    suggestedMain:{name:'Lamb Shank',reason:'Repeat order · pairs with her Barolo'},
+    suggestedDessert:{name:'Tiramisu',reason:'Standard finish for her · 3/4 visits'},
+    upsell:{name:'Truffle Fries',reason:'80% of lamb orders add this'},
+    allergies:['Nuts'], dislikes:['Spicy food'],
+    occasion:'Anniversary tonight',
+    pastRatings:[5,5,4,3],
+    avgRating:4.3,
+    notes:'Slow pacing flagged last visit — keep courses moving',
+    vipTier:'Regular', networkTier:'gold',
+    upsellAffinity:0.78, advocacy:87,
+  },
+  'g2': { id:'g2', name:'Rohan Sharma', initials:'RS', phone:'+65 9123 4568',
+    visits:4, networkVisits:14, lastVisit:'12 days ago',
+    spend:4, avgPerCover:2400,
+    favFood:['Beef Tartare','Carbonara'],
+    favDrinks:['Whisky neat — Yamazaki 12'],
+    suggestedDrink:{name:'Yamazaki 12, neat',type:'spirit',reason:'Orders after every meal'},
+    suggestedDessert:{name:'Affogato',reason:'Pairs with his post-meal whisky'},
+    allergies:[], dislikes:[],
+    pastRatings:[5,5,4,4], avgRating:4.5,
+    vipTier:'Regular',
+  },
+  'g3': { id:'g3', name:'David Lim', initials:'DL', phone:'+65 9234 5678',
+    visits:8, networkVisits:22, lastVisit:'3 days ago',
+    spend:4, avgPerCover:3100,
+    favFood:['Truffle Pasta','Wagyu Ribeye','Cheese plate'],
+    favDrinks:['Bordeaux 2015','Negroni'],
+    suggestedDrink:{name:'Negroni',type:'aperitif',reason:'Always starts with this'},
+    suggestedStarter:{name:'Truffle Arancini',reason:'5/8 visits · loves truffle'},
+    suggestedMain:{name:'Truffle Pasta',reason:'Ordered 6× · 5★ each time'},
+    suggestedDessert:{name:'Cheese Plate',reason:'Skips sweet · 7/8 visits'},
+    upsell:{name:'Bordeaux 2015 — bottle',reason:'Always upgrades from glass'},
+    allergies:[], dislikes:[],
+    pastRatings:[5,5,5,4,5,5,4,5], avgRating:4.75,
+    notes:'High advocacy — brought 6 different parties · chef should say hi',
+    vipTier:'VIP', networkTier:'platinum',
+  },
+  'g4': { id:'g4', name:'Sofia Chen', initials:'SC', phone:'+65 9345 6789',
+    visits:5, networkVisits:11, lastVisit:'21 days ago',
+    spend:3, avgPerCover:1900,
+    favFood:['Heirloom Salad','Sea Bass'],
+    favDrinks:['Sauvignon Blanc','Sparkling water'],
+    suggestedDrink:{name:'Sauvignon Blanc',type:'wine',reason:'Light & crisp — her pattern'},
+    suggestedStarter:{name:'Heirloom Salad',reason:'4/5 visits'},
+    suggestedMain:{name:'Sea Bass',reason:'Light protein · her preference'},
+    suggestedDessert:{name:'Lemon Sorbet',reason:'Avoids heavy desserts'},
+    allergies:['Gluten'], dislikes:['Heavy creams'],
+    pastRatings:[5,5,5,4,5], avgRating:4.8,
+    vipTier:'Regular',
+  },
+  'g5': { id:'g5', name:'Mark Tan', initials:'MT', phone:'+65 9456 7890',
+    visits:2, networkVisits:3, lastVisit:'45 days ago',
+    spend:2, avgPerCover:1200,
+    favFood:['Margherita','Carbonara'],
+    favDrinks:['Peroni','Aperol Spritz'],
+    suggestedDrink:{name:'Aperol Spritz',type:'aperitif',reason:'Date-night choice last visit'},
+    suggestedStarter:{name:'Calamari Fritti',reason:'Ordered last visit · gave 4★'},
+    suggestedMain:{name:'Margherita',reason:'Reliable favorite'},
+    suggestedDessert:{name:'Affogato',reason:'Light · standard finish'},
+    upsell:{name:'Tiramisu (anniversary plating)',reason:'Birthday tonight'},
+    allergies:[], occasion:'Birthday tonight',
+    pastRatings:[4,4], avgRating:4.0,
+    vipTier:'New',
+  },
+  'g6': { id:'g6', name:'Priya Rajan', initials:'PR', phone:'+65 9567 8901',
+    visits:0, networkVisits:8, lastVisit:'First visit here',
+    spend:3, avgPerCover:2200,
+    favFood:['Tasting Menu','Sommelier wines'],
+    favDrinks:['Sommelier pairing','Champagne'],
+    suggestedDrink:{name:'Champagne — Veuve, glass',type:'aperitif',reason:'Engagement tonight'},
+    suggestedMain:{name:'Chef\'s Tasting Menu',reason:'Loves it · 6/8 network visits'},
+    suggestedDessert:{name:'Chef\'s Selection Plate',reason:'Adventurous palate'},
+    upsell:{name:'Sommelier wine pairing',reason:'Always orders pairings'},
+    allergies:[], occasion:'Engagement celebration',
+    pastRatings:[5,4,5,5,5,4,5,5], avgRating:4.75,
+    networkTier:'silver', vipTier:'Network Regular',
+  },
+  'g7': { id:'g7', name:'Raj Mehta', initials:'RM', phone:'+65 9678 9012',
+    visits:7, networkVisits:7, lastVisit:'78 days ago',
+    spend:3, avgPerCover:1800,
+    favFood:['Beef Carpaccio','Osso Buco'],
+    favDrinks:['Barolo','Espresso'],
+    suggestedDrink:{name:'Barolo — glass',type:'wine',reason:'Always · 5/7 visits'},
+    suggestedMain:{name:'Osso Buco',reason:'Comfort order'},
+    suggestedDessert:{name:'Panna Cotta',reason:'Light · digestive'},
+    allergies:[],
+    pastRatings:[5,5,4,4,3,3,3], avgRating:3.86,
+    notes:'⚠ Rating declining — last 3 visits all 3★ · 78 days since last visit',
+    vipTier:'Regular',
+    churnRisk:true,
+  },
+};
+
+const tables = [
+  // INDOOR
+  { id:1, zone:'indoor', cap:6, status:'ordered', server:'James', party:['g1','g3','g4','g5'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,false,false], seatedMin:38, glyphs:['vip','nut','anniversary'], glyphCat:['vip','allergy','occasion'], drinkAgeMin:26,
+    items:[{name:'Burrata',course:'apps',served:true,qty:2}, {name:'Beef Tartare',course:'apps',served:true,qty:1}, {name:'Heirloom Salad',course:'apps',served:true,qty:1}],
+    drinks:[{name:'Negroni',course:'aperitif',qty:2,served:true}, {name:'Aperol Spritz',course:'aperitif',qty:2,served:true}] },
+  { id:2, zone:'indoor', cap:4, status:'ordered', server:'James', seatedPax:2, party:['g5'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,false,false], seatedMin:18, glyphs:['birthday'], glyphCat:['occasion'],
+    items:[{name:'Calamari Fritti',course:'apps',served:true,qty:1}, {name:'Margherita',course:'mains',served:false,qty:1}],
+    drinks:[{name:'Aperol Spritz',course:'aperitif',qty:2,served:true}] },
+  { id:3, zone:'indoor', cap:2, status:'empty' },
+  { id:4, zone:'indoor', cap:6, status:'attention', server:'Maria', seatedPax:4, party:['g4'], course:'dessert', progress:[true,true,false,false], drinkProgress:[true,true,false], seatedMin:52, glyphs:['attention','gluten'], glyphCat:['attention','allergy'],
+    items:[{name:'Heirloom Salad',course:'apps',served:true,qty:1}, {name:'Sea Bass',course:'mains',served:true,qty:2}, {name:'GF Risotto',course:'mains',served:true,qty:2}],
+    drinks:[{name:'Sparkling Water',course:'aperitif',qty:4,served:true}, {name:'Sauvignon Blanc',course:'wine',qty:1,served:true,bottle:true}] },
+  { id:5, zone:'patio', cap:4, status:'overdue', server:'James', party:['g1','g2'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,true,false], seatedMin:22, glyphs:['nut','anniversary'], glyphCat:['allergy','occasion'],
+    items:[{name:'Burrata',course:'apps',served:true,qty:1}, {name:'Beef Tartare',course:'apps',served:true,qty:1}, {name:'Mushroom Risotto',course:'mains',served:false,qty:1}, {name:'Lamb Shank',course:'mains',served:false,qty:1}],
+    drinks:[{name:'Aperol Spritz',course:'aperitif',qty:1,served:true}, {name:'Negroni',course:'aperitif',qty:1,served:true}, {name:'Barolo 2018',course:'wine',qty:1,served:true,bottle:true}] },
+  { id:6, zone:'patio', cap:2, status:'empty' },
+  { id:7, zone:'patio', cap:2, status:'seated', server:'Aisha', party:[], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:6,
+    items:[], drinks:[] },
+  { id:8, zone:'indoor', cap:4, status:'ordered', server:'James', seatedPax:2, party:['g3'], course:'apps', progress:[false,false,false,false], drinkProgress:[true,false,false], seatedMin:11, glyphs:['vip'],
+    items:[{name:'Truffle Arancini',course:'apps',served:false,qty:1}, {name:'Vitello Tonnato',course:'apps',served:false,qty:1}],
+    drinks:[{name:'Negroni',course:'aperitif',qty:1,served:true}] },
+  { id:9, zone:'indoor', cap:4, status:'paid', server:'Maria', party:[], seatedPax:4, course:'check', progress:[true,true,true,true], drinkProgress:[true,true,true], seatedMin:96,
+    items:[{name:'Bruschetta',course:'apps',served:true,qty:2}, {name:'Pizza Diavola',course:'mains',served:true,qty:2}, {name:'Tiramisu',course:'dessert',served:true,qty:2}],
+    drinks:[{name:'House Red',course:'wine',qty:1,served:true,bottle:true}] },
+  { id:10, zone:'indoor', cap:2, status:'empty' },
+  { id:11, zone:'indoor', cap:4, status:'seated', server:'Maria', party:[], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:2,
+    items:[], drinks:[] },
+  { id:12, zone:'patio', cap:4, status:'ordered', server:'Aisha', seatedPax:4, party:['g7'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,true,false], seatedMin:28, glyphs:['attention'], glyphCat:['attention'],
+    items:[{name:'Beef Carpaccio',course:'apps',served:true,qty:1}, {name:'Crudo',course:'apps',served:true,qty:1}, {name:'Osso Buco',course:'mains',served:false,qty:2}, {name:'Tagliata',course:'mains',served:false,qty:2}],
+    drinks:[{name:'Negroni',course:'aperitif',qty:4,served:true}, {name:'Barolo',course:'wine',qty:1,served:true,bottle:true}] },
+  { id:13, zone:'outdoor', cap:4, status:'empty' },
+  { id:14, zone:'outdoor', cap:2, status:'ordered', server:'Tom', party:[], course:'apps', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:14,
+    items:[{name:'Caesar Salad',course:'apps',served:false,qty:1}], drinks:[] },
+  { id:15, zone:'patio', cap:6, status:'seated', server:'Aisha', party:['g6'], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:1, glyphs:['celebration'], glyphCat:['occasion'],
+    items:[], drinks:[] },
+  { id:16, zone:'indoor', cap:2, status:'empty' },
+  { id:17, zone:'outdoor', cap:4, status:'empty' },
+  { id:18, zone:'indoor', cap:4, status:'ordered', server:'Maria', seatedPax:4, party:['g4'], course:'apps', progress:[false,false,false,false], drinkProgress:[true,false,false], seatedMin:8, glyphs:['vip','gluten'], glyphCat:['vip','allergy'],
+    items:[{name:'Insalata (GF)',course:'apps',served:false,qty:1}],
+    drinks:[{name:'Sparkling Water',course:'aperitif',qty:4,served:true}] },
+  { id:19, zone:'indoor', cap:2, status:'empty' },
+  { id:20, zone:'indoor', cap:2, status:'empty' },
+  { id:21, zone:'patio', cap:2, status:'empty' },
+  { id:22, zone:'patio', cap:4, status:'empty' },
+  { id:23, zone:'outdoor', cap:6, status:'empty' },
+];
+
+const reservations = [
+  { time:'18:30', name:'David Lim', phone:'+65 9234 5678', guestId:'g3', party:2, table:8, zone:'indoor', status:'known', allergies:[], occasion:'', notes:'Usual table' },
+  { time:'19:00', name:'Anika Sharma', phone:'+65 9123 4567', guestId:'g1', party:4, table:5, zone:'patio', status:'known', allergies:['Nuts'], occasion:'Anniversary', notes:'Chocolate plate on house' },
+  { time:'19:00', name:'Mark Tan', phone:'+65 9456 7890', guestId:'g5', party:2, table:2, zone:'indoor', status:'known', allergies:[], occasion:'Birthday', notes:'Candle on dessert' },
+  { time:'19:15', name:'Sofia Chen', phone:'+65 9345 6789', guestId:'g4', party:4, table:18, zone:'indoor', status:'known', allergies:['Gluten'], occasion:'', notes:'' },
+  { time:'19:30', name:'Priya Rajan', phone:'+65 9567 8901', guestId:'g6', party:6, table:15, zone:'patio', status:'network', allergies:[], occasion:'Engagement', notes:'First visit here · loves the tasting menu' },
+  { time:'19:30', name:'Marco Visconti', phone:'+65 9788 1234', party:2, table:11, zone:'indoor', status:'network', allergies:[], occasion:'', notes:'First here · 3 across' },
+  { time:'19:45', name:'Raj Mehta', phone:'+65 9678 9012', guestId:'g7', party:4, table:12, zone:'patio', status:'known', allergies:[], occasion:'', notes:'⚠ Churn risk — last 3 visits 3★' },
+  { time:'20:00', name:'Linda Wu', phone:'+65 9888 7777', party:2, table:7, zone:'patio', status:'new', allergies:['Shellfish'], occasion:'', notes:'Walk-in via WhatsApp' },
+  { time:'20:30', name:'James Tan', phone:'+65 9777 6666', party:4, table:4, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'' },
+];
+
+const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[] };
+
+// Lucide icon helper. Sizes: '' (16), sm (14), lg (20), xl (24)
+function ic(name, size) {
+  return `<i data-lucide="${name}"${size ? ' class="'+size+'"' : ''}></i>`;
+}
+function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
+
+// ── shared capture vocabulary (reservation + walk-in stay consistent) ──
+const ALLERGY_LABEL = { nuts:'Nuts', shellfish:'Shellfish', dairy:'Dairy', gluten:'Gluten', vegetarian:'Vegetarian', vegan:'Vegan', halal:'Halal' };
+const OCCASION_LABEL = { birthday:'Birthday', anniversary:'Anniversary', business:'Business', date:'Date', celebration:'Celebration', engagement:'Engagement' };
+const ALLERGY_GLYPH = { Nuts:'nut', Shellfish:'shellfish', Dairy:'dairy', Gluten:'gluten' };       // red danger glyphs only
+const OCCASION_GLYPH = { Birthday:'birthday', Anniversary:'anniversary', Engagement:'engagement', Celebration:'celebration', Business:'business', Date:'date' };
+function readChips(group){ return [...document.querySelectorAll(`.chip-select[data-group="${group}"] .chip-opt.selected`)].map(c=>c.dataset.val); }
+function clearChips(group){ document.querySelectorAll(`.chip-select[data-group="${group}"] .chip-opt`).forEach(c=>c.classList.remove('selected')); }
+function setChips(group, vals){ clearChips(group); (vals||[]).forEach(v=>{ const el=document.querySelector(`.chip-select[data-group="${group}"] .chip-opt[data-val="${v}"]`); if(el) el.classList.add('selected'); }); }
+// labels (e.g. ['Nuts']) → chip values (['nuts']) for pre-filling
+function labelsToChipVals(labels, map){ const inv={}; Object.entries(map).forEach(([k,v])=>inv[v.toLowerCase()]=k); return (labels||[]).map(l=>inv[String(l).toLowerCase()]).filter(Boolean); }
+
+// Course-progress as labeled icons (states: 2=served, 1=current, 0=upcoming)
+const COURSE_ICONS = ['salad','utensils-crossed','cake-slice','receipt'];
+function coursePips(states) {
+  return `<div class="tile-progress">${states.map((s,i)=>`<span class="cpip ${s===2?'done':s===1?'active':''}">${ic(COURSE_ICONS[i])}</span>`).join('')}</div>`;
+}
+
+// Item tag chip: usual = orders this often · try = new suggestion · repeat = refill
+function tagChip(tag) {
+  if (tag === 'usual') return `<span class="tag usual">${ic('heart')}Usual</span>`;
+  if (tag === 'try')   return `<span class="tag try">${ic('sparkles')}Try this</span>`;
+  if (tag === 'repeat')return `<span class="tag repeat">${ic('rotate-ccw')}Refill</span>`;
+  return '';
+}
+
+// Map domain concepts → Lucide icon names
+const ICONS = {
+  // Glyphs / concerns
+  nut: 'triangle-alert', shellfish: 'shell', dairy: 'milk', gluten: 'wheat',
+  birthday: 'cake', anniversary: 'gem', business: 'briefcase', date: 'heart', celebration: 'sparkles', engagement: 'gem',
+  vip: 'star', attention: 'circle-alert', pacing: 'timer-reset', churn: 'alert-circle', avoid: 'circle-slash',
+  // Zones
+  indoor: 'building-2', patio: 'sprout', outdoor: 'sun',
+  // Service
+  starters: 'salad', mains: 'utensils-crossed', dessert: 'cake-slice', check: 'receipt',
+  aperitif: 'martini', wine: 'wine', digestif: 'coffee',
+  // Reco
+  food: 'utensils', drink: 'martini', upsell: 'plus-circle', gesture: 'gift', predict: 'sparkles',
+  // UI
+  plus: 'plus', close: 'x', search: 'search', sparkles: 'sparkles', send: 'send', printer: 'printer',
+  manager: 'bell', clock: 'clock', lock: 'lock', user: 'user', userPlus: 'user-plus',
+  // Phase
+  phase1: 'eye', phase2: 'network', phase3: 'sparkles',
+  // Locked icons
+  reservations: 'calendar', preshift: 'clipboard-list', concierge: 'sparkles', managerView: 'bar-chart-3',
+};
+
+/* ════════════════════════════════════════════════════════
+   HELPERS
+   ════════════════════════════════════════════════════════ */
+const phasePolicy = (p) => ({
+  showOccasionGlyph: p >= 2,
+  showNetworkBadge: p >= 2,
+  showReservations: p >= 2,
+  showPreShift: false,
+  showConcierge: p >= 2,
+  showManager: false,
+  predictiveCues: p >= 2,
+  occasionInBanner: p >= 2,
+  occasionInBriefing: p >= 2,
+});
+
+function avgRating(g) { return g && g.pastRatings && g.pastRatings.length ? g.pastRatings.reduce((a,b)=>a+b,0)/g.pastRatings.length : 0; }
+
+function ratingStars(g) {
+  const a = avgRating(g);
+  if (!a) return '<span class="rating-empty">★★★★★</span>';
+  const full = Math.floor(a + 0.25);
+  return '★'.repeat(full) + '<span class="rating-empty">' + '★'.repeat(5-full) + '</span><span class="rating-num">' + a.toFixed(1) + '</span>';
+}
+
+function ratingStarsSimple(g) {
+  const a = avgRating(g);
+  if (!a) return '';
+  const full = Math.floor(a + 0.25);
+  return '★'.repeat(full) + '☆'.repeat(5-full);
+}
+
+/* ════════════════════════════════════════════════════════
+   FLOOR RENDER
+   ════════════════════════════════════════════════════════ */
+function renderFloor() {
+  const container = document.getElementById('floor-content');
+  const pol = phasePolicy(state.phase);
+  if (state.layout === 'map') { renderFloorMap(container, pol); }
+  else {
+    const zones = state.zone === 'all' ? ['indoor','patio','outdoor'] : [state.zone];
+    let html = '';
+    zones.forEach(zone => {
+      const zoneTables = tables.filter(t => t.zone === zone);
+      html += `<div class="zone-section">
+        <div class="zone-label">${ic(ICONS[zone], 'sm')} ${zone} · ${zoneTables.filter(t=>t.status!=='empty').length} of ${zoneTables.length} occupied</div>
+        <div class="table-grid">${zoneTables.map(t => renderTile(t, pol)).join('')}</div>
+      </div>`;
+    });
+    container.innerHTML = html;
+  }
+  refreshIcons();
+  // keep zone-tab counts in sync (tables can be added in Edit mode)
+  document.querySelectorAll('#zone-tabs .zone-tab').forEach(b=>{
+    const z=b.dataset.zone, cnt=b.querySelector('.zone-count'); if(!cnt) return;
+    cnt.textContent = z==='all' ? tables.length : tables.filter(t=>t.zone===z).length;
+  });
+  // live counts — never let the header lie
+  const occupied = tables.filter(t=>['seated','ordered','attention','overdue','paid'].includes(t.status));
+  const free = tables.filter(t=>t.status==='empty').length;
+  const attention = tables.filter(t=>['attention','overdue'].includes(t.status)).length;
+  const covers = occupied.reduce((s,t)=>s+paxOf(t),0);
+  const setNum=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  setNum('stat-seated', occupied.length); setNum('stat-free', free); setNum('stat-attention', attention);
+  const sub = document.getElementById('floor-subtitle');
+  if (state.phase === 1) sub.textContent = `Friday, 7 June · ${occupied.length} tables seated · ${covers} covers · recognised from QR orders`;
+  if (state.phase === 2) sub.textContent = `Friday, 7 June · ${occupied.length} tables seated · ${covers} covers · guests recognised on arrival`;
+}
+
+function tileGlyphs(t, pol) {
+  let glyphs = [];
+  if (t.glyphs) t.glyphs.forEach((g, i) => {
+    const cat = t.glyphCat ? t.glyphCat[i] : '';
+    if (cat === 'occasion' && !pol.showOccasionGlyph) return;
+    glyphs.push({ glyph: g, cat });
+  });
+  return glyphs;
+}
+
+function renderTile(t, pol) {
+  if (t.status === 'empty') {
+    return `<div class="table-tile empty" data-id="${t.id}" onclick="seatTable(${t.id})">
+      <div class="tile-top"><div class="tile-num">${t.id}</div></div>
+      <div class="tile-party">${t.cap}-top</div>
+      <div class="tile-bottom" style="color: var(--text-faint);">Empty</div>
+    </div>`;
+  }
+  const guest = t.party && t.party[0] ? guests[t.party[0]] : null;
+  const pax = paxOf(t);
+  const partyName = guest ? guest.name.split(' ')[0] + (t.party.length > 1 ? ` +${t.party.length-1}` : '') : (t.walkInName || `Party of ${pax}`);
+  const time = t.seatedMin || 0;
+  const ratingNum = guest ? avgRating(guest) : 0;
+  const ratingHtml = ratingNum ? ` · <span style="color:var(--accent)">★ ${ratingNum.toFixed(1)}</span>` : '';
+
+  // Bill-paid — calm, distinct "ready to turn" card
+  if (t.status === 'paid') {
+    return `<div class="table-tile paid" onclick="openTableModal(${t.id})">
+      <div class="tile-top"><div class="tile-num">${t.id}</div></div>
+      <div class="paid-stamp">${ic('badge-check','xs')} Bill paid</div>
+      <div class="tile-party">${partyName}</div>
+      <div class="tile-pax">${ic('users','xs')} ${pax} pax</div>
+      <div class="paid-turn">Ready to clear & turn</div>
+    </div>`;
+  }
+
+  const timeClass = t.status === 'overdue' ? 'overdue' : (t.status === 'attention' ? 'warn' : '');
+  const glyphs = tileGlyphs(t, pol);
+  const glyphHtml = glyphs.length ? `<div class="tile-glyphs">${glyphs.map(g => {
+    const color = g.cat === 'allergy' ? 'red' : g.cat === 'occasion' ? 'amber' : g.cat === 'vip' ? 'gold' : g.cat === 'attention' ? 'amber' : '';
+    return `<div class="tile-glyph ${color}">${ic(ICONS[g.glyph] || 'circle')}</div>`;
+  }).join('')}</div>` : '';
+
+  return `<div class="table-tile ${t.status}" data-id="${t.id}" onclick="openTableModal(${t.id})">
+    <div class="tile-top">
+      <div class="tile-num">${t.id}</div>
+      ${glyphHtml}
+    </div>
+    <div class="tile-party">${partyName}</div>
+    <div class="tile-pax">${ic('users','xs')} ${pax} pax${ratingHtml}</div>
+    ${coursePips(t.progress.map((p,i)=> p?2 : (i===t.progress.findIndex(x=>!x)?1:0)))}
+    <div class="tile-bottom ${timeClass}">
+      <span>${time}m · ${t.course === 'mains' ? 'mains' : t.course === 'apps' ? 'starters' : t.course === 'dessert' ? 'dessert' : 'just seated'}</span>
+      <span class="tile-server">${t.server || ''}</span>
+    </div>
+  </div>`;
+}
+
+/* ─── POS-style floor map ─── */
+/* spatial floor-plan layout — room-relative px coords per table id */
+const ROOM_W = 760;
+const FLOOR = {
+  indoor: { h: 470, label:'Indoor', fixtures:[
+    {t:'bar', x:566, y:54, w:150, h:336, label:'Bar'},
+    {t:'plant', x:600, y:402, ic:'sprout'},
+    {t:'door', x:40, y:452, w:120, h:8, label:''},
+  ], tables:{
+    1:{x:32,y:38}, 2:{x:36,y:150}, 3:{x:58,y:262}, 4:{x:28,y:356},
+    8:{x:206,y:42}, 9:{x:206,y:152}, 10:{x:222,y:262}, 11:{x:206,y:356},
+    16:{x:386,y:42}, 18:{x:372,y:152}, 19:{x:386,y:262}, 20:{x:386,y:356},
+  }},
+  patio: { h: 250, label:'Patio', fixtures:[
+    {t:'plant', x:600, y:30, ic:'sprout'}, {t:'plant', x:660, y:170, ic:'sprout'}, {t:'plant', x:30, y:185, ic:'sprout'},
+  ], tables:{
+    5:{x:46,y:54}, 6:{x:196,y:58}, 7:{x:316,y:58}, 12:{x:46,y:150}, 15:{x:200,y:136}, 21:{x:360,y:150}, 22:{x:466,y:80},
+  }},
+  outdoor: { h: 200, label:'Outdoor', fixtures:[
+    {t:'plant', x:30, y:30, ic:'sprout'}, {t:'plant', x:700, y:30, ic:'sun'}, {t:'plant', x:700, y:120, ic:'sprout'},
+  ], tables:{
+    13:{x:46,y:56}, 14:{x:206,y:60}, 17:{x:326,y:56}, 23:{x:470,y:46},
+  }},
+};
+function tblSize(cap){ return cap<=2 ? {w:64,h:64,shape:'round'} : cap>=6 ? {w:120,h:74,shape:'rect'} : {w:96,h:64,shape:'rect'}; }
+
+function chairsHtml(cap, shape) {
+  let h=''; const C='<div class="chair" style="';
+  if (shape==='round') { h+=`${C}left:0;top:50%;transform:translateY(-50%);width:6px;height:20px;"></div>`; if(cap>1) h+=`${C}right:0;top:50%;transform:translateY(-50%);width:6px;height:20px;"></div>`; return h; }
+  const top=Math.ceil(cap/2), bot=cap-top;
+  for(let i=0;i<top;i++) h+=`${C}top:0;left:${(i+1)/(top+1)*100}%;transform:translateX(-50%);width:20px;height:6px;"></div>`;
+  for(let i=0;i<bot;i++) h+=`${C}bottom:0;left:${(i+1)/(bot+1)*100}%;transform:translateX(-50%);width:20px;height:6px;"></div>`;
+  return h;
+}
+
+function renderFloorMap(container, pol) {
+  const zones = state.zone === 'all' ? ['indoor','patio','outdoor'] : [state.zone];
+  const editing = state.editLayout;
+  let html = `<div class="map-toolbar">
+    <div class="map-legend">
+      <span><span class="swatch" style="border-color:var(--blue)"></span> Seated</span>
+      <span><span class="swatch" style="border-color:var(--green)"></span> Ordered</span>
+      <span><span class="swatch" style="border-color:var(--amber)"></span> Attention</span>
+      <span><span class="swatch" style="border-color:var(--red)"></span> Overdue</span>
+      <span><span class="swatch" style="border-color:var(--green);border-style:dashed"></span> Bill paid</span>
+      <span><span class="swatch" style="border-color:var(--border-strong);border-style:dashed"></span> Open</span>
+    </div>
+    ${pol.showReservations ? `<button class="btn ghost" style="padding:7px 12px;font-size:12px;" onclick="toggleEditLayout()">${editing?ic('check','sm')+' Done':ic('pencil','sm')+' Edit layout'}</button>` : ''}
+  </div>`;
+
+  if (editing) {
+    const n = state.mergeSel.length;
+    html += `<div class="merge-bar">${ic('move','sm')} <span><strong>Drag</strong> tables to rearrange · <strong>tap</strong> to select &amp; merge for a big party.</span><span class="sp"></span>
+      <button class="btn ghost" style="padding:6px 12px;font-size:12px;" onclick="addTable()">${ic('plus','sm')} Add table</button>
+      ${n>=2 ? `<button class="btn primary" style="padding:6px 12px;font-size:12px;" onclick="mergeSelected()">Merge ${n}</button>` : (n===1?`<span style="color:var(--text-faint);font-size:12px;">1 selected</span>`:'')}
+      ${state.merges.length ? `<button class="btn ghost" style="padding:6px 12px;font-size:12px;" onclick="resetMerges()">Reset merges</button>` : ''}
+    </div>`;
+  }
+
+  html += `<div class="floor-rooms">`;
+  zones.forEach(zone => {
+    const room = FLOOR[zone]; if (!room) return;
+    const zoneTables = tables.filter(t => t.zone === zone);
+    const occ = zoneTables.filter(t=>t.status!=='empty').length;
+    // merge plates for this zone
+    const plates = state.merges.filter(m=>m.zone===zone).map(m=>{
+      const pts = m.ids.map(id=>{ const tt=tables.find(x=>x.id===id); const L=tcoord(tt,room); if(!L) return null; const s=tblSize(tt.cap); return {x:L.x,y:L.y,w:s.w,h:s.h}; }).filter(Boolean);
+      if(!pts.length) return '';
+      const minX=Math.min(...pts.map(p=>p.x))-6, minY=Math.min(...pts.map(p=>p.y))-6;
+      const maxX=Math.max(...pts.map(p=>p.x+p.w))+6, maxY=Math.max(...pts.map(p=>p.y+p.h))+6;
+      return `<div class="merge-plate" style="left:${minX}px;top:${minY}px;width:${maxX-minX}px;height:${maxY-minY}px;" ${editing?`onclick="unmerge('${m.ids.join('-')}')"`:''}><span class="merge-tag">${m.ids.map(i=>'T'+i).join(' + ')}</span></div>`;
+    }).join('');
+    const fixtures = (room.fixtures||[]).map(f=>{
+      if(f.t==='bar') return `<div class="fixture bar" style="left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px;">${f.label}</div>`;
+      if(f.t==='door') return `<div class="fixture door" style="left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px;"></div>`;
+      if(f.t==='plant') return `<div class="fixture plant" style="left:${f.x}px;top:${f.y}px;color:#3a7d5c;">${ic(f.ic||'sprout','lg')}</div>`;
+      return '';
+    }).join('');
+    html += `<div class="room ${zone} ${editing?'editing':''}" style="height:${room.h}px;min-width:${ROOM_W}px;">
+      <div class="room-tag">${ic(ICONS[zone],'xs')} ${room.label} · ${occ}/${zoneTables.length} seated</div>
+      ${plates}
+      ${fixtures}
+      ${zoneTables.map(t => renderMapTable(t, pol, room)).join('')}
+    </div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+  container.style.overflowX = 'auto';
+}
+
+// resolve a table's map coords — prefer dragged coords, fall back to seeded layout
+function tcoord(t, room){
+  if (typeof t.mx==='number' && typeof t.my==='number') return {x:t.mx, y:t.my};
+  return room.tables[t.id] || null;
+}
+function seedMapCoords(){
+  Object.keys(FLOOR).forEach(z=>{ Object.entries(FLOOR[z].tables).forEach(([id,L])=>{ const t=tables.find(x=>x.id===+id); if(t && t.mx==null){ t.mx=L.x; t.my=L.y; } }); });
+}
+
+function renderMapTable(t, pol, room) {
+  const L = tcoord(t, room); if (!L) return '';
+  const {w,h,shape} = tblSize(t.cap);
+  const pax = t.status==='empty' ? 0 : paxOf(t);
+  const sel = state.editLayout && state.mergeSel.includes(t.id) ? 'sel' : '';
+  const glyphs = tileGlyphs(t, pol); const g = glyphs[0];
+  const gColor = g ? (g.cat==='allergy'?'red':g.cat==='occasion'?'amber':g.cat==='vip'?'gold':'amber') : '';
+  let badge = g ? `<div class="tbl-badge ${gColor}">${ic(ICONS[g.glyph]||'circle')}</div>` : '';
+  if (t.status==='paid') badge = `<div class="tbl-badge green">${ic('check')}</div>`;
+  const paxB = t.status==='empty' ? '' : `<div class="tbl-pax-b">${ic('users')} ${pax}</div>`;
+  return `<div class="tbl ${shape} ${t.status} ${sel}" data-id="${t.id}" style="left:${L.x}px;top:${L.y}px;width:${w}px;height:${h}px;" onpointerdown="tblPointerDown(event, ${t.id})">
+    ${chairsHtml(t.cap, shape)}
+    <div class="tbl-surface"><span class="tbl-num">${t.id}</span></div>
+    <div class="tbl-check">${ic('check')}</div>
+    ${badge}${paxB}
+  </div>`;
+}
+
+function mapTableClick(id) {
+  if (state.editLayout) {
+    const i = state.mergeSel.indexOf(id);
+    if (i>=0) state.mergeSel.splice(i,1); else state.mergeSel.push(id);
+    renderFloor();
+    return;
+  }
+  const t = tables.find(x=>x.id===id);
+  if (t && t.status==='empty') seatTable(id); else openTableModal(id);
+}
+
+/* drag-to-move tables on the plan */
+let _drag = null;
+function tblPointerDown(e, id){
+  const el = e.currentTarget; const room = el.closest('.room');
+  _drag = { id, el, room, sx:e.clientX, sy:e.clientY, ox:parseFloat(el.style.left), oy:parseFloat(el.style.top), moved:false };
+  el.setPointerCapture && el.setPointerCapture(e.pointerId);
+  e.preventDefault();
+}
+function tblPointerMove(e){
+  if (!_drag) return;
+  const dx=e.clientX-_drag.sx, dy=e.clientY-_drag.sy;
+  if (Math.abs(dx)>4 || Math.abs(dy)>4) _drag.moved = true;
+  if (_drag.moved && state.editLayout){
+    const rw=_drag.room.clientWidth, rh=_drag.room.clientHeight, ew=_drag.el.offsetWidth, eh=_drag.el.offsetHeight;
+    const nx=Math.max(2, Math.min(rw-ew-2, _drag.ox+dx)), ny=Math.max(24, Math.min(rh-eh-2, _drag.oy+dy));
+    _drag.el.style.left=nx+'px'; _drag.el.style.top=ny+'px';
+  }
+}
+function tblPointerUp(e){
+  if (!_drag) return;
+  const d = _drag; _drag = null;
+  if (d.moved && state.editLayout){
+    const t = tables.find(x=>x.id===d.id);
+    t.mx = parseFloat(d.el.style.left); t.my = parseFloat(d.el.style.top);
+    toast(`Table ${d.id} moved`, 'info');
+  } else {
+    mapTableClick(d.id);   // treat as a tap
+  }
+}
+document.addEventListener('pointermove', tblPointerMove);
+document.addEventListener('pointerup', tblPointerUp);
+
+function findFreeSpot(zone){
+  const room = FLOOR[zone]; const W=ROOM_W, H=room.h, bw=96, bh=64;
+  const boxes = tables.filter(t=>t.zone===zone).map(t=>{ const L=tcoord(t,room); if(!L) return null; const s=tblSize(t.cap); return {x:L.x,y:L.y,w:s.w,h:s.h}; }).filter(Boolean);
+  // bar fixture as an obstacle
+  (room.fixtures||[]).filter(f=>f.t==='bar').forEach(f=>boxes.push({x:f.x,y:f.y,w:f.w,h:f.h}));
+  const hit=(x,y)=>boxes.some(b=> x<b.x+b.w+10 && x+bw+10>b.x && y<b.y+b.h+10 && y+bh+10>b.y);
+  for(let y=40; y<=H-bh-6; y+=24) for(let x=20; x<=W-bw-6; x+=24){ if(!hit(x,y)) return {x,y}; }
+  return {x:20,y:H-bh-8};
+}
+function addTable(){
+  const zone = state.zone==='all' ? 'indoor' : state.zone;
+  const nextId = Math.max(...tables.map(t=>t.id)) + 1;
+  const spot = findFreeSpot(zone);
+  tables.push({ id:nextId, zone, cap:4, status:'empty', mx:spot.x, my:spot.y });
+  toast(`Table ${nextId} added — drag to place it`, 'success');
+  renderFloor();
+}
+function toggleEditLayout(){ state.editLayout = !state.editLayout; state.mergeSel = []; renderFloor(); }
+function mergeSelected(){
+  const ids = state.mergeSel.slice();
+  const zone = tables.find(t=>t.id===ids[0]).zone;
+  if (ids.some(id=>tables.find(t=>t.id===id).zone!==zone)) { toast('Merge tables within the same area', 'warn'); return; }
+  state.merges.push({ ids, zone });
+  toast(`Merged ${ids.map(i=>'T'+i).join(' + ')}`, 'success');
+  state.mergeSel = []; renderFloor();
+}
+function unmerge(key){ state.merges = state.merges.filter(m=>m.ids.join('-')!==key); toast('Tables un-merged','info'); renderFloor(); }
+function resetMerges(){ state.merges = []; state.mergeSel = []; toast('Layout reset','info'); renderFloor(); }
+
+/* ════════════════════════════════════════════════════════
+   TABLE MODAL — RECO FIRST
+   ════════════════════════════════════════════════════════ */
+function openTableModal(id) {
+  const t = tables.find(x => x.id === id);
+  if (!t || t.status === 'empty') return;
+  const pol = phasePolicy(state.phase);
+  const modal = document.getElementById('table-modal');
+  const content = document.getElementById('table-modal-content');
+  const guest = t.party && t.party[0] ? guests[t.party[0]] : null;
+
+  // Concerns — merge the matched profile with info captured at booking/seating
+  const profileAllergies = t.party.flatMap(g => guests[g] ? (guests[g].allergies||[]) : []);
+  const allAllergies = [...new Set([...(t.allergies||[]), ...profileAllergies])];
+  const allDislikes = t.party.flatMap(g => guests[g] ? (guests[g].dislikes||[]) : []).filter((v,i,a)=>a.indexOf(v)===i);
+  const pacingNote = t.party.map(g => guests[g]).find(g => g && g.notes && g.notes.includes('pacing'));
+  const profOcc = t.party.map(g=>guests[g]).find(g => g && g.occasion);
+  const tOccasion = pol.occasionInBanner ? (t.occasion || (profOcc && profOcc.occasion) || '') : '';
+  const tOccasionName = (t.guestName || (profOcc && profOcc.name) || '').split(' ')[0];
+  const churnGuest = pol.predictiveCues ? t.party.find(g => guests[g] && guests[g].churnRisk) : null;
+
+  // Service plan + on-table state
+  const plan = buildServicePlan(t, pol);
+  const headerGuest = guest ? guest : null;
+  const pax = paxOf(t);
+
+  content.innerHTML = `
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Table ${t.id} <span style="font-size: 13px; font-weight: 500; color: var(--text-dim); margin-left: 6px;">${t.zone}</span></div>
+        <div class="modal-sub">Server ${t.server || 'unassigned'} · seated ${t.seatedMin}m ago</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="pax-pill">${ic('users','sm')} ${pax} ${pax===1?'guest':'guests'}</span>
+        <span class="live-pill"><span class="live-dot"></span> Live from QR</span>
+        <button class="add-btn" onclick="openGuestInfoModal()" style="font-size: 12px; padding: 7px 12px;"><span class="plus">+</span> Guest info</button>
+        <button class="modal-close" onclick="closeModal('table-modal')"><i data-lucide="x" class="sm"></i></button>
+      </div>
+    </div>
+    <div class="modal-body">
+
+      ${(allAllergies.length || pacingNote || tOccasion || churnGuest || allDislikes.length) ? `<div class="alert-strip">
+        ${allAllergies.length ? `<div class="alert-chip red full">
+          ${ic('triangle-alert')}<span><strong>${allAllergies.join(', ').toUpperCase()} ALLERGY</strong> <span class="em">— confirm with kitchen before every course</span></span>
+        </div>` : ''}
+        ${tOccasion ? `<div class="alert-chip gold">
+          ${ic('gem')}<span>${tOccasion}${tOccasionName?` <span class="em">· ${tOccasionName}</span>`:''}</span>
+        </div>` : ''}
+        ${allDislikes.length ? `<div class="alert-chip amber">
+          ${ic('circle-slash')}<span>Avoid <span class="em">${allDislikes.join(', ')}</span></span>
+        </div>` : ''}
+        ${pacingNote ? `<div class="alert-chip amber">
+          ${ic('timer-reset')}<span>Keep courses moving</span>
+        </div>` : ''}
+        ${churnGuest ? `<div class="alert-chip red">
+          ${ic('alert-circle')}<span>Churn risk <span class="em">· comp digestif</span></span>
+        </div>` : ''}
+      </div>` : ''}
+
+      ${headerGuest ? `<div class="party-header">
+        <div class="party-avatar-stack">
+          ${t.party.map(gid => guests[gid] ? `<div class="party-avatar" onclick="event.stopPropagation(); openGuestBriefing('${gid}')">${guests[gid].initials}</div>` : '').join('')}
+          ${t.party.length < t.cap ? `<div class="party-avatar add" onclick="openGuestInfoModal()" title="Add guest">+</div>` : ''}
+        </div>
+        <div class="party-info">
+          <div class="party-name-row">
+            <div class="party-name">${headerGuest.name.split(' ')[0]} ${t.party.length > 1 ? `<span class="party-extras">+ ${t.party.slice(1).map(g => guests[g] ? guests[g].name.split(' ')[0] : '').join(', ')}</span>` : ''}</div>
+          </div>
+          <div class="party-meta-row">
+            <div class="meta-chip">${ic('users','sm')} <strong>${pax}</strong> ${pax===1?'guest':'guests'}</div>
+            <div class="meta-chip"><span class="rating-display">${ratingStars(headerGuest)}</span></div>
+            <div class="meta-chip">${headerGuest.visits>0 ? `${ic('repeat','sm')} Returning · <strong>${headerGuest.visits}</strong> visits` : `${ic('user-plus','sm')} First visit here`}</div>
+            ${headerGuest.visits>0 ? `<div class="meta-chip" style="color:var(--text-dim)">last visit ${headerGuest.lastVisit}</div>` : ''}
+            <div class="meta-chip"><span class="spend-tier" style="font-size: 13px; letter-spacing: 1px;">${'$'.repeat(headerGuest.spend)}</span> <span style="color: var(--text-faint); font-size: 11px;">avg $${headerGuest.avgPerCover}</span></div>
+          </div>
+        </div>
+      </div>` : `<div class="party-header">
+        <div class="party-avatar-stack"><div class="party-avatar add" onclick="openGuestInfoModal()">+</div></div>
+        <div class="party-info">
+          <div class="party-name-row"><div class="party-name">${t.guestName || 'Walk-in'}</div></div>
+          <div class="party-meta-row">
+            <div class="meta-chip">${ic('users','sm')} <strong>${pax}</strong> ${pax===1?'guest':'guests'}</div>
+            <div class="meta-chip">${ic('user-plus','sm')} ${t.guestName? 'Walk-in' : 'No profile yet'}</div>
+          </div>
+        </div>
+      </div>`}
+
+      ${renderJourney(t)}
+
+      <div class="tdetail">
+
+        <!-- LEFT: on the table now (food + drinks together) -->
+        <div class="tcol">
+          <div class="tcol-head">
+            <div class="tcol-head-l">${ic('clipboard-list','sm')}<span class="tcol-title">On the table</span></div>
+            <span class="tcol-sub">live order</span>
+          </div>
+          <div class="tcol-body">${renderOnTable(t)}</div>
+        </div>
+
+        <!-- RIGHT: suggest next (course → items → tags, auto from orders) -->
+        <div class="tcol plan">
+          <div class="tcol-head">
+            <div class="tcol-head-l">${ic('chef-hat','sm')}<span class="tcol-title accent">Suggest next</span></div>
+            <span class="tcol-sub">scaled to ${plan.pax} · auto-updates</span>
+          </div>
+          <div class="tcol-body">
+            ${plan.cards.length ? plan.cards.map(c => `
+              <div class="plan-card ${c.lead?'lead':''} ${c.predictive?'predict':''}">
+                <div class="plan-course">${ic(c.icon)} ${c.course}</div>
+                <div class="plan-items">
+                  ${c.items.map(it => `<div class="plan-item">
+                    <span class="plan-item-qty">${it.qty}×</span>
+                    <span class="plan-item-name">${it.name}</span>
+                    <span class="plan-item-spread"></span>
+                    ${tagChip(it.tag)}
+                  </div>`).join('')}
+                </div>
+                <div class="plan-note">${c.allergyLabel ? `<span class="tag safe">${ic('shield-check')}${c.allergyLabel}</span>` : ''}${c.note}</div>
+              </div>`).join('') : `<div class="ot-empty">All caught up — nothing to bring right now.</div>`}
+
+            <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+              ${plan.balance.map(b => {
+                const ok = b.got >= b.need;
+                return `<div class="balance-row ${ok?'ok':'gap'}">
+                  <span class="balance-icon">${ok?ic('circle-check','sm'):ic('circle-alert','sm')}</span>
+                  ${ok ? `${b.label} balanced` : `${b.label} — short ${b.need-b.got} for the table`}
+                  <span class="balance-count">${b.got}/${b.need}</span>
+                </div>`;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="actions-row">
+        <button class="demo-btn" onclick="simulateOrder(${t.id})">${ic('play','xs')} Demo: next order arrives</button>
+        <div style="flex:1"></div>
+        <button class="btn" onclick="openMoveTable(${t.id})"><i data-lucide="arrow-right-left" class="sm"></i> Move table</button>
+        <button class="btn ghost" onclick="closeModal('table-modal')">Close</button>
+      </div>
+    </div>
+  `;
+  modal.classList.add('show');
+  refreshIcons();
+}
+
+/* ─── Menu (with allergen tags) ─── */
+const MENU = {
+  starters: [
+    {name:'Burrata', tags:['dairy']},
+    {name:'Beef Tartare', tags:[]},
+    {name:'Truffle Arancini', tags:['gluten','dairy']},
+    {name:'Calamari Fritti', tags:['gluten']},
+    {name:'Heirloom Salad', tags:[]},
+    {name:'Bruschetta', tags:['gluten']},
+  ],
+  mains: [
+    {name:'Lamb Shank', tags:[]},
+    {name:'Mushroom Risotto', tags:[]},
+    {name:'Truffle Pasta', tags:['gluten']},
+    {name:'Sea Bass', tags:[]},
+    {name:'Wagyu Ribeye', tags:[]},
+    {name:'Osso Buco', tags:[]},
+  ],
+  desserts: [
+    {name:'Tiramisu', tags:['gluten','dairy']},
+    {name:'Chocolate Plate', tags:[]},
+    {name:'Affogato', tags:['dairy']},
+    {name:'Panna Cotta', tags:['dairy']},
+    {name:'Lemon Sorbet', tags:[]},
+    {name:'Cheese Plate', tags:['dairy']},
+  ],
+};
+
+function allergyKeysFor(t) {
+  const names = [...new Set(t.party.map(g=>guests[g]).filter(Boolean).flatMap(p=>p.allergies||[]))];
+  return { names, keys: names.map(a=>a.toLowerCase()) };
+}
+function isSafe(item, keys) { return !item.tags.some(tag => keys.includes(tag)); }
+function courseQty(t, course) { return (t.items||[]).filter(i=>i.course===course).reduce((s,i)=>s+(i.qty||1),0); }
+function drinkQty(t) { return (t.drinks||[]).reduce((s,d)=>s+(d.qty||1),0); }
+function hasBottle(t) { return (t.drinks||[]).some(d=>d.bottle); }
+
+function tableStage(t) {
+  const ap = courseQty(t,'apps'), mn = courseQty(t,'mains'), ds = courseQty(t,'dessert');
+  if (t.progress[3]) return 'check';
+  if (ds>0 || t.progress[2]) return 'dessert';
+  if (mn>0 || t.progress[1]) return 'mains';
+  if (ap>0 || t.progress[0]) return 'starters';
+  return 'seated';
+}
+
+function idealCounts(pax) {
+  return { starters: Math.max(2, Math.round(pax*0.75)), drinks: pax, mains: pax, desserts: Math.max(1, Math.round(pax*0.6)) };
+}
+
+// Headcount at the table — QR/seating knows it even if only one phone is identified
+function paxOf(t) { return t.seatedPax || (t.party ? t.party.length : 0) || t.cap; }
+
+/* ════ SERVICE PLAN — what to bring next, with quantities ════
+   Reads the table's actual orders (items/drinks) and the party size,
+   checks balance per course, and produces prioritized actions. */
+function buildServicePlan(t, pol) {
+  const pax = paxOf(t);
+  const profiles = t.party.map(g => guests[g]).filter(Boolean);
+  const { names: allergyNames, keys: allergyKeys } = allergyKeysFor(t);
+  const lovedFood = profiles.flatMap(p => p.favFood || []);
+  const lovedDrinks = profiles.flatMap(p => p.favDrinks || []);
+  const stage = tableStage(t);
+  const ideal = idealCounts(pax);
+
+  const ap = courseQty(t,'apps'), mn = courseQty(t,'mains'), ds = courseQty(t,'dessert');
+  const dr = drinkQty(t), bottle = hasBottle(t);
+  const allergyLabel = allergyNames.length ? allergyNames.join(' & ').toLowerCase() + '-safe' : null;
+
+  const safe = (pool) => pool.filter(i => isSafe(i, allergyKeys));
+  const isUsualFood = (n) => lovedFood.some(f => f.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(f.toLowerCase()));
+  // build items: prefer the table's usual dishes (tag 'usual'), fill with new picks (tag 'try')
+  const buildItems = (pool, deficit) => {
+    const usual = pool.filter(i => isUsualFood(i.name));
+    const fresh = pool.filter(i => !isUsualFood(i.name));
+    const ordered = [...usual, ...fresh];
+    const picks = ordered.slice(0, Math.min(2, Math.max(1, deficit)));
+    if (picks.length === 1) return [{ qty: deficit, name: picks[0].name, tag: isUsualFood(picks[0].name)?'usual':'try' }];
+    const a = Math.ceil(deficit/2), b = deficit - a;
+    const out = [{ qty:a, name:picks[0].name, tag: isUsualFood(picks[0].name)?'usual':'try' }];
+    if (b>0) out.push({ qty:b, name:picks[1].name, tag: isUsualFood(picks[1].name)?'usual':'try' });
+    return out;
+  };
+  const paxNote = (extra) => `for ${pax} ${pax===1?'guest':'guests'}${extra?' · '+extra:''}`;
+
+  const cards = [];
+
+  // ── DRINKS: round for the headcount
+  if (dr < ideal.drinks && (stage==='seated' || stage==='starters')) {
+    const deficit = ideal.drinks - dr;
+    let items;
+    if (lovedDrinks.some(d=>/Champagne|Veuve/i.test(d))) items=[{qty:deficit, name:'Champagne, by the glass', tag:'usual'}];
+    else if (lovedDrinks.some(d=>/Negroni/i.test(d))) {
+      const neg = Math.min(deficit, Math.max(1, profiles.filter(p=>(p.favDrinks||[]).some(d=>/Negroni/i.test(d))).length));
+      const spr = deficit - neg;
+      items=[{qty:neg, name:'Negroni', tag:'usual'}]; if (spr>0) items.push({qty:spr, name:'Aperol Spritz', tag:'try'});
+    }
+    else if (lovedDrinks.some(d=>/Sauvignon|white/i.test(d))) items=[{qty:1, name:'Sauvignon Blanc, bottle', tag:'usual'}];
+    else items=[{qty:deficit, name:'Aperol Spritz', tag:'try'}];
+    cards.push({ course:'Drinks', icon:'martini', items,
+      note: dr===0 ? paxNote('none served yet') : `${dr} of ${pax} have a drink` });
+  }
+
+  // ── STARTERS: shared plates scaled to the party
+  if (ap < ideal.starters && (stage==='seated' || stage==='starters')) {
+    const deficit = ideal.starters - ap;
+    cards.push({ course:'Starters', icon:'salad',
+      items: buildItems(safe(MENU.starters), deficit),
+      note: ap===0 ? paxNote(`${deficit} plates to share`) : `only ${ap} for ${pax} — add ${deficit} more`,
+      allergyLabel });
+  }
+
+  // ── MAIN COURSE: once they're into starters
+  if (mn < ideal.mains && stage !== 'seated' && stage !== 'check') {
+    const deficit = ideal.mains - mn;
+    cards.push({ course:'Main Course', icon:'utensils-crossed',
+      items: buildItems(safe(MENU.mains), deficit),
+      note: mn===0 ? paxNote(`one each`) : `${deficit} more for the table`,
+      allergyLabel });
+  }
+
+  // ── WINE with the mains
+  if (!bottle && mn>0 && (stage==='starters' || stage==='mains')) {
+    const usual = lovedDrinks.some(d=>/Barolo|Bordeaux/i.test(d));
+    let wine = lovedDrinks.some(d=>/Barolo/i.test(d)) ? 'Barolo 2018, bottle'
+      : lovedDrinks.some(d=>/Bordeaux/i.test(d)) ? 'Bordeaux 2015, bottle' : 'Chianti Riserva, bottle';
+    const qty = pax>=5 ? 2 : 1;
+    cards.push({ course:'Wine', icon:'wine',
+      items:[{qty, name: wine.replace('bottle', qty>1?'bottles':'bottle'), tag: usual?'usual':'try'}],
+      note: usual ? 'the red they always order' : 'pairs with the mains ordered' });
+  }
+
+  // ── REPEAT DRINKS: a round has been sitting; offer a refill
+  if (dr>0 && (t.drinkAgeMin||0) >= 20 && (stage==='starters'||stage==='mains')) {
+    const counts = {};
+    (t.drinks||[]).filter(d=>!d.bottle).forEach(d=> counts[d.name] = (counts[d.name]||0)+(d.qty||1));
+    const items = Object.entries(counts).slice(0,2).map(([name,qty])=>({qty, name, tag:'repeat'}));
+    if (items.length) cards.push({ course:'Refill drinks', icon:'rotate-ccw', items,
+      note: `round poured ${t.drinkAgeMin}m ago · glasses running low` });
+  }
+
+  // ── DESSERT: tee it up; offer when mains clear
+  if (ds < ideal.desserts && stage !== 'check') {
+    const ready = t.progress[1];
+    cards.push({ course:'Dessert', icon:'cake-slice',
+      items: buildItems(safe(MENU.desserts), ideal.desserts),
+      note: ready ? `mains cleared · ${paxNote('').replace('for ','')}` : `have ready for after mains · ${pax} ${pax===1?'guest':'guests'}`,
+      allergyLabel });
+  }
+
+  // ── Phase 3 gestures
+  if (pol.predictiveCues) {
+    const occ = profiles.find(p=>p.occasion);
+    if (occ) cards.push({ course:'On the house', icon:'gift', predictive:true,
+      items:[{qty:1, name:'Chocolate Plate', tag:'try'}], note:`${occ.occasion} · ${occ.name.split(' ')[0]} — 87% likely to share it` });
+    if (profiles.some(p=>p.churnRisk)) cards.push({ course:'Win-back', icon:'heart-handshake', predictive:true,
+      items:[{qty:1, name:'Complimentary Amaro', tag:'try'}], note:'churn risk · gesture lifts retention 64%' });
+  }
+
+  if (cards.length) cards[0].lead = true;
+
+  const balance = [
+    { label:'Starters', got: ap, need: ideal.starters },
+    { label:'Drinks', got: bottle ? Math.max(dr, pax) : dr, need: ideal.drinks },
+    { label:'Mains', got: mn, need: ideal.mains },
+    { label:'Dessert', got: ds, need: ideal.desserts },
+  ];
+
+  return { cards: cards.slice(0,5), balance, stage, pax };
+}
+
+/* Left column — what's been ordered (food + drinks together), no status noise */
+function renderOnTable(t) {
+  const food = t.items || [];
+  const drinks = t.drinks || [];
+  let html = `<div class="ot-group"><div class="ot-group-head">${ic('utensils','xs')} Food</div>`;
+  if (!food.length) html += `<div class="ot-empty">Nothing ordered yet</div>`;
+  else food.forEach(i => {
+    html += `<div class="ot-row"><span class="ot-qty">${i.qty||1}×</span><span class="ot-name">${i.name}</span></div>`;
+  });
+  html += `</div><div class="ot-group"><div class="ot-group-head">${ic('wine','xs')} Drinks</div>`;
+  if (!drinks.length) html += `<div class="ot-empty">No drinks yet</div>`;
+  else drinks.forEach(d => {
+    html += `<div class="ot-row"><span class="ot-qty">${d.qty||1}×</span><span class="ot-name">${d.name}${d.bottle?' <span style="color:var(--text-faint);font-size:11px;">bottle</span>':''}</span></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+/* Journey bar — where the table is in the diner arc */
+function renderJourney(t) {
+  const stage = tableStage(t);
+  const nodes = [
+    {key:'seated', label:'Seated', icon:'armchair'},
+    {key:'starters', label:'Starters', icon:'salad'},
+    {key:'mains', label:'Mains', icon:'utensils-crossed'},
+    {key:'dessert', label:'Dessert', icon:'cake-slice'},
+    {key:'check', label:'Check', icon:'receipt'},
+  ];
+  const idx = nodes.findIndex(n=>n.key===stage);
+  let html = '<div class="journey">';
+  nodes.forEach((n,i) => {
+    const cls = i<idx ? 'done' : (i===idx ? 'current' : '');
+    html += `<div class="journey-node ${cls}"><div class="journey-dot">${i<idx?ic('check','xs'):ic(n.icon,'xs')}</div><div class="journey-label">${n.label}</div></div>`;
+    if (i<nodes.length-1) html += `<div class="journey-line ${i<idx?'done':''}"></div>`;
+  });
+  return html + '</div>';
+}
+
+/* Demo: simulate the next QR order landing, so the plan auto-updates */
+function simulateOrder(id) {
+  const t = tables.find(x=>x.id===id);
+  if (!t) return;
+  const plan = buildServicePlan(t, phasePolicy(state.phase));
+  // take the lead card (skip predictive gestures)
+  const lead = plan.cards.find(c => !c.predictive);
+  if (!lead) { toast('Table fully ordered', 'info'); return; }
+  const course = lead.course.toLowerCase();
+  const isDrink = course.includes('drink') || course.includes('wine');
+  if (isDrink) {
+    lead.items.forEach(it => t.drinks.push({ name: it.name.replace(/,? bottle.?s?/i,'').trim(), course: course.includes('wine')?'wine':'aperitif', qty: it.qty, served:true, bottle: /bottle/i.test(it.name) }));
+    if (course.includes('refill')) t.drinkAgeMin = 0;
+  } else {
+    const c = course.includes('starter') ? 'apps' : course.includes('main') ? 'mains' : 'dessert';
+    lead.items.forEach(it => t.items.push({ name: it.name, course:c, qty: it.qty, served:false }));
+    if (c==='apps') t.course='apps';
+    if (c==='mains') t.course='mains';
+    if (c==='dessert') t.course='dessert';
+  }
+  if (t.status==='overdue' || t.status==='seated') t.status='ordered';
+  toast(`Order in: ${lead.items.map(i=>i.qty+'× '+i.name).join(', ')}`, 'success');
+  openTableModal(id);
+  renderFloor();
+}
+
+function nextCourseLabel(t) {
+  if (!t.progress[0]) return 'Mark starters served';
+  if (!t.progress[1]) return 'Mark mains served';
+  if (!t.progress[2]) return 'Mark dessert served';
+  return 'Drop the check';
+}
+
+function advanceCourse(id) {
+  const t = tables.find(x => x.id === id);
+  const idx = t.progress.findIndex(p => !p);
+  if (idx >= 0) {
+    t.progress[idx] = true;
+    if (idx === 0) t.course = 'mains';
+    if (idx === 1) t.course = 'dessert';
+    if (idx === 2) t.course = 'check';
+    if (idx === 3) { t.status = 'empty'; t.party = []; }
+    if (t.status === 'overdue') t.status = 'ordered';
+    toast(`${['Starters','Mains','Dessert','Check'][idx]} marked served`, 'success');
+    openTableModal(id);
+    renderFloor();
+  }
+}
+
+function advanceDrink(id) {
+  const t = tables.find(x => x.id === id);
+  const idx = t.drinkProgress.findIndex(p => !p);
+  if (idx >= 0) {
+    t.drinkProgress[idx] = true;
+    toast(`${['Aperitif','Wine','Digestif'][idx]} marked poured`, 'success');
+    openTableModal(id);
+    renderFloor();
+  }
+}
+
+function seatTable(id) {
+  const t = tables.find(x => x.id === id);
+  const pol = phasePolicy(state.phase);
+  // Phase 2+: open the proper "Seat a Guest" flow
+  if (pol.showReservations) {
+    state.pendingSeatTable = id;
+    // build the "assign table" picker from all open tables
+    const open = tables.filter(x => x.status === 'empty').sort((a,b)=>a.id-b.id);
+    const sel = document.getElementById('seat-table-select');
+    sel.innerHTML = open.map(x => `<option value="${x.id}" ${x.id===id?'selected':''}>Table ${x.id} · ${x.zone} · ${x.cap}-top</option>`).join('');
+    document.getElementById('seat-phone').value = '';
+    document.getElementById('seat-name').value = '';
+    document.getElementById('seat-info').value = '';
+    clearChips('seat-occasion'); clearChips('seat-allergy');
+    document.getElementById('seat-match-card').classList.remove('show');
+    document.getElementById('seat-title').textContent = 'Open Table';
+    document.getElementById('seat-sub').textContent = 'No login — phone or name auto-pulls a returning guest\'s profile';
+    document.getElementById('seat-modal').classList.add('show');
+    state.pendingSeatGuest = null;
+    state.pendingReservation = null;
+    state.seatNotice = '';
+    changeSeatTable(id);
+    return;
+  }
+  // Phase 1: simple anonymous seat
+  t.status = 'seated';
+  t.seatedMin = 0;
+  t.server = 'James';
+  t.party = [];
+  t.course = 'none';
+  t.progress = [false,false,false,false];
+  t.drinkProgress = [false,false,false];
+  toast(`Table ${id} opened`, 'info');
+  renderFloor();
+}
+
+function changeSeatTable(id, keepPax) {
+  id = +id;
+  const t = tables.find(x => x.id === id); if (!t) return;
+  state.pendingSeatTable = id;
+  document.getElementById('seat-table-num').textContent = id;
+  document.getElementById('seat-table-zone').textContent = t.zone;
+  document.getElementById('seat-table-cap').textContent = t.cap + '-top';
+  const cn = document.getElementById('seat-confirm-num'); if (cn) cn.textContent = '· T'+id;
+  const psel = document.getElementById('seat-party');
+  if (psel && !keepPax) psel.value = Math.min(2, t.cap);
+  refreshSeatMsg();
+}
+
+// notice (reassignment) + capacity warning shown under the table picker
+function refreshSeatMsg() {
+  const el = document.getElementById('seat-msg'); if (!el) return;
+  const t = tables.find(x => x.id === state.pendingSeatTable);
+  const pax = parseInt(document.getElementById('seat-party').value) || 0;
+  let html = '';
+  if (state.seatNotice) html += `<div style="color:var(--amber);display:flex;align-items:center;gap:6px;">${ic('circle-alert','xs')} ${state.seatNotice}</div>`;
+  if (t && pax > t.cap) html += `<div style="color:var(--red);display:flex;align-items:center;gap:6px;">${ic('triangle-alert','xs')} Table ${t.id} seats ${t.cap} — party of ${pax} won't fit. Merge tables or pick a bigger one.</div>`;
+  el.innerHTML = html;
+  refreshIcons();
+}
+
+/* ─── Seat a reservation: arrival → open their table, info carried over ─── */
+function seatReservation(idx) {
+  const r = reservations[idx];
+  if (!r) return;
+  const open = tables.filter(x => x.status === 'empty').sort((a,b)=>a.id-b.id);
+  if (!open.length) { toast('No open table available right now', 'warn'); return; }
+
+  // 1) their reserved table if it's free, else 2) smallest open table that fits, else 3) largest open
+  let target, notice = '';
+  if (r.table && open.find(x=>x.id===r.table)) {
+    target = r.table;
+  } else {
+    const fits = open.filter(x=>x.cap >= r.party).sort((a,b)=>a.cap-b.cap || a.id-b.id);
+    const chosen = fits[0] || open.slice().sort((a,b)=>b.cap-a.cap)[0];
+    target = chosen.id;
+    notice = r.table
+      ? `Reserved Table ${r.table} is occupied — suggesting Table ${target}`
+      : `No table pre-assigned — suggesting Table ${target} for ${r.party}`;
+  }
+  state.pendingSeatTable = target;
+  state.pendingReservation = idx;
+  state.seatNotice = notice;
+  // picker shows capacity so the host can re-pick deliberately
+  document.getElementById('seat-table-select').innerHTML =
+    open.map(x => `<option value="${x.id}" ${x.id===target?'selected':''}>Table ${x.id} · ${x.zone} · seats ${x.cap}</option>`).join('');
+  document.getElementById('seat-phone').value = r.phone || '';
+  document.getElementById('seat-name').value = r.name || '';
+  document.getElementById('seat-info').value = r.notes || '';
+  setChips('seat-occasion', labelsToChipVals(r.occasion?[r.occasion]:[], OCCASION_LABEL));
+  setChips('seat-allergy', labelsToChipVals(r.allergies||[], ALLERGY_LABEL));
+  document.getElementById('seat-match-card').classList.remove('show');
+  document.getElementById('seat-title').textContent = `Seat ${r.name}`;
+  document.getElementById('seat-sub').textContent = `${r.time} reservation · party of ${r.party}`;
+  state.pendingSeatGuest = null;
+  if (r.phone) seatLookup(r.phone, 'phone');     // recognise returning guest
+  document.getElementById('seat-modal').classList.add('show');
+  changeSeatTable(target, true);                 // keepPax — don't stomp the reservation's party size
+  document.getElementById('seat-party').value = r.party || 2;
+  refreshSeatMsg();
+}
+
+/* ─── Move a seated party to another table ─── */
+function openMoveTable(fromId) {
+  state.moveFrom = fromId;
+  const open = tables.filter(x => x.status === 'empty').sort((a,b)=>a.id-b.id);
+  document.getElementById('move-sub').textContent = `Move Table ${fromId}'s party to an open table`;
+  const box = document.getElementById('move-options');
+  box.innerHTML = open.length ? open.map(x => `<div class="move-opt" onclick="doMoveTable(${x.id})">
+    <div class="mo-num">${x.id}</div><div class="mo-sub">${x.zone} · ${x.cap}-top</div></div>`).join('')
+    : `<div class="ot-empty">No open tables right now.</div>`;
+  document.getElementById('move-modal').classList.add('show');
+  refreshIcons();
+}
+function doMoveTable(toId) {
+  const from = tables.find(x=>x.id===state.moveFrom), to = tables.find(x=>x.id===toId);
+  if (!from || !to) return;
+  // carry the whole service over
+  ['status','party','items','drinks','course','progress','drinkProgress','seatedMin','server','seatedPax','note','walkInName','drinkAgeMin','glyphs','glyphCat'].forEach(k=>{ to[k] = from[k]; });
+  // reset the source table to empty
+  from.status='empty'; from.party=[]; from.items=[]; from.drinks=[];
+  from.course='none'; from.progress=[false,false,false,false]; from.drinkProgress=[false,false,false];
+  from.seatedPax=undefined; from.note=undefined; from.walkInName=undefined; from.drinkAgeMin=undefined; from.glyphs=undefined; from.glyphCat=undefined;
+  closeModal('move-modal'); closeModal('table-modal');
+  toast(`Moved party from T${from.id} to T${to.id}`, 'success');
+  renderFloor();
+}
+
+function seatLookup(value, mode) {
+  const card = document.getElementById('seat-match-card');
+  if (!value || value.length < 3) { card.classList.remove('show'); state.pendingSeatGuest = null; return; }
+  let match;
+  if (mode === 'phone') match = Object.values(guests).find(g => g.phone.replace(/\s/g,'').includes(value.replace(/\s/g,'')));
+  else match = Object.values(guests).find(g => g.name.toLowerCase().includes(value.toLowerCase()));
+  if (match) {
+    state.pendingSeatGuest = match.id;
+    card.classList.add('show');
+    card.classList.remove('new');
+    // autofill the name for a returning guest
+    const nameEl = document.getElementById('seat-name');
+    if (mode === 'phone') nameEl.value = match.name;
+    const pol = phasePolicy(state.phase);
+    card.innerHTML = `
+      <div class="seat-match-name">${ic('user-check','sm')} ${match.name} ${match.vipTier === 'VIP' ? '<span class="briefing-tier vip" style="margin-left: 6px;">VIP</span>' : ''}</div>
+      <div class="seat-match-meta">
+        <span>${match.visits>0 ? `Returning · <strong>${match.visits}</strong> visits` : 'First visit here'}</span>
+        ${match.visits>0 ? `<span>Last: <strong>${match.lastVisit}</strong></span>` : ''}
+        <span class="rating-display" style="letter-spacing: 1.5px; font-size: 12px;">${ratingStars(match)}</span>
+      </div>
+      ${(match.allergies && match.allergies.length) || match.occasion ? `<div class="res-tags" style="margin-top: 10px;">${(match.allergies||[]).map(a=>`<div class="res-tag allergy">${ic('triangle-alert','xs')} ${a}</div>`).join('')}${match.occasion ? `<div class="res-tag occasion">${ic('gem','xs')} ${match.occasion}</div>` : ''}</div>` : ''}
+    `;
+    refreshIcons();
+  } else if (value.length >= 6) {
+    state.pendingSeatGuest = 'new';
+    card.classList.add('show','new');
+    card.innerHTML = `<div class="seat-match-name" style="color: var(--text-dim);">${ic('user-plus','sm')} New guest</div><div class="seat-match-meta">No profile yet · we'll create one from tonight's order</div>`;
+    refreshIcons();
+  } else {
+    card.classList.remove('show');
+    state.pendingSeatGuest = null;
+  }
+}
+
+function confirmSeat() {
+  const id = state.pendingSeatTable;
+  if (!id) return;
+  const t = tables.find(x => x.id === id);
+  const party = parseInt(document.getElementById('seat-party').value) || 2;
+  const info = (document.getElementById('seat-info').value || '').trim();
+  const typedName = (document.getElementById('seat-name').value || '').trim();
+  const g = (state.pendingSeatGuest && state.pendingSeatGuest !== 'new') ? guests[state.pendingSeatGuest] : null;
+
+  // ── captured info, merged from the matched profile + what the host entered ──
+  const capAllergies = readChips('seat-allergy').map(v=>ALLERGY_LABEL[v]||v);
+  const allergies = [...new Set([...(g?.allergies||[]), ...capAllergies])];
+  const occVal = readChips('seat-occasion')[0];
+  const occasion = (occVal ? (OCCASION_LABEL[occVal]||occVal) : '') || (g?.occasion || '');
+
+  // reset table to a fresh seating
+  t.status = 'seated';
+  t.seatedMin = 0;
+  t.server = 'James';
+  t.course = 'none';
+  t.progress = [false,false,false,false];
+  t.drinkProgress = [false,false,false];
+  t.items = [];
+  t.drinks = [];
+  t.seatedPax = party;
+  t.note = info || undefined;
+  t.party = g ? [g.id] : [];
+  t.guestRef = g ? g.id : null;
+  t.guestName = g ? g.name : (typedName || undefined);
+  t.allergies = allergies;          // <- carried so the briefing/alerts work even with no profile
+  t.occasion = occasion;
+
+  // glyphs from the ACTUAL captured types
+  const pol = phasePolicy(state.phase);
+  const newGlyphs = [], newCat = [];
+  const dangerAllergy = allergies.find(a => ALLERGY_GLYPH[a]);
+  if (dangerAllergy) { newGlyphs.push(ALLERGY_GLYPH[dangerAllergy]); newCat.push('allergy'); }
+  if (occasion && pol.showOccasionGlyph) {
+    const okey = OCCASION_GLYPH[occasion.split(' ')[0]] || 'celebration';
+    newGlyphs.push(okey); newCat.push('occasion');
+  }
+  if (g && g.vipTier === 'VIP') { newGlyphs.push('vip'); newCat.push('vip'); }
+  t.glyphs = newGlyphs.length ? newGlyphs : undefined;
+  t.glyphCat = newCat.length ? newCat : undefined;
+
+  // if this was a reservation, mark it seated
+  if (state.pendingReservation != null && reservations[state.pendingReservation]) {
+    reservations[state.pendingReservation].seated = true;
+    reservations[state.pendingReservation].table = id;
+  }
+
+  const who = g ? g.name.split(' ')[0] : (typedName || 'guest');
+  toast(`Table ${id} open · ${who} seated`, 'success');
+  state.pendingReservation = null;
+  closeModal('seat-modal');
+  renderFloor();
+  if (state.view === 'reservations') renderReservations();
+}
+
+function seatAnonymous() {
+  state.pendingSeatGuest = null;
+  confirmSeat();
+}
+
+/* ════════════════════════════════════════════════════════
+   GUEST BRIEFING (the 10-second card)
+   ════════════════════════════════════════════════════════ */
+function openGuestBriefing(gid) {
+  const g = guests[gid];
+  if (!g) return;
+  const pol = phasePolicy(state.phase);
+  const modal = document.getElementById('guest-modal');
+  const content = document.getElementById('guest-modal-content');
+
+  const cues = [];
+  if (g.allergies && g.allergies.length) {
+    g.allergies.forEach(a => cues.push({ type:'red', icon:'triangle-alert', text:`${a.toUpperCase()} ALLERGY`, sub:'Confirm with kitchen' }));
+  }
+  if (g.occasion && pol.occasionInBriefing) cues.push({ type:'amber', icon:'gem', text: g.occasion, sub: 'Acknowledge before dessert' });
+  if (g.visits >= 3) cues.push({ type:'blue', icon:'star', text:`${g.visits}${ordinal(g.visits)} visit · greet by name`, sub:`Last visit ${g.lastVisit}` });
+  if (g.suggestedDrink) cues.push({ type:'green', icon:'wine', text:`Pour the ${g.suggestedDrink.name}`, sub: g.suggestedDrink.reason });
+  if (g.notes) cues.push({ type:'amber', icon:'notebook-pen', text: g.notes.replace(/^⚠ /,''), sub:'From service notes' });
+  if (pol.predictiveCues && g.upsellAffinity > 0.7) cues.push({ type:'purple', icon:'sparkles', text:'Likely to upgrade to bottle', sub:'78% predictive confidence' });
+  if (pol.predictiveCues && g.churnRisk) cues.unshift({ type:'red', icon:'alert-circle', text:'Churn risk — needs care', sub:'Rating declining · 78d since last' });
+
+  content.innerHTML = `
+    <div class="briefing-head">
+      <div class="briefing-name">
+        ${g.name}
+        ${g.vipTier === 'VIP' ? '<span class="briefing-tier vip">VIP</span>' : ''}
+      </div>
+      <div class="briefing-meta">
+        <span>${g.visits>0 ? `${ic('repeat','sm')} Returning · <strong>${g.visits}</strong> visits` : `${ic('user-plus','sm')} First visit here`}</span>
+        ${g.visits>0 ? `<span>Last: <strong>${g.lastVisit}</strong></span>` : ''}
+        <span class="rating-display">${ratingStars(g)}</span>
+      </div>
+    </div>
+    <div>
+      ${cues.slice(0, 5).map(c => `<div class="cue ${c.type}">
+        <div class="cue-icon">${ic(c.icon)}</div>
+        <div>
+          <div class="cue-text">${c.text}</div>
+          <div class="cue-sub">${c.sub}</div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="briefing-stats">
+      <div>
+        <div class="briefing-stat-label">Spend</div>
+        <div class="spend-tier">${'$'.repeat(g.spend)}</div>
+        <div class="briefing-stat-sub">avg $${g.avgPerCover}</div>
+      </div>
+      <div>
+        <div class="briefing-stat-label">Loves (food)</div>
+        <div class="briefing-stat-value">${(g.favFood||[]).slice(0,2).join(' · ')}</div>
+      </div>
+      <div>
+        <div class="briefing-stat-label">Loves (drinks)</div>
+        <div class="briefing-stat-value">${(g.favDrinks||[]).slice(0,2).join(' · ')}</div>
+      </div>
+      <div>
+        <div class="briefing-stat-label">Avg Rating</div>
+        <div class="briefing-stat-value rating-display">${ratingStars(g)}</div>
+        <div class="briefing-stat-sub">${(g.pastRatings||[]).length} reviews</div>
+      </div>
+    </div>
+    <div style="padding: 14px 26px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end;">
+      <button class="btn ghost" onclick="openGuestInfoModal('${gid}')">Update info</button>
+      <button class="btn primary" onclick="closeModal('guest-modal')">Got it</button>
+    </div>
+  `;
+  modal.classList.add('show');
+  refreshIcons();
+}
+
+function ordinal(n) { return ['th','st','nd','rd'][((n%10)<4 && (n%100<11||n%100>13)) ? n%10 : 0] || 'th'; }
+
+/* ════════════════════════════════════════════════════════
+   RESERVATIONS / PRE-SHIFT / CONCIERGE / MANAGER
+   ════════════════════════════════════════════════════════ */
+function renderReservations() {
+  const c = document.getElementById('reservations-content');
+  const pol = phasePolicy(state.phase);
+  if (!pol.showReservations) {
+    c.innerHTML = lockedView('Reservations are a Phase 2 capability', 'Capture name, occasion, allergies, seating preference at booking time. Pre-shift briefing builds from this. WhatsApp confirmation loop captures what guests don\'t tell us on the phone.', 'calendar');
+    refreshIcons();
+    return;
+  }
+  const resCovers = reservations.reduce((s,r)=>s+(r.party||0),0);
+  const resSeated = reservations.filter(r=>r.seated).length;
+  c.innerHTML = `
+    <div class="floor-header">
+      <div>
+        <div class="floor-title serif">Reservations</div>
+        <div class="floor-subtitle">Tonight · ${reservations.length} bookings · ${resCovers} covers${resSeated?` · ${resSeated} seated`:''} · doors open in 36 min</div>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn primary" onclick="openReservationForm()"><span style="font-weight:700">+</span> New</button>
+      </div>
+    </div>
+    <div class="zone-tabs">
+      <button class="zone-tab active">Tonight</button>
+      <button class="zone-tab">Tomorrow</button>
+      <button class="zone-tab">This Week</button>
+    </div>
+    <div class="res-grid">
+      <div class="res-list">
+        ${reservations.map((r, idx) => {
+          const known = r.guestId && guests[r.guestId] && guests[r.guestId].visits>0;
+          const cls = r.seated ? 'known' : (known ? 'known' : 'new');
+          const tableTxt = r.table ? `Table ${r.table}` : 'No table yet';
+          return `<div class="res-time-block">
+          <div class="res-time">${r.time}</div>
+          <div class="res-card ${cls}" ${r.guestId ? `onclick="openGuestBriefing('${r.guestId}')"` : ''}>
+            <div class="res-row-1">
+              <div class="res-name">
+                ${r.name}
+                ${r.seated ? '<span class="res-badge" style="background:var(--green-bg);color:var(--green);">Seated</span>' : (known ? '<span class="res-badge known">Regular</span>' : '<span class="res-badge new">New</span>')}
+              </div>
+              <div style="color: var(--text-dim); font-size: 12px; font-weight: 500;">${ic('users','xs')} ${r.party} · ${tableTxt}</div>
+            </div>
+            <div class="res-detail">
+              ${r.guestId && guests[r.guestId] ? `<span>${guests[r.guestId].visits>0 ? `<strong style="color: var(--text);">${guests[r.guestId].visits}</strong> visits · last ${guests[r.guestId].lastVisit}` : 'first visit here'}</span><span class="rating-display" style="letter-spacing: 1.5px;">${ratingStars(guests[r.guestId])}</span>` : '<span style="color:var(--text-faint)">new guest</span>'}
+            </div>
+            ${(r.allergies && r.allergies.length) || r.occasion || r.notes ? `<div class="res-tags">
+              ${(r.allergies||[]).map(a => `<div class="res-tag allergy">${ic('triangle-alert','xs')} ${a}</div>`).join('')}
+              ${r.occasion ? `<div class="res-tag occasion">${ic('gem','xs')} ${r.occasion}</div>` : ''}
+              ${r.notes ? `<div class="res-tag">${r.notes}</div>` : ''}
+            </div>` : ''}
+            <div class="res-actions">
+              ${r.seated
+                ? `<button class="btn ghost" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation(); ${r.table?`openTableModal(${r.table})`:''}">${ic('check','xs')} Seated${r.table?` · view T${r.table}`:''}</button>`
+                : `<button class="btn primary" style="padding:8px 14px;font-size:12px;" onclick="event.stopPropagation(); seatReservation(${idx})">${ic('armchair','xs')} Seat now</button>`}
+            </div>
+          </div>
+        </div>`;}).join('')}
+      </div>
+      ${(()=>{
+        const regs = reservations.filter(r=>r.guestId && guests[r.guestId] && guests[r.guestId].visits>0);
+        const occs = reservations.filter(r=>r.occasion);
+        const alls = reservations.filter(r=>r.allergies&&r.allergies.length);
+        const firsts = reservations.filter(r=>!(r.guestId && guests[r.guestId] && guests[r.guestId].visits>0));
+        return `<div class="briefing-panel">
+        <div class="briefing-panel-head">Tonight at a Glance</div>
+        <div class="briefing-section">
+          <div class="briefing-section-title">Regulars · ${regs.length}</div>
+          ${regs.slice(0,5).map(r=>`<div class="briefing-item">${r.name} <span class="em">${r.table?'T'+r.table:'—'} · ${guests[r.guestId].visits} visits</span></div>`).join('') || '<div class="briefing-item" style="color:var(--text-faint)">none yet</div>'}
+        </div>
+        <div class="briefing-section">
+          <div class="briefing-section-title">Occasions · ${occs.length}</div>
+          ${occs.map(r=>`<div class="briefing-item">${r.name} <span class="em">${r.occasion}</span></div>`).join('') || '<div class="briefing-item" style="color:var(--text-faint)">none</div>'}
+        </div>
+        <div class="briefing-section">
+          <div class="briefing-section-title">Allergies · ${alls.length}</div>
+          ${alls.map(r=>`<div class="briefing-item">${r.table?'T'+r.table:r.name.split(' ')[0]} <span class="em">${r.allergies.join(', ')}</span></div>`).join('') || '<div class="briefing-item" style="color:var(--text-faint)">none flagged</div>'}
+        </div>
+        <div class="briefing-section">
+          <div class="briefing-section-title">First-timers tonight · ${firsts.length}</div>
+          ${firsts.map(r=>`<div class="briefing-item">${r.name} <span class="em">${r.table?'T'+r.table:'—'}${r.occasion?' · '+r.occasion:''}</span></div>`).join('') || '<div class="briefing-item" style="color:var(--text-faint)">none</div>'}
+        </div>
+      </div>`;})()}
+    </div>
+  `;
+  refreshIcons();
+}
+
+/* Concierge now lives inside the Floor page (Phase 3) */
+function updateConciergeBar() {
+  const bar = document.getElementById('floor-concierge');
+  if (!bar) return;
+  bar.style.display = phasePolicy(state.phase).showConcierge ? 'block' : 'none';
+}
+
+const conciergeAnswers = {
+  'What wine would Anika like with the lamb?': { a: '<strong>Barolo 2018</strong> — Anika orders it every visit. She rated last month\'s Barolo 5★. The lamb shank she\'s ordering tonight pairs beautifully. Suggest a bottle — she\'s ordered bottles in 3 of 4 visits.', meta:'Network data · 4 visits here · 14 total · 0.4s' },
+  'Has David ever ordered the truffle pasta?': { a: '<strong>Yes, 6 times</strong> across the network — including 3 here. It\'s his most-ordered dish. If you mention fresh truffle, he\'ll likely order again. Never rated below 5★.', meta:'Cross-venue · 0.3s' },
+  'Any churn risk tonight?': { a: '<strong>2 flagged.</strong> Raj Mehta (T12) — last 3 visits rated 3★, 78d since last, recently at 2 competitors. Mark Tan (T2) — low spend, no engagement signal. Manager visit on T12, no special action on T2.', meta:'Churn model · 0.6s' },
+  'Most likely to order dessert tonight?': { a: '<strong>Anika (T5), Sofia (T18), David (T8)</strong> — each orders dessert on 80%+ of visits. Anika\'s anniversary makes hers almost certain. Sofia favors sorbet. David takes the cheese plate 70% of the time.', meta:'Order history · >90% confidence · 0.4s' },
+};
+
+function askConcierge(q) {
+  const input = document.getElementById('concierge-input');
+  const query = q || input.value;
+  if (!query) return;
+  input.value = query;
+  const results = document.getElementById('concierge-results');
+  const found = conciergeAnswers[query] || { a: `In production, Pulse searches network history and taste model to answer "<em>${query}</em>" in under 2 seconds.`, meta:'Demo · 0.7s' };
+  results.innerHTML = `<div class="concierge-answer">
+    <div class="concierge-answer-q">${ic('sparkles','sm')} <span>${query}</span></div>
+    <div class="concierge-answer-a">${found.a}</div>
+    <div class="concierge-answer-meta">${ic('zap','xs')} ${found.meta}</div>
+  </div>` + results.innerHTML;
+  if (!q) input.value = '';
+  refreshIcons();
+}
+
+function lockedView(title, sub, icon) {
+  return `<div class="locked-view">
+    <div class="locked-icon">${ic(icon, 'xl')}</div>
+    <div class="locked-title">${title}</div>
+    <div class="locked-sub">${sub}</div>
+    <button class="btn primary" onclick="bumpPhase()">Unlock — switch phase</button>
+  </div>`;
+}
+
+function bumpPhase() {
+  if (state.phase < 2) { state.phase++; document.querySelectorAll('#phase-switch button').forEach(b => b.classList.toggle('active', b.dataset.phase == state.phase)); applyPhase(); }
+}
+
+/* ════════════════════════════════════════════════════════
+   MODAL / NAV / FORM / TOAST
+   ════════════════════════════════════════════════════════ */
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(el => el.classList.toggle('active', el.dataset.view === v));
+  if (v === 'floor') { renderFloor(); updateConciergeBar(); }
+  if (v === 'reservations') renderReservations();
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+function openReservationForm() {
+  // reset every field so a new booking starts clean
+  document.getElementById('res-phone').value = '';
+  document.getElementById('res-name').value = '';
+  document.getElementById('res-party').value = 2;
+  document.getElementById('res-date').value = '2026-06-07';
+  document.getElementById('res-time').value = '19:30';
+  document.getElementById('res-notes').value = '';
+  document.getElementById('res-match').innerHTML = '';
+  clearChips('res-occasion'); clearChips('res-allergy');
+  // table options: open tables + "assign on arrival"
+  const open = tables.filter(t=>t.status==='empty').sort((a,b)=>a.id-b.id);
+  document.getElementById('res-table').innerHTML =
+    `<option value="">Assign on arrival</option>` +
+    open.map(t=>`<option value="${t.id}">Table ${t.id} · ${t.zone} · ${t.cap}-top</option>`).join('');
+  state.resMatchGuest = null;
+  document.getElementById('res-form-modal').classList.add('show');
+}
+
+function resLookup(value) {
+  const el = document.getElementById('res-match');
+  const v = (value||'').replace(/\s/g,'');
+  const match = v.length>=6 ? Object.values(guests).find(g => g.phone.replace(/\s/g,'').includes(v)) : null;
+  if (match) {
+    state.resMatchGuest = match.id;
+    document.getElementById('res-name').value = match.name;
+    if (match.allergies && match.allergies.length) setChips('res-allergy', labelsToChipVals(match.allergies, ALLERGY_LABEL));
+    el.innerHTML = `<span style="color:var(--green);">✓ ${match.name} — ${match.visits>0?`returning, ${match.visits} visits`:'first visit'}${match.allergies&&match.allergies.length?` · ${match.allergies.join(', ')} on file`:''}</span>`;
+  } else {
+    state.resMatchGuest = null;
+    el.innerHTML = v.length>=6 ? `<span style="color:var(--text-dim);">New guest — profile created on arrival</span>` : '';
+  }
+}
+
+function saveReservation() {
+  const phone = (document.getElementById('res-phone').value||'').trim();
+  if (phone.length < 6) { toast('Enter a phone number', 'warn'); return; }
+  const occVal = readChips('res-occasion')[0];
+  const res = {
+    time: document.getElementById('res-time').value || '—',
+    name: (document.getElementById('res-name').value||'').trim() || 'Guest',
+    phone,
+    guestId: state.resMatchGuest || null,
+    party: parseInt(document.getElementById('res-party').value) || 2,
+    table: document.getElementById('res-table').value ? +document.getElementById('res-table').value : null,
+    zone: '',
+    allergies: readChips('res-allergy').map(v=>ALLERGY_LABEL[v]||v),
+    occasion: occVal ? (OCCASION_LABEL[occVal]||occVal) : '',
+    notes: (document.getElementById('res-notes').value||'').trim(),
+    seated: false,
+  };
+  if (res.table) { const t=tables.find(x=>x.id===res.table); if(t) res.zone=t.zone; }
+  reservations.push(res);
+  reservations.sort((a,b)=> (a.time||'').localeCompare(b.time||''));
+  toast(`Reservation saved for ${res.name} · WhatsApp confirmation sent`, 'success');
+  closeModal('res-form-modal');
+  renderReservations();
+}
+function openGuestInfoModal(gid) {
+  document.getElementById('guest-info-modal').classList.add('show');
+  const pol = phasePolicy(state.phase);
+  document.getElementById('gi-occasion-wrap').style.display = pol.showReservations ? 'flex' : 'none';
+  if (gid && guests[gid]) {
+    document.getElementById('gi-phone').value = guests[gid].phone;
+    document.getElementById('gi-name').value = guests[gid].name;
+    lookupGuest(guests[gid].phone);
+  } else {
+    document.getElementById('gi-phone').value = '';
+    document.getElementById('gi-name').value = '';
+    document.getElementById('gi-notes').value = '';
+    document.getElementById('gi-match').innerHTML = '';
+  }
+}
+function lookupGuest(phone) {
+  const match = Object.values(guests).find(g => g.phone === phone);
+  const el = document.getElementById('gi-match');
+  if (match) { el.innerHTML = `<span style="color: var(--green);">✓ Matched — ${match.name} · ${match.visits>0 ? `returning, ${match.visits} visits` : 'first visit'}</span>`; document.getElementById('gi-name').value = match.name; }
+  else if (phone.length >= 8) el.innerHTML = `<span style="color: var(--text-dim);">New guest — profile will be created</span>`;
+  else el.innerHTML = '';
+}
+function saveGuestInfo() { toast('Guest info saved · profile updated', 'success'); closeModal('guest-info-modal'); }
+function actNudge(el) { el.style.opacity = '0.55'; toast('Actioned · learning', 'success'); }
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + (type || 'info');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ════════════════════════════════════════════════════════
+   PHASE SWITCHER
+   ════════════════════════════════════════════════════════ */
+function openSeatPicker() {
+  // Default to the first empty table
+  const t = tables.find(x => x.status === 'empty');
+  if (t) seatTable(t.id);
+}
+
+function applyPhase() {
+  const desc = {
+    1: { name:'Phase 1 — The Briefing', desc:'QR data only · floor, briefing card, table recommendations · add guest info' },
+    2: { name:'Phase 2 — The Network', desc:'+ Reservations · seat-a-guest · editable floor map · AI search · predictive cues' },
+  };
+  const d = desc[state.phase];
+  document.getElementById('phase-name').textContent = d.name;
+  document.getElementById('phase-desc').textContent = d.desc;
+  const pol = phasePolicy(state.phase);
+  // Show "Seat a Guest" CTA only in Phase 2+
+  const seatCta = document.getElementById('seat-cta');
+  if (seatCta) seatCta.style.display = pol.showReservations ? 'inline-flex' : 'none';
+  // Lock Reservations until Phase 2 (keeps it clickable → shows locked view)
+  document.querySelectorAll('.nav-tab').forEach(el => {
+    if (el.dataset.view === 'reservations') el.classList.toggle('locked', !pol.showReservations);
+  });
+  // If on a now-hidden view, fall back to floor
+  if (state.view === 'reservations' && !pol.showReservations) { switchView('floor'); return; }
+  updateConciergeBar();
+  // Re-render current
+  if (state.view === 'floor') renderFloor();
+  if (state.view === 'reservations') renderReservations();
+}
+
+document.getElementById('phase-switch').addEventListener('click', e => {
+  if (e.target.dataset.phase) {
+    state.phase = +e.target.dataset.phase;
+    document.querySelectorAll('#phase-switch button').forEach(b => b.classList.toggle('active', b.dataset.phase == state.phase));
+    applyPhase();
+  }
+});
+document.getElementById('nav-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.nav-tab');
+  if (btn && btn.dataset.view) switchView(btn.dataset.view);
+});
+document.getElementById('zone-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.zone-tab');
+  if (btn && btn.dataset.zone) {
+    state.zone = btn.dataset.zone;
+    document.querySelectorAll('#zone-tabs .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === state.zone));
+    renderFloor();
+  }
+});
+document.getElementById('view-toggle').addEventListener('click', e => {
+  const btn = e.target.closest('button');
+  if (btn && btn.dataset.layout) {
+    state.layout = btn.dataset.layout;
+    document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.layout === state.layout));
+    renderFloor();
+  }
+});
+document.querySelectorAll('.chip-select').forEach(cs => {
+  cs.addEventListener('click', e => {
+    if (e.target.classList.contains('chip-opt')) {
+      const group = cs.dataset.group;
+      if (group && group.includes('occasion')) {
+        cs.querySelectorAll('.chip-opt').forEach(c => c.classList.remove('selected'));
+        e.target.classList.add('selected');
+      } else {
+        e.target.classList.toggle('selected');
+      }
+    }
+  });
+});
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show'); });
+});
+
+function updateClock() { const now = new Date(); document.getElementById('clock').textContent = now.toTimeString().slice(0,5); }
+setInterval(updateClock, 30000); updateClock();
+
+/* ════════════════════════════════════════════════════════
+   GUIDED TOUR — a story of one guest's night
+   ════════════════════════════════════════════════════════ */
+let tutStep = 0;
+
+// small builders that reuse the real component classes
+function pop(html, i){ return `<div class="pop" style="animation-delay:${(i||0)*90}ms;">${html}</div>`; }
+function miniTile(num, status, name, sub, glyphs, dots, extra) {
+  return `<div class="table-tile ${status}" style="width:170px; pointer-events:none;">
+    <div class="tile-top"><div class="tile-num">${num}</div>${glyphs?`<div class="tile-glyphs">${glyphs}</div>`:''}</div>
+    <div class="tile-party">${name}</div>
+    <div class="tile-pax">${ic('users','xs')} ${sub}</div>
+    ${coursePips(dots||[0,0,0,0])}
+    <div class="tile-bottom ${extra&&extra.cls||''}">${extra&&extra.text?`<span>${extra.text}</span>`:'<span></span>'}<span class="tile-server">${extra&&extra.server||''}</span></div>
+  </div>`;
+}
+function gly(icon, color){ return `<div class="tile-glyph ${color}">${ic(icon)}</div>`; }
+function planCard(course, icon, items, note, lead) {
+  return `<div class="plan-card ${lead?'lead':''}" style="width:440px; max-width:100%;">
+    <div class="plan-course">${ic(icon)} ${course}</div>
+    <div class="plan-items">${items.map(it=>`<div class="plan-item">
+      <span class="plan-item-qty">${it.q}×</span><span class="plan-item-name">${it.n}</span>
+      <span class="plan-item-spread"></span>${it.tag?tagChip(it.tag):''}</div>`).join('')}</div>
+    <div class="plan-note">${note}</div>
+  </div>`;
+}
+function journeyMini(stage) {
+  const nodes=[['Seated','armchair'],['Starters','salad'],['Mains','utensils-crossed'],['Dessert','cake-slice'],['Check','receipt']];
+  const idx={seated:0,starters:1,mains:2,dessert:3,check:4}[stage];
+  let h='<div class="journey" style="width:480px; max-width:100%;">';
+  nodes.forEach((n,i)=>{ const cls=i<idx?'done':i===idx?'current':'';
+    h+=`<div class="journey-node ${cls}"><div class="journey-dot">${i<idx?ic('check','xs'):ic(n[1],'xs')}</div><div class="journey-label">${n[0]}</div></div>`;
+    if(i<nodes.length-1) h+=`<div class="journey-line ${i<idx?'done':''}"></div>`;
+  });
+  return h+'</div>';
+}
+
+const tutScenes = [
+  { // 0 — welcome
+    kicker:['sparkles','A 90-second tour'],
+    title:'How Pulse works',
+    narr:'Follow one guest, Anika, through her whole night — from the booking screen to the moment her bill is paid. You\'ll never read a screen. You\'ll only glance.',
+    stage:()=>pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="tut-hero-dot"></div>
+      <div class="tut-logo">Pulse</div>
+      <div style="color:var(--text-faint);font-size:13px;">Guest intelligence, one glance at a time</div>
+      <button class="btn ghost" style="margin-top:14px;font-size:12px;padding:8px 14px;" onclick="endTutorial(); setTimeout(startFollow, 300);">${ic('mouse-pointer-click','sm')} Or follow along — click through it yourself</button>
+    </div>`)
+  },
+  { // 1 — reservations
+    kicker:['calendar','Start of shift'],
+    title:'Tonight\'s reservations',
+    narr:'Every shift opens here — bookings by time. A badge tells you who you\'re dealing with: <strong>Regular</strong> (dined here before, with their history) or <strong>New</strong> (first time).',
+    stage:()=>`
+      ${pop(`<div class="tut-resrow"><div class="tut-restime">19:00</div><div class="res-card known" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Anika Sharma <span class="res-badge known">Regular</span></div></div><div class="res-detail"><span><strong style="color:var(--text)">4</strong> visits</span><span class="rating-display" style="letter-spacing:1.5px">★★★★☆</span></div><div class="res-tags"><div class="res-tag allergy">${ic('triangle-alert','xs')} Nuts</div><div class="res-tag occasion">${ic('gem','xs')} Anniversary</div></div></div></div>`,0)}
+      ${pop(`<div class="tut-resrow"><div class="tut-restime">19:30</div><div class="res-card new" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Priya Rajan <span class="res-badge new">New</span></div></div><div class="res-detail"><span>first visit · loves the tasting menu</span></div></div></div>`,1)}
+      ${pop(`<div class="tut-resrow"><div class="tut-restime">20:00</div><div class="res-card new" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Linda Wu <span class="res-badge new">New</span></div></div><div class="res-detail"><span>walk-in confirmed</span></div></div></div>`,2)}
+    `
+  },
+  { // 2 — open table
+    kicker:['user-plus','Guest arrives'],
+    title:'Open the table',
+    narr:'Anika arrives. Tap her table and type her phone — Pulse <strong>recognises her instantly</strong> and pulls her profile from across the network, auto-filling her name. A brand-new guest? Just type a name and pax. No app, no login.',
+    stage:()=>`
+      ${pop(`<div class="tut-input" style="display:flex;align-items:center;gap:8px;color:var(--text);">${ic('phone' ,'sm')}<span>+65 9123 4567</span><span class="cursor">&nbsp;</span></div>`,0)}
+      ${pop(`<div class="tut-match">
+        <div class="seat-match-name">${ic('user-check','sm')} Anika Sharma <span class="briefing-tier vip" style="margin-left:6px;">VIP</span></div>
+        <div class="seat-match-meta" style="margin-top:6px;"><span>Returning · <strong>4</strong> visits</span><span>Last: <strong>12 days ago</strong></span><span class="rating-display" style="letter-spacing:1.5px;font-size:12px;">★★★★☆</span></div>
+        <div class="res-tags" style="margin-top:10px;"><div class="res-tag allergy">${ic('triangle-alert','xs')} Nuts</div><div class="res-tag occasion">${ic('gem','xs')} Anniversary</div></div>
+      </div>`,1)}
+      ${pop(`<div style="font-size:12px;color:var(--text-faint);">↑ recognised — name & preferences auto-filled</div>`,2)}
+    `
+  },
+  { // 3 — floor at a glance
+    kicker:['eye','The floor'],
+    title:'Read the room at a glance',
+    narr:'Once seated, every table shows its state by <strong>border colour</strong> and a symbol or two. Blue = just seated, green = ordered, amber = needs attention, red = running late.',
+    stage:()=>`<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
+      ${pop(miniTile(7,'seated','Party of 2','2 pax',null,[1,0,0,0],{text:'4m · just seated',server:'Aisha'}),0)}
+      ${pop(miniTile(5,'ordered','Anika +1','2 pax · ★ 4.3', gly('triangle-alert','red')+gly('gem','amber'),[2,1,0,0],{text:'12m · mains',server:'James'}),1)}
+      ${pop(miniTile(12,'overdue','Raj','4 pax', gly('circle-alert','amber'),[2,1,0,0],{text:'28m · mains',cls:'overdue',server:'Aisha'}),2)}
+    </div>`
+  },
+  { // 4 — state 1
+    kicker:['list-checks','Order flow · State 1'],
+    title:'Just seated → open strong',
+    narr:'The second they sit, Pulse suggests the opening move: a round of drinks and shared starters — <strong>scaled to the headcount</strong> and <strong>safe for their allergies</strong>. The highlighted card is what to do first.',
+    stage:()=>`
+      ${pop(journeyMini('seated'),0)}
+      ${pop(planCard('Drinks','martini',[{q:2,n:'Negroni',tag:'usual'},{q:2,n:'Aperol Spritz',tag:'try'}],'for 4 guests · none served yet',true),1)}
+      ${pop(planCard('Starters','salad',[{q:2,n:'Burrata',tag:'usual'},{q:1,n:'Heirloom Salad',tag:'try'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>3 plates to share`),2)}
+    `
+  },
+  { // 5 — state 2
+    kicker:['utensils-crossed','Order flow · State 2'],
+    title:'Starters in → line up the mains',
+    narr:'Their QR order lands and the plan <strong>updates itself</strong>. Starters down → Pulse lines up the mains they usually love, plus a wine to pair. <strong>Usual</strong> = they order it often. <strong>Try this</strong> = a fresh idea.',
+    stage:()=>`
+      ${pop(journeyMini('starters'),0)}
+      ${pop(planCard('Main Course','utensils-crossed',[{q:2,n:'Lamb Shank',tag:'usual'},{q:2,n:'Sea Bass',tag:'usual'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>for 4 guests · one each`,true),1)}
+      ${pop(planCard('Wine','wine',[{q:1,n:'Barolo 2018, bottle',tag:'usual'}],'the red they always order'),2)}
+    `
+  },
+  { // 6 — state 3
+    kicker:['rotate-ccw','Order flow · State 3'],
+    title:'Mains in → refill & ready dessert',
+    narr:'Mains are down. Glasses running low? Pulse nudges a <strong>refill</strong> of the same round, and quietly readies the dessert they always finish with — so you offer it at the perfect moment.',
+    stage:()=>`
+      ${pop(journeyMini('mains'),0)}
+      ${pop(planCard('Refill drinks','rotate-ccw',[{q:2,n:'Negroni',tag:'repeat'},{q:2,n:'Aperol Spritz',tag:'repeat'}],'round poured 26m ago · glasses running low',true),1)}
+      ${pop(planCard('Dessert','cake-slice',[{q:2,n:'Chocolate Plate',tag:'try'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>have ready for after mains`),2)}
+    `
+  },
+  { // 7 — state 4
+    kicker:['check-check','Order flow · Last state'],
+    title:'Everything balanced',
+    narr:'When every course is covered for the table, Pulse goes quiet — the balance checks turn green and there\'s nothing left to bring. The meal is complete.',
+    stage:()=>`
+      ${pop(journeyMini('dessert'),0)}
+      ${pop(`<div class="tcol" style="width:440px;max-width:100%;"><div class="tcol-body" style="padding:14px 16px;">
+        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Starters balanced <span class="balance-count">3/3</span></div>
+        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Drinks balanced <span class="balance-count">5/4</span></div>
+        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Mains balanced <span class="balance-count">4/4</span></div>
+        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Dessert balanced <span class="balance-count">2/2</span></div>
+      </div></div>`,1)}
+    `
+  },
+  { // 8 — paid
+    kicker:['badge-check','After the meal'],
+    title:'Bill paid → ready to turn',
+    narr:'When the bill\'s settled, the table turns <strong>calm and green</strong> with a clear stamp. That\'s your signal it\'s done — clear it and turn it for the next guest.',
+    stage:()=>pop(`<div class="table-tile paid" style="width:200px;pointer-events:none;">
+      <div class="tile-top"><div class="tile-num">9</div></div>
+      <div class="paid-stamp">${ic('badge-check','xs')} Bill paid</div>
+      <div class="tile-party">Party of 4</div>
+      <div class="tile-pax">${ic('users','xs')} 4 pax</div>
+      <div class="paid-turn">Ready to clear & turn</div>
+    </div>`)
+  },
+  { // 9 — grid vs map
+    kicker:['layout-grid','Two views'],
+    title:'List grid, or your real floor',
+    narr:'See the floor as a tidy <strong>grid</strong>, or flip to <strong>map</strong> — your actual room, tables as shapes, so the layout matches what you\'re walking. Same info, whichever your room thinks in.',
+    stage:()=>`<div style="display:flex;gap:26px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      ${pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="display:grid;grid-template-columns:repeat(3,30px);gap:6px;">${Array.from({length:9}).map(()=>'<div style="height:30px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-2);"></div>').join('')}</div><div style="font-size:11px;color:var(--text-dim);">${ic('layout-grid','xs')} Grid</div></div>`,0)}
+      ${pop(`<div style="font-size:20px;color:var(--text-faint);">→</div>`,1)}
+      ${pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="position:relative;width:160px;height:96px;border:1px solid var(--border);border-radius:10px;background:var(--surface);">
+        <div class="map-table round ordered" style="position:absolute;width:34px;height:34px;left:14px;top:16px;"><span class="map-table-num" style="font-size:13px;">5</span></div>
+        <div class="map-table square seated" style="position:absolute;width:38px;height:38px;left:64px;top:30px;"><span class="map-table-num" style="font-size:13px;">8</span></div>
+        <div class="map-table round paid" style="position:absolute;width:34px;height:34px;left:116px;top:14px;"><span class="map-table-num" style="font-size:13px;">9</span></div>
+      </div><div style="font-size:11px;color:var(--text-dim);">${ic('map','xs')} Map</div></div>`,2)}
+    </div>`
+  },
+  { // 10 — symbol cheat sheet
+    kicker:['book-open','Cheat-sheet'],
+    title:'Every symbol, once',
+    narr:'You\'ll recognise these everywhere in Pulse.',
+    stage:()=>`<div class="tut-legend">
+      ${[
+        ['triangle-alert','red','<strong>Allergy</strong> — confirm with kitchen'],
+        ['gem','amber','<strong>Occasion</strong> — birthday / anniversary'],
+        ['star','gold','<strong>VIP / regular</strong> — greet warmly'],
+        ['circle-alert','amber','<strong>Needs attention</strong>'],
+        ['timer-reset','amber','<strong>Keep courses moving</strong>'],
+        ['users','blue','<strong>Pax</strong> — guests at the table'],
+        ['heart','green','<strong>Usual</strong> — they order this often'],
+        ['sparkles','purple','<strong>Try this</strong> — fresh suggestion'],
+        ['rotate-ccw','gold','<strong>Refill</strong> — repeat the round'],
+        ['badge-check','green','<strong>Bill paid</strong> — ready to turn'],
+      ].map((r,i)=>`<div class="tut-leg pop" style="animation-delay:${i*45}ms;"><span class="tut-leg-ic ${r[1]}">${ic(r[0])}</span><span>${r[2]}</span></div>`).join('')}
+    </div>`
+  },
+  { // 11 — ready
+    kicker:['check-circle','You\'re ready'],
+    title:'Go make someone feel known',
+    narr:'That\'s the whole loop — recognise, suggest, serve, turn. Pulse stays invisible. The guest only ever sees grace.',
+    stage:()=>pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="tut-leg-ic green" style="width:56px;height:56px;border-radius:16px;">${ic('check','xl')}</div>
+      <div style="color:var(--text-faint);font-size:13px;">You can replay this anytime from the ${ic('help-circle','xs')} button.</div>
+    </div>`)
+  },
+];
+
+function startTutorial(){ tutStep=0; document.getElementById('tut-overlay').classList.add('show'); renderTut(); }
+function endTutorial(){ document.getElementById('tut-overlay').classList.remove('show'); try{ localStorage.setItem('pulse_tut_seen','1'); }catch(e){} }
+function tutNext(){ if(tutStep>=tutScenes.length-1){ endTutorial(); return; } tutStep++; renderTut(); }
+function tutPrev(){ if(tutStep>0){ tutStep--; renderTut(); } }
+function renderTut(){
+  const s = tutScenes[tutStep];
+  // progress pips
+  document.getElementById('tut-progress').innerHTML = tutScenes.map((_,i)=>`<div class="pip ${i<tutStep?'done':i===tutStep?'active':''}"></div>`).join('');
+  const stage = document.getElementById('tut-stage');
+  stage.className = 'tut-stage-inner tut-anim';
+  stage.innerHTML = s.stage();
+  // restart entrance animation
+  void stage.offsetWidth; stage.classList.add('tut-anim');
+  document.getElementById('tut-kicker').innerHTML = `${ic(s.kicker[0])} ${s.kicker[1]}`;
+  document.getElementById('tut-title').textContent = s.title;
+  document.getElementById('tut-narr').innerHTML = s.narr;
+  document.getElementById('tut-count').textContent = `${tutStep+1} / ${tutScenes.length}`;
+  document.getElementById('tut-back').style.visibility = tutStep===0 ? 'hidden' : 'visible';
+  document.getElementById('tut-next').textContent = tutStep===tutScenes.length-1 ? 'Enter Pulse' : 'Next';
+  refreshIcons();
+}
+document.addEventListener('keydown', e=>{
+  if(!document.getElementById('tut-overlay').classList.contains('show')) return;
+  if(e.key==='ArrowRight'||e.key==='Enter') tutNext();
+  if(e.key==='ArrowLeft') tutPrev();
+  if(e.key==='Escape') endTutorial();
+});
+
+/* ════════════════════════════════════════════════════════
+   FOLLOW-ALONG — click-through coach marks over the real UI
+   ════════════════════════════════════════════════════════ */
+let coachStep = 0, coachActive = false, coachHandler = null, coachEl = null;
+
+function setPhase(p){ state.phase=p; document.querySelectorAll('#phase-switch button').forEach(b=>b.classList.toggle('active', b.dataset.phase==p)); applyPhase(); }
+
+const coachSteps = [
+  { sel:'.nav-tab[data-view="reservations"]', advance:'click',
+    pre:()=>{ closeAllModals(); setPhase(2); state.layout='grid'; switchView('floor'); },
+    k:['calendar','Step 1'], title:'Open Reservations', body:'Every shift starts with tonight\'s bookings. <strong>Tap Reservations.</strong>' },
+  { sel:'#reservations-content .res-card', advance:'click',
+    pre:()=>{ switchView('reservations'); },
+    k:['user','Step 2'], title:'Open a guest', body:'These are tonight\'s bookings. <strong>Tap a guest</strong> to see their briefing card.' },
+  { sel:'#guest-modal .modal', advance:'next', place:'right',
+    k:['id-card','Step 3'], title:'The briefing card', body:'Allergies first, then the occasion, then what to suggest. You glance — you never read.' },
+  { sel:'#seat-cta', advance:'click',
+    pre:()=>{ closeModal('guest-modal'); switchView('floor'); },
+    k:['armchair','Step 4'], title:'Seat a guest', body:'A guest arrives. <strong>Tap “Seat a Guest”</strong> to open a table.' },
+  { sel:'#seat-modal .modal', advance:'next', place:'left',
+    pre:()=>{ const ph=document.getElementById('seat-phone'); if(ph){ ph.value='+65 9234 5678'; seatLookup('+65 9234 5678','phone'); } },
+    k:['user-check','Step 5'], title:'Recognised instantly', body:'Type a phone and a <strong>returning guest is recognised</strong> — name & preferences auto-fill. Set pax, then continue.' },
+  { sel:'#seat-modal .btn.primary', advance:'click',
+    k:['check','Step 6'], title:'Open the table', body:'<strong>Tap “Open Table”</strong> — the table goes live with their profile attached.' },
+  { sel:'.table-tile[data-id="5"]', advance:'click',
+    pre:()=>{ closeAllModals(); switchView('floor'); },
+    k:['layout-grid','Step 7'], title:'Manage a table', body:'Back on the floor. <strong>Tap a seated table</strong> to see what to do next.' },
+  { sel:'#table-modal .tcol.plan', advance:'next', place:'left',
+    k:['chef-hat','Step 8'], title:'What to bring next', body:'Pulse lays out the next move — <strong>named dishes, quantities for the table, allergy-safe</strong>. It updates as their order lands.' },
+  { sel:'#view-toggle button[data-layout="map"]', advance:'click',
+    pre:()=>{ closeAllModals(); switchView('floor'); },
+    k:['map','Step 9'], title:'Your real floor', body:'<strong>Tap Map</strong> to see the room as it actually is — and merge tables for big parties in Edit.' },
+  { sel:null, advance:'done',
+    k:['check-circle','Done'], title:'That\'s the whole loop', body:'Recognise → suggest → serve → turn. Replay anytime from the ? button.' },
+];
+
+function closeAllModals(){ document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show')); }
+
+function ensureCoachDom(){
+  if (document.getElementById('coach-tip')) return;
+  ['t','r','b','l'].forEach(p=>{ const d=document.createElement('div'); d.className='coach-panel'; d.id='coach-'+p; document.body.appendChild(d); });
+  const ring=document.createElement('div'); ring.className='coach-ring'; ring.id='coach-ring'; document.body.appendChild(ring);
+  const tip=document.createElement('div'); tip.className='coach-tip'; tip.id='coach-tip'; document.body.appendChild(tip);
+}
+function setCoachVisible(v){
+  ['coach-t','coach-r','coach-b','coach-l','coach-ring','coach-tip'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display = v?'block':'none'; });
+}
+function startFollow(){ const ov=document.getElementById('tut-overlay'); if(ov) ov.classList.remove('show'); ensureCoachDom(); coachStep=0; coachActive=true; setCoachVisible(true); runCoach(); }
+function endFollow(){ coachActive=false; setCoachVisible(false); detachCoachClick(); try{localStorage.setItem('pulse_tut_seen','1')}catch(e){} }
+function detachCoachClick(){ if(coachHandler&&coachEl){ coachEl.removeEventListener('click', coachHandler, true); coachHandler=null; coachEl=null; } }
+function coachNext(){ detachCoachClick(); if(coachStep>=coachSteps.length-1){ endFollow(); return; } coachStep++; runCoach(); }
+
+function runCoach(){
+  const s = coachSteps[coachStep];
+  if (s.pre) s.pre();
+  // let DOM settle (view switches / modals), then position
+  setTimeout(()=>{
+    if (s.advance==='done' || !s.sel){ positionCenter(s); return; }
+    const el = document.querySelector(s.sel);
+    if (!el){ // brief retry then center fallback
+      setTimeout(()=>{ const e2=document.querySelector(s.sel); if(e2) placeCoach(e2,s); else positionCenter(s); }, 200);
+      return;
+    }
+    el.scrollIntoView({block:'center', inline:'center'});
+    setTimeout(()=>placeCoach(el, s), 180);
+  }, s.pre ? 300 : 60);
+}
+
+function placeCoach(el, s){
+  const r = el.getBoundingClientRect();
+  const pad = 6, vw = innerWidth, vh = innerHeight;
+  const T=document.getElementById('coach-t'), R=document.getElementById('coach-r'), B=document.getElementById('coach-b'), L=document.getElementById('coach-l');
+  T.style.cssText = `display:block;left:0;top:0;width:${vw}px;height:${Math.max(0,r.top-pad)}px`;
+  B.style.cssText = `display:block;left:0;top:${r.bottom+pad}px;width:${vw}px;height:${Math.max(0,vh-r.bottom-pad)}px`;
+  L.style.cssText = `display:block;left:0;top:${r.top-pad}px;width:${Math.max(0,r.left-pad)}px;height:${r.height+pad*2}px`;
+  R.style.cssText = `display:block;left:${r.right+pad}px;top:${r.top-pad}px;width:${Math.max(0,vw-r.right-pad)}px;height:${r.height+pad*2}px`;
+  const ring=document.getElementById('coach-ring');
+  ring.style.display='block'; ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
+  ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+  ring.className = 'coach-ring' + (s.advance==='click'?' click':'');
+  positionTip(r, s);
+  if (s.advance==='click'){ coachEl=el; coachHandler=()=>{ setTimeout(coachNext, 420); }; el.addEventListener('click', coachHandler, true); }
+}
+
+function positionTip(r, s){
+  const tip=document.getElementById('coach-tip');
+  const isClick = s.advance==='click';
+  tip.innerHTML = `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
+    <h4>${s.title}</h4><p>${s.body}</p>
+    <div class="coach-foot">
+      <button class="coach-skip" onclick="endFollow()">Skip</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="coach-count">${coachStep+1}/${coachSteps.length}</span>
+        ${isClick ? `<span class="coach-hint">${ic('mouse-pointer-click')} Tap it</span>` : `<button class="coach-next" onclick="coachNext()">${s.advance==='done'?'Finish':'Next'}</button>`}
+      </div>
+    </div>`;
+  const tw=300, th=tip.offsetHeight||150, gap=14, vw=innerWidth, vh=innerHeight;
+  let left, top;
+  const place = s.place || 'auto';
+  if (place==='right' && r.right+gap+tw < vw){ left=r.right+gap; top=Math.min(Math.max(12,r.top), vh-th-12); }
+  else if (place==='left' && r.left-gap-tw > 0){ left=r.left-gap-tw; top=Math.min(Math.max(12,r.top), vh-th-12); }
+  else if (r.bottom+gap+th < vh){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.bottom+gap; }
+  else if (r.top-gap-th > 0){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.top-gap-th; }
+  else { left=(vw-tw)/2; top=vh-th-20; }
+  tip.style.left=left+'px'; tip.style.top=top+'px';
+  refreshIcons();
+}
+
+function positionCenter(s){
+  setCoachVisible(true);
+  ['coach-t','coach-r','coach-b','coach-l'].forEach((id,i)=>{ const e=document.getElementById(id); e.style.display='block'; if(i===0){e.style.cssText='display:block;inset:0;width:100vw;height:100vh;left:0;top:0;';} else e.style.display='none'; });
+  const ring=document.getElementById('coach-ring'); ring.style.display='none';
+  const tip=document.getElementById('coach-tip');
+  tip.style.display='block';
+  tip.innerHTML = `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div><h4>${s.title}</h4><p>${s.body}</p>
+    <div class="coach-foot"><span></span><button class="coach-next" onclick="endFollow()">Finish</button></div>`;
+  const tw=300, th=tip.offsetHeight||150;
+  tip.style.left=(innerWidth-tw)/2+'px'; tip.style.top=(innerHeight-th)/2+'px';
+  refreshIcons();
+}
+window.addEventListener('resize', ()=>{ if(coachActive){ const s=coachSteps[coachStep]; if(s.sel){ const el=document.querySelector(s.sel); if(el) placeCoach(el,s); } } });
+
+// Init
+seedMapCoords(); renderFloor(); applyPhase();
+// Auto-open the tour on first visit
+try { if (!localStorage.getItem('pulse_tut_seen')) setTimeout(startTutorial, 400); } catch(e) {}
+</script>
+</body>
+</html>
