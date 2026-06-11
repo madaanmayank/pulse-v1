@@ -6,55 +6,81 @@
 <title>Pulse — Guest Intelligence Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..900&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #131313;
-    --surface-2: #1a1a1a;
-    --surface-3: #222222;
-    --surface-4: #2a2a2a;
-    --border: #1f1f1f;
-    --border-strong: #2e2e2e;
-    --text: #fafafa;
-    --text-dim: #a1a1a1;
-    --text-faint: #5a5a5a;
-    --red: #f87171;
-    --red-deep: #ef4444;
-    --red-bg: #2a1414;
-    --amber: #fbbf24;
-    --amber-bg: #2a1f10;
-    --green: #34d399;
-    --green-bg: #0f2520;
-    --blue: #60a5fa;
-    --blue-bg: #102030;
-    --purple: #c084fc;
-    --purple-bg: #1f1530;
-    --gold: #2dd4bf;
-    --gold-bg: #0e2e2b;
-    --accent: #2dd4bf;
-    --accent-ink: #04302b;
-    --shadow-lg: 0 12px 40px rgba(0,0,0,0.5);
+    /* ── Luxury dark — warm near-black canvas, ivory ink, champagne accent ── */
+    --bg: #0a0908;
+    --surface: #141210;
+    --surface-2: #1a1815;
+    --surface-3: #23201c;
+    --surface-4: #2e2a25;
+    --border: #221f1b;
+    --border-strong: #322d27;
+    --text: #f4f0e8;            /* warm ivory */
+    --text-dim: #a8a094;        /* warm taupe */
+    --text-faint: #6b6459;      /* muted warm gray */
+    --red: #e08a82;
+    --red-deep: #d9655c;
+    --red-bg: #261614;
+    --amber: #e6b765;
+    --amber-bg: #261d10;
+    --green: #74c39a;
+    --green-bg: #142420;
+    --blue: #8aabd6;
+    --blue-bg: #161f2a;
+    --purple: #b79fd6;
+    --purple-bg: #1f1a2a;
+    /* champagne is the brand/CTA accent — replaces the old teal */
+    --gold: #d8c39a;
+    --gold-bg: #221c12;
+    --accent: #d8c39a;
+    --accent-soft: #ecdcb6;
+    --accent-deep: #c2a978;
+    --accent-ink: #2b2112;      /* deep warm brown — text on champagne fills */
+    /* premium type system — high-contrast luxury serif + clean sans */
+    --font-display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+    --font-ui: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: "Geist Mono", ui-monospace, "SF Mono", monospace;
+    /* spacing scale (8pt-ish) for consistent breathing room */
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px;
+    --s6: 24px; --s7: 32px; --s8: 40px; --s9: 56px;
+    /* radii — generous, soft */
+    --r-sm: 9px; --r-md: 13px; --r-lg: 18px; --r-xl: 24px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 8px 26px rgba(0,0,0,0.45);
+    --shadow-lg: 0 28px 80px -14px rgba(0,0,0,0.72), 0 10px 28px -10px rgba(0,0,0,0.55);
+    --ring: 0 0 0 3px rgba(216,195,154,0.18);
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     background: var(--bg);
     color: var(--text);
-    font-family: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-size: 13.5px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     height: 100%;
     overflow: hidden;
-    letter-spacing: -0.01em;
-    font-feature-settings: "cv11","ss01","ss03";
+    letter-spacing: -0.008em;
+    font-feature-settings: "cv05","cv11","ss01";
   }
   /* app shell: column layout so the scroll area always fills the exact leftover height */
-  body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
+  body {
+    display: flex; flex-direction: column; height: 100vh; height: 100dvh;
+    background:
+      radial-gradient(1100px 560px at 82% -12%, rgba(216,195,154,0.06), transparent 62%),
+      radial-gradient(820px 460px at -5% 4%, rgba(216,195,154,0.025), transparent 58%),
+      var(--bg);
+  }
   .topbar, .phase-strip { flex: 0 0 auto; }
-  .serif { font-family: "Geist", system-ui, sans-serif; font-weight: 600; letter-spacing: -0.025em; }
-  .mono { font-family: "Geist Mono", ui-monospace, monospace; font-feature-settings: "tnum"; }
+  /* high-contrast luxury serif — used for the brand/title moments only */
+  .serif { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
+  .mono { font-family: var(--font-mono); font-feature-settings: "tnum"; }
   i[data-lucide] { width: 16px; height: 16px; display: inline-flex; flex-shrink: 0; }
   i.lg[data-lucide] { width: 20px; height: 20px; }
   i.xl[data-lucide] { width: 24px; height: 24px; }
@@ -65,24 +91,26 @@
 
   /* ─── Topbar ─── */
   .topbar {
-    height: 56px;
-    background: var(--surface);
+    height: 66px;
+    background: rgba(20,18,16,0.78);
+    backdrop-filter: saturate(140%) blur(14px);
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    padding: 0 20px;
-    gap: 14px;
+    padding: 0 30px;
+    gap: 18px;
     position: relative;
     z-index: 10;
   }
   .logo {
-    font-weight: 700;
-    font-size: 17px;
-    letter-spacing: -0.02em;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 28px;
+    letter-spacing: 0.01em;
     color: var(--text);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .logo-dot {
     width: 7px; height: 7px;
@@ -140,7 +168,7 @@
   }
   .phase-switch button.active {
     background: var(--accent);
-    color: #1a1a1a;
+    color: var(--accent-ink);
   }
 
   .clock {
@@ -176,7 +204,7 @@
     position: relative;
     z-index: 1;
   }
-  .view { display: none; padding: 28px 32px; max-width: 1600px; margin: 0 auto; }
+  .view { display: none; padding: 52px 56px 80px; max-width: 1560px; margin: 0 auto; }
   .view.active { display: block; }
 
   /* ─── Floor Header ─── */
@@ -184,38 +212,40 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    margin-bottom: 28px;
+    margin-bottom: 48px;
   }
   .floor-title {
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.025em;
+    font-size: 52px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.0;
   }
   .floor-subtitle {
     color: var(--text-dim);
-    font-size: 13px;
-    margin-top: 4px;
+    font-size: 13.5px;
+    margin-top: 12px;
+    letter-spacing: 0;
   }
-  .floor-stats { display: flex; gap: 24px; align-items: center; }
+  .floor-stats { display: flex; gap: 40px; align-items: center; }
   .stat {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
   }
   .stat-num {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 24px;
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 30px;
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
   }
   .stat-label {
     font-size: 10px;
-    color: var(--text-dim);
+    color: var(--text-faint);
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 4px;
+    letter-spacing: 1.4px;
+    margin-top: 7px;
     font-weight: 600;
   }
   .stat.alert .stat-num { color: var(--amber); }
@@ -223,19 +253,20 @@
   .zone-tabs {
     display: flex;
     gap: 4px;
-    margin-bottom: 28px;
+    margin-bottom: 32px;
     border-bottom: 1px solid var(--border);
   }
   .zone-tab {
-    padding: 12px 20px;
+    padding: 13px 22px;
     color: var(--text-dim);
-    font-size: 13px;
+    font-size: 13.5px;
     font-weight: 500;
     border-bottom: 2px solid transparent;
     transition: all 0.18s;
     display: flex;
     align-items: center;
     gap: 8px;
+    margin-bottom: -1px;
   }
   .zone-tab:hover { color: var(--text); }
   .zone-tab.active {
@@ -250,7 +281,7 @@
     font-size: 11px;
     font-weight: 600;
   }
-  .zone-tab.active .zone-count { background: var(--accent); color: #1a1a1a; }
+  .zone-tab.active .zone-count { background: var(--accent); color: var(--accent-ink); }
 
   .filter-row {
     display: flex;
@@ -279,19 +310,19 @@
   }
 
   /* ─── Tables ─── */
-  .zone-section { margin-bottom: 36px; }
+  .zone-section { margin-bottom: 56px; }
   .zone-label {
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2.6px;
     color: var(--text-faint);
-    margin-bottom: 14px;
-    font-weight: 700;
+    margin-bottom: 22px;
+    font-weight: 600;
   }
   .table-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(172px, 1fr));
+    gap: 20px;
   }
 
   /* ─── View toggle (Grid / Map) ─── */
@@ -362,7 +393,14 @@
   .tbl.overdue .tbl-surface { border-color: var(--red); background:#1d1010; }
   .tbl.paid .tbl-surface { border-color: var(--green); border-style:dashed; background:rgba(52,211,153,0.06); }
   .tbl.empty .tbl-surface { border-style: dashed; opacity:.55; }
-  .tbl:hover .tbl-surface { box-shadow: 0 0 0 3px rgba(45,212,191,0.18); }
+  .tbl:hover .tbl-surface { box-shadow: 0 0 0 3px rgba(216,195,154,0.18); }
+  /* freshly-added table — pulses so you can't miss where it landed */
+  .tbl.just-added .tbl-surface { border-color: var(--accent) !important; background: rgba(216,195,154,0.1) !important; animation: freshPulse 0.85s ease-in-out 2; }
+  .tbl.just-added .tbl-num { color: var(--accent); }
+  @keyframes freshPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(216,195,154,0.0); }
+    50% { box-shadow: 0 0 0 8px rgba(216,195,154,0.28); }
+  }
   .tbl-num { font-family:"Geist Mono",monospace; font-size:16px; font-weight:600; letter-spacing:-0.03em; z-index:1; }
   .tbl-pax-b {
     position:absolute; bottom:1px; left:50%; transform:translateX(-50%);
@@ -377,46 +415,66 @@
   .tbl-badge i[data-lucide]{ width:9px; height:9px; }
   .tbl-badge.red{ background:var(--red); color:#1a0a0a; }
   .tbl-badge.amber{ background:var(--amber); color:#1a1500; }
-  .tbl-badge.gold{ background:var(--accent); color:#04302b; }
-  .tbl-badge.green{ background:var(--green); color:#04302b; }
+  .tbl-badge.gold{ background:var(--accent); color:#2b2112; }
+  .tbl-badge.green{ background:var(--green); color:#2b2112; }
   /* chairs */
   .chair { position:absolute; background:var(--surface-4); border-radius:3px; }
   .tbl.seated .chair,.tbl.ordered .chair,.tbl.attention .chair,.tbl.overdue .chair,.tbl.paid .chair { background:#3a3a44; }
 
   /* edit / merge mode */
   .room.editing .tbl { cursor: crosshair; }
-  .tbl.sel .tbl-surface { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(45,212,191,0.3); }
-  .tbl-check { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#04302b; display:none; align-items:center; justify-content:center; z-index:4; }
+  .tbl.sel .tbl-surface { border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(216,195,154,0.3); }
+  .tbl-check { position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#2b2112; display:none; align-items:center; justify-content:center; z-index:4; }
   .tbl-check i[data-lucide]{ width:11px; height:11px; }
   .tbl.sel .tbl-check { display:flex; }
   .merge-plate {
     position:absolute; border:2px dashed var(--accent); border-radius:14px;
-    background:rgba(45,212,191,0.07); z-index:0;
+    background:rgba(216,195,154,0.07); z-index:0;
   }
   .merge-tag {
-    position:absolute; top:-10px; left:10px; background:var(--accent); color:#04302b;
+    position:absolute; top:-10px; left:10px; background:var(--accent); color:#2b2112;
     font-size:9px; font-weight:800; letter-spacing:.5px; padding:2px 7px; border-radius:6px;
   }
   .merge-bar {
     display:flex; align-items:center; gap:10px; padding:10px 14px; margin-bottom:12px;
-    background:var(--gold-bg); border:1px solid #1b4a44; border-radius:10px; font-size:13px; color:var(--text);
+    background:var(--gold-bg); border:1px solid #3a3122; border-radius:10px; font-size:13px; color:var(--text);
   }
   .merge-bar .sp { flex:1; }
   .table-tile {
-    background: var(--surface);
+    background: linear-gradient(180deg, rgba(255,247,232,0.022), rgba(255,247,232,0) 58%), var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
+    border-radius: var(--r-md);
+    padding: 20px;
     position: relative;
     cursor: pointer;
-    transition: border-color 0.15s, transform 0.15s;
-    min-height: 138px;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    min-height: 164px;
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow-sm);
   }
   .table-tile:hover {
     border-color: var(--border-strong);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  /* ─── Cursor-tracking spotlight on interactive cards ─── */
+  .table-tile, .cv, .res-card { position: relative; }
+  .table-tile::after, .cv::after, .res-card::after {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(216,195,154,0.10), transparent 62%);
+    opacity: 0; transition: opacity 0.3s ease; z-index: 1;
+  }
+  .table-tile:hover::after, .cv:hover::after, .res-card:hover::after { opacity: 1; }
+  .table-tile.empty::after { display: none; }
+  /* ─── Entrance animations ─── */
+  @keyframes planIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .plan-card { animation: planIn 0.42s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes balIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+  .bal-cell { animation: balIn 0.35s ease both; }
+  @media (prefers-reduced-motion: reduce) {
+    .plan-card, .bal-cell { animation: none; }
+    .table-tile::after, .cv::after, .res-card::after { transition: none; }
   }
   .table-tile.empty {
     background: transparent;
@@ -553,16 +611,16 @@
   .modal {
     background: var(--surface);
     border: 1px solid var(--border-strong);
-    border-radius: 18px;
+    border-radius: var(--r-xl);
     max-width: 920px;
     width: 100%;
     max-height: 94vh;
     overflow: auto;
     box-shadow: var(--shadow-lg);
   }
-  .modal.small { max-width: 580px; }
+  .modal.small { max-width: 600px; }
   .modal-head {
-    padding: 20px 26px;
+    padding: 24px 30px;
     border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
@@ -573,20 +631,22 @@
     z-index: 5;
   }
   .modal-title {
-    font-size: 18px;
+    font-family: var(--font-display);
+    font-size: 30px;
     font-weight: 600;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
-  .modal-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; font-weight: 500; }
+  .modal-sub { font-size: 12.5px; color: var(--text-dim); margin-top: 6px; font-weight: 400; }
   .modal-close {
-    width: 34px; height: 34px;
-    border-radius: 10px;
+    width: 38px; height: 38px;
+    border-radius: var(--r-sm);
     color: var(--text-dim);
     font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
     transition: all 0.18s;
   }
   .modal-close:hover { background: var(--surface-2); color: var(--text); }
-  .modal-body { padding: 24px 26px 28px; }
+  .modal-body { padding: 28px 30px 32px; }
 
   /* ─── Table View — concerns banner ─── */
   /* Compact, wrapping alert chips — balanced, never break the row */
@@ -605,21 +665,69 @@
   .alert-chip .em { color: var(--text); font-weight: 500; font-size: 12px; }
   .alert-chip.red { background: var(--red-bg); color: var(--red); border-color: #3a1818; }
   .alert-chip.amber { background: var(--amber-bg); color: var(--amber); border-color: #3a2d10; }
-  .alert-chip.gold { background: var(--gold-bg); color: var(--gold); border-color: #1b4a44; }
+  .alert-chip.gold { background: var(--gold-bg); color: var(--gold); border-color: #3a3122; }
   .alert-chip.purple { background: var(--purple-bg); color: var(--purple); border-color: #2a1f3a; }
   /* a critical allergy chip spans full width so it always reads first */
   .alert-chip.full { width: 100%; }
+
+  /* ─── AI service summary (top of the table view) ─── */
+  .ai-summary {
+    background: linear-gradient(180deg, rgba(216,195,154,0.055), rgba(216,195,154,0.012) 60%), var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    padding: 20px 22px;
+    margin-bottom: 22px;
+  }
+  .ai-sum-head { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--accent-ink); background: var(--accent);
+    padding: 5px 10px; border-radius: 999px;
+  }
+  .ai-badge i[data-lucide] { width: 12px; height: 12px; }
+  .ai-sum-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.6px; font-weight: 600; color: var(--text-dim); }
+  .ai-sum-meta { margin-left: auto; font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 7px; font-weight: 500; }
+  .ai-sum-meta .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.7s ease-in-out infinite; }
+  .ai-sum-text { font-size: 15.5px; line-height: 1.66; color: var(--text-dim); font-weight: 400; margin-bottom: 16px; letter-spacing: -0.003em; }
+  .ai-sum-text strong { font-weight: 600; color: var(--text); }
+  .ai-bullets { display: flex; flex-direction: column; gap: 10px; }
+  .ai-bullet { display: flex; align-items: flex-start; gap: 11px; font-size: 13.5px; line-height: 1.5; color: var(--text-dim); }
+  .ai-bullet .ab-ic {
+    width: 24px; height: 24px; border-radius: 7px; flex-shrink: 0; margin-top: 1px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-3); color: var(--text-dim);
+  }
+  .ai-bullet .ab-ic i[data-lucide] { width: 13px; height: 13px; }
+  .ai-bullet strong { color: var(--text); font-weight: 600; }
+  .ai-bullet.red .ab-ic { background: var(--red-bg); color: var(--red); }
+  .ai-bullet.amber .ab-ic { background: var(--amber-bg); color: var(--amber); }
+  .ai-bullet.gold .ab-ic { background: var(--gold-bg); color: var(--accent); }
+  .ai-bullet.green .ab-ic { background: var(--green-bg); color: var(--green); }
+  .ai-bullet.blue .ab-ic { background: var(--blue-bg); color: var(--blue); }
+  .ai-bullet.purple .ab-ic { background: var(--purple-bg); color: var(--purple); }
+
+  /* small action button inside a column header (e.g. Shuffle) */
+  .col-action {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; color: var(--text-dim);
+    border: 1px solid var(--border-strong); border-radius: 8px;
+    padding: 6px 11px; transition: all 0.15s; background: transparent;
+  }
+  .col-action:hover { color: var(--accent); border-color: var(--accent); }
+  .col-action i[data-lucide] { width: 13px; height: 13px; transition: transform 0.4s ease; }
+  .col-action:hover i[data-lucide] { transform: rotate(180deg); }
 
   /* ─── Party header ─── */
   .party-header {
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
+    border-radius: var(--r-md);
+    padding: 20px 22px;
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
   }
   .party-avatar-stack { display: flex; }
   .party-avatar {
@@ -648,11 +756,12 @@
     margin-bottom: 4px;
   }
   .party-name {
-    font-size: 20px;
+    font-family: var(--font-display);
+    font-size: 32px;
     font-weight: 600;
-    letter-spacing: -0.025em;
+    letter-spacing: 0;
   }
-  .party-extras { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+  .party-extras { font-size: 13px; color: var(--text-dim); font-weight: 500; font-family: var(--font-ui); }
   .party-meta-row {
     display: flex;
     gap: 14px;
@@ -678,10 +787,10 @@
   /* ─── Recommendations block ─── */
   .reco-block {
     background: var(--gold-bg);
-    border: 1px solid #1b4a44;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 18px;
+    border: 1px solid #3a3122;
+    border-radius: var(--r-md);
+    padding: 20px;
+    margin-bottom: 22px;
   }
   .reco-header {
     display: flex;
@@ -756,7 +865,7 @@
     margin-left: 8px;
     border: 1px solid var(--border-strong);
   }
-  .reco-tag.now { background: var(--accent); color: #1a1a1a; border-color: var(--accent); }
+  .reco-tag.now { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .reco-tag.predict { background: var(--purple-bg); color: var(--purple); border-color: rgba(192,132,252,0.3); }
   .reco-tag.safe { background: var(--red-bg); color: var(--red); border-color: rgba(248,113,113,0.3); }
 
@@ -775,14 +884,14 @@
   .lanes {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 8px;
   }
   .lane {
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border-radius: var(--r-md);
+    padding: 18px 20px;
   }
   .lane-head {
     display: flex;
@@ -846,13 +955,13 @@
   /* ═══ TABLE DETAIL — two columns ═══ */
   .tdetail {
     display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: 14px;
+    grid-template-columns: 0.66fr 1.34fr;
+    gap: 18px;
   }
   .tcol {
     background: var(--surface-2);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--r-md);
     overflow: hidden;
   }
   .tcol.plan { background: var(--surface); }
@@ -873,7 +982,7 @@
   }
   .tcol-title.accent { color: var(--accent); }
   .tcol-sub { font-size: 11px; color: var(--text-faint); font-weight: 500; }
-  .tcol-body { padding: 14px 16px; }
+  .tcol-body { padding: 18px 20px; }
 
   /* ─── Journey bar ─── */
   .journey {
@@ -893,7 +1002,7 @@
   }
   .journey-dot i[data-lucide] { width: 12px; height: 12px; }
   .journey-node.done .journey-dot { background: var(--green); border-color: var(--green); color: #0a0a0a; }
-  .journey-node.current .journey-dot { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+  .journey-node.current .journey-dot { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
   .journey-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-faint); font-weight: 600; }
   .journey-node.done .journey-label, .journey-node.current .journey-label { color: var(--text-dim); }
   .journey-line { flex: 1; height: 2px; background: var(--border-strong); margin: 0 4px; margin-bottom: 16px; }
@@ -928,71 +1037,99 @@
   .ot-status.pending { background: var(--amber-bg); color: var(--amber); }
   .ot-empty { color: var(--text-faint); font-size: 12px; font-style: italic; padding: 6px 0; }
 
-  /* ─── Bring-next plan cards (course-grouped) ─── */
+  /* ─── Bring-next plan cards — clean vertical block ─── */
   .plan-card {
     border: 1px solid var(--border);
-    border-radius: 11px;
-    padding: 13px 14px;
+    border-radius: 12px;
+    padding: 14px 16px;
     margin-bottom: 10px;
     background: var(--surface-2);
   }
   .plan-card:last-child { margin-bottom: 0; }
   .plan-card.lead { border-color: var(--accent); background: var(--gold-bg); }
   .plan-card.predict { border-color: #2a1f3a; background: var(--purple-bg); }
+  .plan-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
   .plan-course {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px;
-    font-weight: 700; color: var(--text-faint);
-    margin-bottom: 10px;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px;
+    font-weight: 700; color: var(--text-dim);
   }
-  .plan-course i[data-lucide] { width: 14px; height: 14px; color: var(--accent); }
+  .plan-course i[data-lucide] { width: 15px; height: 15px; color: var(--accent); }
   .plan-card.predict .plan-course i[data-lucide] { color: var(--purple); }
-  .plan-items { display: flex; flex-direction: column; gap: 7px; margin-bottom: 9px; }
-  .plan-item {
-    display: flex; align-items: center; gap: 10px;
+  /* aligned 3-column grid → qty under qty, name under name, tag under tag */
+  .plan-items {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    justify-content: start;
+    column-gap: 14px; row-gap: 9px;
+    align-items: baseline;
   }
+  .plan-item { display: contents; }
   .plan-item-qty {
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 16px; font-weight: 700; color: var(--accent);
-    flex-shrink: 0; min-width: 26px;
-    font-variant-numeric: tabular-nums;
+    font-family: var(--font-mono);
+    font-size: 14px; font-weight: 600; color: var(--accent);
+    font-variant-numeric: tabular-nums; text-align: right;
   }
-  .plan-item-name { font-size: 14.5px; font-weight: 600; color: var(--text); }
-  .plan-item-spread { flex: 1; }
+  .plan-item-name { font-size: 14.5px; font-weight: 600; color: var(--text); letter-spacing: -0.005em; }
+  .plan-item-spread { display: none; }
+  /* quiet inline tag — no heavy box; aligned in its own column */
+  .tg {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+    display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; justify-self: start;
+  }
+  .tg::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.9; }
+  .tg.usual { color: var(--green); }
+  .tg.try { color: var(--blue); }
+  .tg.repeat { color: var(--accent); }
+  .plan-note {
+    font-size: 11.5px; color: var(--text-dim); font-weight: 500;
+    margin-top: 11px; line-height: 1.45; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .plan-note:empty { display: none; }
+  .note-safe {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--red); font-weight: 700; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .note-safe i[data-lucide] { width: 12px; height: 12px; }
+  /* legacy boxed tag — kept for any other surface */
   .tag {
     font-size: 9px; padding: 3px 7px; border-radius: 5px; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.4px; flex-shrink: 0;
-    display: inline-flex; align-items: center; gap: 3px;
-    border: 1px solid transparent;
+    display: inline-flex; align-items: center; gap: 3px; border: 1px solid transparent;
   }
   .tag i[data-lucide] { width: 10px; height: 10px; }
   .tag.usual { background: var(--green-bg); color: var(--green); border-color: #16352c; }
   .tag.try { background: var(--blue-bg); color: var(--blue); border-color: #16273a; }
   .tag.safe { background: var(--red-bg); color: var(--red); border-color: #3a1818; }
-  .tag.repeat { background: var(--gold-bg); color: var(--accent); border-color: #1b4a44; }
-  .plan-note {
-    font-size: 12px; color: var(--text-dim); font-weight: 500;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .tag.repeat { background: var(--gold-bg); color: var(--accent); border-color: #3a3122; }
 
-  /* ─── Balance checks ─── */
-  .balance-row {
+  /* ─── Course balance — compact 2×2 grid ─── */
+  .balance-head {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px;
+    font-weight: 600; color: var(--text-faint); margin-bottom: 10px;
+  }
+  .balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bal-cell {
     display: flex; align-items: center; gap: 8px;
-    padding: 7px 0;
-    font-size: 12px; font-weight: 500;
-    border-top: 1px solid var(--border);
+    padding: 9px 12px; border-radius: 9px;
+    background: var(--surface-3); font-size: 12.5px; font-weight: 500;
+    border: 1px solid transparent;
   }
-  .balance-row:first-child { border-top: none; }
-  .balance-icon { width: 16px; height: 16px; flex-shrink: 0; display: inline-flex; }
-  .balance-row.ok { color: var(--text-dim); }
-  .balance-row.ok .balance-icon { color: var(--green); }
-  .balance-row.gap { color: var(--text); }
-  .balance-row.gap .balance-icon { color: var(--amber); }
-  .balance-count {
-    margin-left: auto;
-    font-family: "Geist Mono", ui-monospace, monospace;
-    font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums;
+  .bal-cell .bal-ic { width: 15px; height: 15px; flex-shrink: 0; display: inline-flex; }
+  .bal-cell .bal-ic i[data-lucide] { width: 15px; height: 15px; }
+  .bal-cell.ok { color: var(--text-dim); }
+  .bal-cell.ok .bal-ic { color: var(--green); }
+  .bal-cell.gap { color: var(--text); background: var(--amber-bg); border-color: #3a2d10; }
+  .bal-cell.gap .bal-ic { color: var(--amber); }
+  .bal-label { flex: 1; }
+  .bal-count {
+    font-family: var(--font-mono); font-weight: 600;
+    font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text-faint);
   }
+  .bal-cell.gap .bal-count { color: var(--amber); }
 
   /* Demo trigger */
   .demo-btn {
@@ -1035,7 +1172,7 @@
   .seat-table-sub { font-size: 12px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
   .seat-match-card {
     background: var(--gold-bg);
-    border: 1px solid #1b4a44;
+    border: 1px solid #3a3122;
     border-radius: 10px;
     padding: 14px 16px;
     margin-top: 14px;
@@ -1043,7 +1180,7 @@
   }
   .seat-match-card.show { display: block; }
   .seat-match-card.new { background: var(--surface-2); border-color: var(--border); }
-  .seat-match-name { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  .seat-match-name { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: 0; }
   .seat-match-meta { font-size: 12px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 12px; flex-wrap: wrap; }
   .seat-match-meta strong { color: var(--text); }
   .seat-or { text-align: center; color: var(--text-faint); font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin: 16px 0 12px; position: relative; font-weight: 600; }
@@ -1055,12 +1192,12 @@
   .actions-row {
     display: flex;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 24px;
     flex-wrap: wrap;
   }
   .btn {
     padding: 12px 18px;
-    border-radius: 10px;
+    border-radius: var(--r-sm);
     font-size: 13px;
     font-weight: 600;
     background: var(--surface-3);
@@ -1069,31 +1206,35 @@
     transition: all 0.18s;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
+    letter-spacing: -0.005em;
   }
   .btn:hover { background: var(--surface-4); }
   .btn.primary {
     background: var(--accent);
-    color: #1a1a1a;
+    color: var(--accent-ink);
     border-color: var(--accent);
+    box-shadow: 0 4px 14px -4px rgba(216,195,154,0.5);
   }
-  .btn.primary:hover { background: #e0b683; }
+  .btn.primary:hover { background: var(--accent-soft); }
   .btn.ghost { background: transparent; }
+  .btn.ghost:hover { background: var(--surface-2); }
 
   /* ─── Briefing card (guest modal) ─── */
   .briefing-head {
-    padding: 22px 24px;
+    padding: 26px 30px;
     background: var(--surface-2);
     border-bottom: 1px solid var(--border);
   }
   .briefing-name {
-    font-size: 24px;
+    font-family: var(--font-display);
+    font-size: 37px;
     font-weight: 600;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 14px;
+    margin-bottom: 10px;
   }
   .briefing-tier {
     font-size: 10px;
@@ -1103,7 +1244,7 @@
     letter-spacing: 0.8px;
     text-transform: uppercase;
   }
-  .briefing-tier.gold { background: var(--gold-bg); color: var(--gold); border: 1px solid #1b4a44; }
+  .briefing-tier.gold { background: var(--gold-bg); color: var(--gold); border: 1px solid #3a3122; }
   .briefing-tier.platinum { background: var(--purple-bg); color: var(--purple); border: 1px solid #2a1f3a; }
   .briefing-tier.vip { background: var(--red-bg); color: var(--red); border: 1px solid #3a1818; }
   .briefing-meta {
@@ -1118,9 +1259,9 @@
   .briefing-meta strong { color: var(--text); font-weight: 600; }
 
   .cue {
-    padding: 16px 26px;
+    padding: 18px 30px;
     display: flex;
-    gap: 14px;
+    gap: 16px;
     align-items: center;
     border-bottom: 1px solid var(--border);
     transition: background 0.15s;
@@ -1159,11 +1300,11 @@
   .cue-sub { font-size: 12px; color: var(--text-dim); margin-top: 3px; font-weight: 500; }
 
   .briefing-stats {
-    padding: 18px 26px;
+    padding: 24px 30px;
     background: var(--surface-2);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
+    gap: 24px;
   }
   .briefing-stat-label {
     font-size: 9px;
@@ -1183,13 +1324,42 @@
     font-weight: 500;
   }
 
+  /* ─── Search bar (reservations) ─── */
+  .search-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    padding: 0 16px;
+    margin-bottom: 28px;
+    transition: border-color 0.18s, box-shadow 0.18s;
+  }
+  .search-bar:focus-within { border-color: var(--accent); box-shadow: var(--ring); }
+  .search-bar > i[data-lucide] { color: var(--text-faint); flex-shrink: 0; }
+  .search-bar input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text); font-family: var(--font-ui); font-size: 14.5px;
+    padding: 15px 0; letter-spacing: -0.005em;
+  }
+  .search-bar input::placeholder { color: var(--text-faint); }
+  .search-clear {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 7px; color: var(--text-faint);
+    transition: all 0.15s;
+  }
+  .search-clear:hover { background: var(--surface-3); color: var(--text); }
+  .res-empty {
+    display: flex; align-items: center; gap: 9px;
+    padding: 28px 4px; color: var(--text-faint); font-size: 14px; font-weight: 500;
+  }
+
   /* ─── Reservations ─── */
   .res-grid {
     display: grid;
     grid-template-columns: 1fr 340px;
-    gap: 24px;
+    gap: 32px;
   }
-  .res-list { display: flex; flex-direction: column; gap: 10px; }
+  .res-list { display: flex; flex-direction: column; gap: 14px; }
   .res-time-block {
     display: flex;
     gap: 18px;
@@ -1206,14 +1376,15 @@
   }
   .res-card {
     flex: 1;
-    background: var(--surface);
+    background: linear-gradient(180deg, rgba(255,255,255,0.016), rgba(255,255,255,0) 55%), var(--surface);
     border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 18px;
+    border-radius: var(--r-md);
+    padding: 20px 22px;
     cursor: pointer;
     transition: all 0.18s;
+    box-shadow: var(--shadow-sm);
   }
-  .res-card:hover { border-color: var(--border-strong); transform: translateX(2px); }
+  .res-card:hover { border-color: var(--border-strong); transform: translateX(3px); box-shadow: var(--shadow-md); }
   .res-card.known { border-left: 3px solid var(--accent); }
   .res-card.network { border-left: 3px solid var(--purple); }
   .res-card.new { border-left: 3px solid var(--text-faint); }
@@ -1224,12 +1395,13 @@
     margin-bottom: 6px;
   }
   .res-name {
-    font-size: 15px;
+    font-family: var(--font-display);
+    font-size: 25px;
     font-weight: 600;
     display: flex;
     align-items: center;
-    gap: 10px;
-    letter-spacing: -0.015em;
+    gap: 12px;
+    letter-spacing: 0;
   }
   .res-badge {
     font-size: 9px;
@@ -1318,24 +1490,26 @@
   .label {
     font-size: 10px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.6px;
     color: var(--text-dim);
-    font-weight: 700;
+    font-weight: 600;
   }
   .label .req { color: var(--red); }
   .input, .textarea, .select {
     background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-sm);
+    padding: 13px 15px;
     color: var(--text);
     font-size: 14px;
     transition: all 0.18s;
   }
+  .input::placeholder, .textarea::placeholder { color: var(--text-faint); }
   .input:focus, .textarea:focus, .select:focus {
     outline: none;
     border-color: var(--accent);
     background: var(--surface-3);
+    box-shadow: var(--ring);
   }
   .textarea { resize: vertical; min-height: 72px; }
   .chip-select {
@@ -1344,26 +1518,27 @@
     gap: 6px;
   }
   .chip-opt {
-    padding: 8px 13px;
+    padding: 9px 14px;
     background: var(--surface-2);
-    border: 1px solid var(--border);
-    border-radius: 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
     font-size: 13px;
     color: var(--text-dim);
     cursor: pointer;
     transition: all 0.18s;
     user-select: none;
     font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .chip-opt:hover { color: var(--text); }
+  .chip-opt:hover { color: var(--text); border-color: var(--text-faint); }
   .chip-opt.selected {
     background: var(--accent);
-    color: #1a1a1a;
+    color: var(--accent-ink);
     border-color: var(--accent);
     font-weight: 700;
   }
   .chip-opt.red.selected { background: var(--red-deep); border-color: var(--red-deep); color: #fff; }
-  .chip-opt.amber.selected { background: var(--amber); border-color: var(--amber); color: #1a1a1a; }
+  .chip-opt.amber.selected { background: var(--amber); border-color: var(--amber); color: var(--accent-ink); }
 
   /* ─── Concierge / Manager ─── */
   .concierge-search {
@@ -1561,10 +1736,11 @@
   }
   .locked-icon i[data-lucide] { width: 26px; height: 26px; }
   .locked-title {
-    font-size: 20px;
+    font-family: var(--font-display);
+    font-size: 33px;
     font-weight: 600;
-    margin-bottom: 8px;
-    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    letter-spacing: 0;
   }
   .locked-sub { color: var(--text-dim); font-size: 14px; max-width: 460px; margin: 0 auto 24px; line-height: 1.5; }
 
@@ -1615,7 +1791,7 @@
     display: inline-flex; align-items: center; gap: 7px;
   }
   .tut-kicker i[data-lucide] { width: 14px; height: 14px; }
-  .tut-title { font-size: 23px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 10px; }
+  .tut-title { font-family: var(--font-display); font-size: 40px; font-weight: 600; letter-spacing: 0; margin-bottom: 12px; }
   .tut-narr { font-size: 14.5px; color: var(--text-dim); line-height: 1.6; max-width: 540px; margin: 0 auto; }
   .tut-narr strong { color: var(--text); font-weight: 600; }
 
@@ -1639,7 +1815,7 @@
     width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
     box-shadow: 0 0 24px var(--accent); animation: pulse 2s ease-in-out infinite; margin-bottom: 6px;
   }
-  .tut-logo { font-size: 30px; font-weight: 700; letter-spacing: -0.03em; }
+  .tut-logo { font-family: var(--font-display); font-size: 48px; font-weight: 600; letter-spacing: 0.01em; }
 
   /* mini reservation rows for the tour */
   .tut-resrow { display: flex; gap: 12px; align-items: center; width: 100%; max-width: 460px; }
@@ -1677,7 +1853,7 @@
 
   /* mini phone-match card for the open-table scene */
   .tut-match {
-    background: var(--gold-bg); border: 1px solid #1b4a44; border-radius: 12px;
+    background: var(--gold-bg); border: 1px solid #3a3122; border-radius: 12px;
     padding: 14px 16px; width: 420px; max-width: 100%; text-align: left;
   }
   .tut-input {
@@ -1691,10 +1867,10 @@
   .coach-panel { position: fixed; background: rgba(6,6,8,0.74); z-index: 340; transition: all 0.25s ease; }
   .coach-ring {
     position: fixed; z-index: 341; border: 2px solid var(--accent); border-radius: 12px;
-    box-shadow: 0 0 0 4px rgba(45,212,191,0.22); pointer-events: none; transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
+    box-shadow: 0 0 0 4px rgba(216,195,154,0.22); pointer-events: none; transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
   }
   .coach-ring.click { animation: ringPulse 1.4s ease-in-out infinite; }
-  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(45,212,191,0.22); } 50% { box-shadow: 0 0 0 8px rgba(45,212,191,0.10); } }
+  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(216,195,154,0.22); } 50% { box-shadow: 0 0 0 8px rgba(216,195,154,0.10); } }
   .coach-tip {
     position: fixed; z-index: 342; background: var(--surface); border: 1px solid var(--border-strong);
     border-radius: 14px; padding: 16px 18px; width: 300px; box-shadow: var(--shadow-lg);
@@ -1702,7 +1878,7 @@
   }
   .coach-k { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; font-weight: 700; color: var(--accent); display:flex; align-items:center; gap:6px; margin-bottom: 8px; }
   .coach-k i[data-lucide] { width: 13px; height: 13px; }
-  .coach-tip h4 { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .coach-tip h4 { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: 0; margin-bottom: 6px; }
   .coach-tip p { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
   .coach-tip p strong { color: var(--text); font-weight: 600; }
   .coach-foot { display:flex; align-items:center; justify-content:space-between; margin-top: 14px; gap: 10px; }
@@ -1712,7 +1888,77 @@
   @keyframes tapNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
   .coach-skip { font-size: 12px; color: var(--text-faint); }
   .coach-skip:hover { color: var(--text-dim); }
-  .coach-next { background: var(--accent); color: #04302b; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 9px; }
+  .coach-next { background: var(--accent); color: #2b2112; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 9px; }
+
+  /* ═══════════ CARD DESIGN LAB (compare iterations) ═══════════ */
+  .cardlab-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; gap:16px; }
+  .cardlab-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; align-items:start; }
+  .cl-col { display:flex; flex-direction:column; gap:14px; }
+  .cl-col-h { font-size:11px; text-transform:uppercase; letter-spacing:1.6px; color:var(--accent); font-weight:700; }
+  .cl-col-desc { font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-top:-8px; min-height:38px; }
+  .cl-pick { margin-top:6px; justify-content:center; }
+  @media (max-width:1100px){ .cardlab-grid{ grid-template-columns:1fr 1fr; } }
+
+  /* status hue per state (border / accents) */
+  .hue-seated{--hue:var(--blue);--hueb:var(--blue-bg);}
+  .hue-ordered{--hue:var(--green);--hueb:var(--green-bg);}
+  .hue-attention{--hue:var(--amber);--hueb:var(--amber-bg);}
+  .hue-overdue{--hue:var(--red);--hueb:var(--red-bg);}
+  .hue-paid{--hue:var(--green);--hueb:var(--green-bg);}
+  .hue-seated,.hue-ordered,.hue-attention,.hue-overdue,.hue-paid{ } /* ensure var fallback */
+
+  /* shared progress + glyphs for variants */
+  .seg { display:flex; gap:5px; }
+  .seg span { height:5px; flex:1; border-radius:3px; background:var(--surface-4); }
+  .seg span.done { background:var(--green); }
+  .seg span.active { background:var(--blue); }
+  .linebar { position:relative; height:3px; background:var(--surface-4); border-radius:3px; margin:4px 0; }
+  .linebar .fill { position:absolute; left:0; top:0; height:100%; background:var(--hue); border-radius:3px; }
+  .linebar .node { position:absolute; top:50%; width:10px; height:10px; border-radius:50%; background:var(--hue); transform:translate(-50%,-50%); box-shadow:0 0 0 3px var(--surface); }
+  .cv .g { display:inline-flex; gap:5px; }
+  .cv .gi { width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:var(--surface-3);color:var(--text-dim); }
+  .cv .gi i[data-lucide]{ width:13px;height:13px; }
+  .cv .gi.red{background:var(--red-bg);color:var(--red);}
+  .cv .gi.amber{background:var(--amber-bg);color:var(--amber);}
+  .cv .gi.gold{background:var(--gold-bg);color:var(--accent);}
+
+  /* base card */
+  .cv { background:var(--surface); border:1px solid var(--border); border-radius:var(--r-md); position:relative; cursor:pointer; transition:transform .18s, box-shadow .18s, border-color .18s; box-shadow:var(--shadow-sm); }
+  .cv:hover { transform:translateY(-2px); box-shadow:var(--shadow-md); border-color:var(--border-strong); }
+  .cv .num { font-family:var(--font-mono); letter-spacing:-.03em; }
+  .cv .nm { letter-spacing:-.01em; }
+
+  /* A — Refined: rebalanced classic, segmented bar */
+  .cv.a { padding:18px; border-top:3px solid var(--hue); }
+  .cv.a .num { font-size:25px; font-weight:500; }
+  .cv.a .nm { font-size:16px; font-weight:600; margin:12px 0 6px; }
+  .cv.a .meta { font-size:13px; color:var(--text-dim); display:flex; align-items:center; gap:6px; margin-bottom:16px; }
+  .cv.a .ft { font-size:12.5px; color:var(--text-dim); display:flex; justify-content:space-between; margin-top:12px; }
+
+  /* B — Editorial: serif name hero, accent bar, line progress */
+  .cv.b { padding:18px 18px 16px 22px; }
+  .cv.b::before { content:''; position:absolute; left:0; top:16px; bottom:16px; width:4px; border-radius:0 4px 4px 0; background:var(--hue); }
+  .cv.b .st { font-size:10px; text-transform:uppercase; letter-spacing:1.6px; font-weight:700; color:var(--hue); margin-bottom:10px; }
+  .cv.b .nm { font-family:var(--font-display); font-size:24px; font-weight:600; margin-bottom:5px; }
+  .cv.b .meta { font-size:12.5px; color:var(--text-dim); margin-bottom:18px; }
+  .cv.b .ft { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+  .cv.b .ft .tnum { font-family:var(--font-mono); font-size:12px; color:var(--text-faint); }
+
+  /* C — Compact: dense one-line header */
+  .cv.c { padding:14px 16px; border-left:3px solid var(--hue); }
+  .cv.c .top { display:flex; align-items:center; gap:10px; margin-bottom:11px; }
+  .cv.c .num { font-size:18px; font-weight:600; color:var(--hue); }
+  .cv.c .nm { font-size:14px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cv.c .pax { font-size:12px; color:var(--text-dim); display:inline-flex; align-items:center; gap:4px; }
+  .cv.c .ft { font-size:11.5px; color:var(--text-faint); margin-top:10px; display:flex; justify-content:space-between; align-items:center; }
+
+  /* D — Status-led: status pill header */
+  .cv.d { padding:16px; }
+  .cv.d .chip { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; padding:5px 11px; border-radius:999px; background:var(--hueb); color:var(--hue); }
+  .cv.d .chip .dot { width:6px; height:6px; border-radius:50%; background:var(--hue); }
+  .cv.d .num { font-size:15px; color:var(--text-faint); }
+  .cv.d .nm { font-size:16px; font-weight:600; }
+  .cv.d .meta { font-size:13px; color:var(--text-dim); margin:4px 0 14px; display:flex; align-items:center; gap:6px; }
 
   /* ═══════════════ TABLET (touch-first) ═══════════════ */
   @media (max-width: 1180px) {
@@ -1827,9 +2073,12 @@
         <button class="zone-tab" data-zone="patio">Patio <span class="zone-count">7</span></button>
         <button class="zone-tab" data-zone="outdoor">Outdoor <span class="zone-count">4</span></button>
       </div>
-      <div class="view-toggle" id="view-toggle" style="margin-bottom:8px;">
-        <button class="active" data-layout="grid"><i data-lucide="layout-grid"></i> Grid</button>
-        <button data-layout="map"><i data-lucide="map"></i> Map</button>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+        <button class="col-action" onclick="cardLab()"><i data-lucide="layout-template"></i> Card designs</button>
+        <div class="view-toggle" id="view-toggle">
+          <button class="active" data-layout="grid"><i data-lucide="layout-grid"></i> Grid</button>
+          <button data-layout="map"><i data-lucide="map"></i> Map</button>
+        </div>
       </div>
     </div>
 
@@ -1919,7 +2168,7 @@
       <div class="seat-intro">
         <div class="seat-assign-label">Assigning</div>
         <div class="seat-table-num" id="seat-table-num">5</div>
-        <div class="seat-table-sub"><span id="seat-table-zone">patio</span> · <span id="seat-table-cap">4-top</span></div>
+        <div class="seat-table-sub"><span id="seat-table-zone">patio</span> · <span id="seat-table-cap">seats 4</span></div>
         <select class="input" id="seat-table-select" style="max-width:260px;margin:12px auto 0;text-align-last:center;" onchange="changeSeatTable(this.value)"></select>
         <div id="seat-msg" style="margin-top:10px; display:flex; flex-direction:column; gap:5px; align-items:center; font-size:12px; font-weight:500;"></div>
       </div>
@@ -1982,6 +2231,54 @@
     <div class="modal-body">
       <div class="label" style="margin-bottom:10px;">Pick the new table</div>
       <div id="move-options" class="move-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add a table to the floor plan (Phase 2 · layout) -->
+<div class="modal-overlay" id="addtable-modal">
+  <div class="modal small">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Add a table</div>
+        <div class="modal-sub">It joins the floor plan — drag to position it after</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('addtable-modal')"><i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="seat-intro">
+        <div class="seat-assign-label">New table</div>
+        <div class="seat-table-num" id="addtable-num">12</div>
+        <div class="seat-table-sub"><span id="addtable-zone-lbl">indoor</span> · <span id="addtable-cap-lbl">seats 4</span></div>
+      </div>
+      <div class="form-grid">
+        <div class="field">
+          <div class="label">Table number</div>
+          <input class="input" id="addtable-id" type="number" min="1" oninput="syncAddTable()" />
+          <div id="addtable-warn" style="font-size:12px;font-weight:500;color:var(--red);display:none;align-items:center;gap:6px;"></div>
+        </div>
+        <div class="field">
+          <div class="label">Area</div>
+          <select class="select" id="addtable-zone" onchange="syncAddTable()">
+            <option value="indoor">Indoor</option>
+            <option value="patio">Patio</option>
+            <option value="outdoor">Outdoor</option>
+          </select>
+        </div>
+        <div class="field full">
+          <div class="label">Seats</div>
+          <div class="chip-select" data-group="addtable-cap">
+            <div class="chip-opt" data-val="2" onclick="pickAddCap(2)"><i data-lucide="circle" class="xs"></i> Seats 2</div>
+            <div class="chip-opt selected" data-val="4" onclick="pickAddCap(4)"><i data-lucide="square" class="xs"></i> Seats 4</div>
+            <div class="chip-opt" data-val="6" onclick="pickAddCap(6)"><i data-lucide="rectangle-horizontal" class="xs"></i> Seats 6</div>
+            <div class="chip-opt" data-val="8" onclick="pickAddCap(8)"><i data-lucide="rectangle-horizontal" class="xs"></i> Seats 8</div>
+          </div>
+        </div>
+      </div>
+      <div class="actions-row" style="justify-content: flex-end; margin-top: 22px;">
+        <button class="btn ghost" onclick="closeModal('addtable-modal')">Cancel</button>
+        <button class="btn primary" id="addtable-confirm" onclick="confirmAddTable()"><i data-lucide="plus" class="sm"></i> Add Table <span id="addtable-confirm-num"></span></button>
+      </div>
     </div>
   </div>
 </div>
@@ -2229,10 +2526,12 @@ const reservations = [
   { time:'19:30', name:'Marco Visconti', phone:'+65 9788 1234', party:2, table:11, zone:'indoor', status:'network', allergies:[], occasion:'', notes:'First here · 3 across' },
   { time:'19:45', name:'Raj Mehta', phone:'+65 9678 9012', guestId:'g7', party:4, table:12, zone:'patio', status:'known', allergies:[], occasion:'', notes:'⚠ Churn risk — last 3 visits 3★' },
   { time:'20:00', name:'Linda Wu', phone:'+65 9888 7777', party:2, table:7, zone:'patio', status:'new', allergies:['Shellfish'], occasion:'', notes:'Walk-in via WhatsApp' },
+  { time:'20:00', name:'Aashish', phone:'+65 9211 3344', party:2, table:16, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'First visit here' },
+  { time:'20:15', name:'Kar How Sharma', phone:'+65 9255 8866', party:4, table:22, zone:'patio', status:'new', allergies:[], occasion:'', notes:'' },
   { time:'20:30', name:'James Tan', phone:'+65 9777 6666', party:4, table:4, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'' },
 ];
 
-const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[] };
+const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic' };
 
 // Lucide icon helper. Sizes: '' (16), sm (14), lg (20), xl (24)
 function ic(name, size) {
@@ -2259,9 +2558,9 @@ function coursePips(states) {
 
 // Item tag chip: usual = orders this often · try = new suggestion · repeat = refill
 function tagChip(tag) {
-  if (tag === 'usual') return `<span class="tag usual">${ic('heart')}Usual</span>`;
-  if (tag === 'try')   return `<span class="tag try">${ic('sparkles')}Try this</span>`;
-  if (tag === 'repeat')return `<span class="tag repeat">${ic('rotate-ccw')}Refill</span>`;
+  if (tag === 'usual') return `<span class="tg usual">Usual</span>`;
+  if (tag === 'try')   return `<span class="tg try">Try this</span>`;
+  if (tag === 'repeat')return `<span class="tg repeat">Refill</span>`;
   return '';
 }
 
@@ -2298,6 +2597,7 @@ const phasePolicy = (p) => ({
   showConcierge: p >= 2,
   showManager: false,
   predictiveCues: p >= 2,
+  aiSummary: p >= 2,
   occasionInBanner: p >= 2,
   occasionInBriefing: p >= 2,
 });
@@ -2369,7 +2669,7 @@ function renderTile(t, pol) {
   if (t.status === 'empty') {
     return `<div class="table-tile empty" data-id="${t.id}" onclick="seatTable(${t.id})">
       <div class="tile-top"><div class="tile-num">${t.id}</div></div>
-      <div class="tile-party">${t.cap}-top</div>
+      <div class="tile-party">Seats ${t.cap}</div>
       <div class="tile-bottom" style="color: var(--text-faint);">Empty</div>
     </div>`;
   }
@@ -2390,6 +2690,9 @@ function renderTile(t, pol) {
       <div class="paid-turn">Ready to clear & turn</div>
     </div>`;
   }
+
+  // alternate card designs (chosen in the Card Lab) — applies to occupied tables
+  if (state.cardDesign && state.cardDesign !== 'classic') return renderCardVariant(t, pol, state.cardDesign);
 
   const timeClass = t.status === 'overdue' ? 'overdue' : (t.status === 'attention' ? 'warn' : '');
   const glyphs = tileGlyphs(t, pol);
@@ -2412,6 +2715,97 @@ function renderTile(t, pol) {
     </div>
   </div>`;
 }
+
+/* ════════════════════════════════════════════════════════
+   CARD DESIGN LAB — 4 iterations of the floor tile
+   ════════════════════════════════════════════════════════ */
+function cardData(t, pol) {
+  const guest = t.party && t.party[0] ? guests[t.party[0]] : null;
+  const pax = paxOf(t);
+  const name = guest ? guest.name.split(' ')[0] + (t.party.length>1?` +${t.party.length-1}`:'') : (t.walkInName || t.guestName || `Party of ${pax}`);
+  const rating = guest ? avgRating(guest) : 0;
+  const stage = tableStage(t);
+  const courseWord = { seated:'Just seated', starters:'Starters', mains:'Mains', dessert:'Dessert', check:'Check' }[stage] || 'Seated';
+  const glyphs = tileGlyphs(t, pol).map(g => ({ icon: ICONS[g.glyph]||'circle', color: g.cat==='allergy'?'red':g.cat==='occasion'?'amber':g.cat==='vip'?'gold':'amber' }));
+  const prog = t.progress || [false,false,false,false];
+  const activeIdx = prog.findIndex(p => !p);
+  const donePct = prog.filter(Boolean).length / prog.length * 100;
+  return { num:t.id, name, pax, rating, stage, courseWord, glyphs, prog, activeIdx, donePct, time:t.seatedMin||0, server:t.server||'', status:t.status };
+}
+function segHtml(prog, activeIdx) {
+  return `<div class="seg">${prog.map((p,i)=>`<span class="${p?'done':(i===activeIdx?'active':'')}"></span>`).join('')}</div>`;
+}
+function glyphHtml(glyphs) {
+  return glyphs.length ? `<div class="g">${glyphs.map(g=>`<span class="gi ${g.color}">${ic(g.icon)}</span>`).join('')}</div>` : '';
+}
+function ratingTxt(r) { return r ? `★ ${r.toFixed(1)}` : ''; }
+
+function renderCardVariant(t, pol, v) {
+  const d = cardData(t, pol);
+  const hue = `hue-${d.status}`;
+  if (v === 'a') return `<div class="cv a ${hue}" data-id="${d.num}" onclick="openTableModal(${d.num})">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;"><span class="num">${d.num}</span>${glyphHtml(d.glyphs)}</div>
+    <div class="nm">${d.name}</div>
+    <div class="meta">${ic('users','sm')} ${d.pax}${d.rating?` · <span style="color:var(--accent)">${ratingTxt(d.rating)}</span>`:''}</div>
+    ${segHtml(d.prog,d.activeIdx)}
+    <div class="ft"><span>${d.courseWord} · ${d.time}m</span><span style="color:var(--text-faint)">${d.server}</span></div>
+  </div>`;
+  if (v === 'b') return `<div class="cv b ${hue}" data-id="${d.num}" onclick="openTableModal(${d.num})">
+    <div class="st">${d.courseWord} · ${d.time}m</div>
+    <div class="nm">${d.name}</div>
+    <div class="meta">${d.pax} ${d.pax===1?'guest':'guests'}${d.rating?` · ${ratingTxt(d.rating)}`:''}</div>
+    <div class="linebar"><div class="fill" style="width:${d.donePct}%"></div><div class="node" style="left:${d.donePct}%"></div></div>
+    <div class="ft">${glyphHtml(d.glyphs)||'<span></span>'}<span class="tnum">T${d.num}</span></div>
+  </div>`;
+  if (v === 'c') return `<div class="cv c ${hue}" data-id="${d.num}" onclick="openTableModal(${d.num})">
+    <div class="top"><span class="num">${d.num}</span><span class="nm">${d.name}</span><span class="pax">${ic('users','xs')} ${d.pax}</span></div>
+    ${segHtml(d.prog,d.activeIdx)}
+    <div class="ft"><span>${d.courseWord} · ${d.time}m · ${d.server}</span>${glyphHtml(d.glyphs)}</div>
+  </div>`;
+  // v === 'd'
+  return `<div class="cv d ${hue}" data-id="${d.num}" onclick="openTableModal(${d.num})">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><span class="chip"><span class="dot"></span>${d.courseWord} · ${d.time}m</span><span class="num">${d.num}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;"><span class="nm">${d.name}</span>${glyphHtml(d.glyphs)}</div>
+    <div class="meta">${ic('users','sm')} ${d.pax}${d.rating?` · ${ratingTxt(d.rating)}`:''}</div>
+    ${segHtml(d.prog,d.activeIdx)}
+  </div>`;
+}
+
+const CARD_VARIANTS = [
+  { k:'a', name:'A · Refined', desc:'Rebalanced classic — bigger name, a slim segmented bar replaces the big icon row.' },
+  { k:'b', name:'B · Editorial', desc:'Serif name as the hero, a status accent bar, one elegant progress line. Most premium.' },
+  { k:'c', name:'C · Compact', desc:'Dense one-line header — fits more tables per screen for a busy floor.' },
+  { k:'d', name:'D · Status-led', desc:'A status pill leads, so the stage & timing read first at a glance.' },
+];
+function cardLab() {
+  switchView('floor');
+  const c = document.getElementById('floor-content');
+  const pol = phasePolicy(state.phase);
+  const samples = [1, 4];   // T1 (mains, 4-top, allergy+VIP) · T4 (dessert, attention, allergy+occasion)
+  c.innerHTML = `
+    <div class="cardlab-head">
+      <div>
+        <div class="floor-title serif" style="font-size:34px;">Card designs</div>
+        <div class="floor-subtitle">Four takes on the floor tile — same two tables in each. Pick one to try it across the whole floor.</div>
+      </div>
+      <button class="btn" onclick="exitCardLab()">${ic('arrow-left','sm')} Back to floor</button>
+    </div>
+    <div class="cardlab-grid">
+      ${CARD_VARIANTS.map(v => `<div class="cl-col">
+        <div class="cl-col-h">${v.name}</div>
+        <div class="cl-col-desc">${v.desc}</div>
+        ${samples.map(id => { const tt = tables.find(t=>t.id===id); return tt ? renderCardVariant(tt, pol, v.k) : ''; }).join('')}
+        <button class="btn primary cl-pick" onclick="pickCardDesign('${v.k}')">Use design ${v.k.toUpperCase()}</button>
+      </div>`).join('')}
+    </div>`;
+  refreshIcons();
+}
+function pickCardDesign(v) {
+  state.cardDesign = v;
+  toast(`Design ${v.toUpperCase()} applied to the floor`, 'success');
+  renderFloor();
+}
+function exitCardLab() { renderFloor(); }
 
 /* ─── POS-style floor map ─── */
 /* spatial floor-plan layout — room-relative px coords per table id */
@@ -2517,12 +2911,13 @@ function renderMapTable(t, pol, room) {
   const {w,h,shape} = tblSize(t.cap);
   const pax = t.status==='empty' ? 0 : paxOf(t);
   const sel = state.editLayout && state.mergeSel.includes(t.id) ? 'sel' : '';
+  const fresh = state.justAdded === t.id ? 'just-added' : '';
   const glyphs = tileGlyphs(t, pol); const g = glyphs[0];
   const gColor = g ? (g.cat==='allergy'?'red':g.cat==='occasion'?'amber':g.cat==='vip'?'gold':'amber') : '';
   let badge = g ? `<div class="tbl-badge ${gColor}">${ic(ICONS[g.glyph]||'circle')}</div>` : '';
   if (t.status==='paid') badge = `<div class="tbl-badge green">${ic('check')}</div>`;
   const paxB = t.status==='empty' ? '' : `<div class="tbl-pax-b">${ic('users')} ${pax}</div>`;
-  return `<div class="tbl ${shape} ${t.status} ${sel}" data-id="${t.id}" style="left:${L.x}px;top:${L.y}px;width:${w}px;height:${h}px;" onpointerdown="tblPointerDown(event, ${t.id})">
+  return `<div class="tbl ${shape} ${t.status} ${sel} ${fresh}" data-id="${t.id}" style="left:${L.x}px;top:${L.y}px;width:${w}px;height:${h}px;" onpointerdown="tblPointerDown(event, ${t.id})">
     ${chairsHtml(t.cap, shape)}
     <div class="tbl-surface"><span class="tbl-num">${t.id}</span></div>
     <div class="tbl-check">${ic('check')}</div>
@@ -2582,13 +2977,64 @@ function findFreeSpot(zone){
   for(let y=40; y<=H-bh-6; y+=24) for(let x=20; x<=W-bw-6; x+=24){ if(!hit(x,y)) return {x,y}; }
   return {x:20,y:H-bh-8};
 }
+/* ─── Add a table: open a clear modal (number · area · seats) ─── */
 function addTable(){
   const zone = state.zone==='all' ? 'indoor' : state.zone;
-  const nextId = Math.max(...tables.map(t=>t.id)) + 1;
+  state.addCap = 4;
+  document.getElementById('addtable-id').value = nextTableId();
+  document.getElementById('addtable-zone').value = zone;
+  setChips('addtable-cap', ['4']);
+  document.getElementById('addtable-modal').classList.add('show');
+  syncAddTable();
+  refreshIcons();
+}
+function nextTableId(){ return tables.length ? Math.max(...tables.map(t=>t.id)) + 1 : 1; }
+function pickAddCap(n){
+  state.addCap = n;
+  setChips('addtable-cap', [String(n)]);
+  syncAddTable();
+}
+// live-update the big preview + validate the chosen number
+function syncAddTable(){
+  const idEl = document.getElementById('addtable-id');
+  const id = parseInt(idEl.value);
+  const zone = document.getElementById('addtable-zone').value;
+  const cap = state.addCap || 4;
+  document.getElementById('addtable-num').textContent = isNaN(id) ? '—' : id;
+  document.getElementById('addtable-zone-lbl').textContent = zone;
+  document.getElementById('addtable-cap-lbl').textContent = 'seats ' + cap;
+  document.getElementById('addtable-confirm-num').textContent = isNaN(id) ? '' : ('· T'+id);
+  const taken = !isNaN(id) && tables.some(t=>t.id===id);
+  const bad = isNaN(id) || id < 1;
+  const warn = document.getElementById('addtable-warn');
+  const confirm = document.getElementById('addtable-confirm');
+  if (taken) { warn.style.display='flex'; warn.innerHTML = `${ic('triangle-alert','xs')} Table ${id} already exists`; }
+  else if (bad) { warn.style.display='none'; }
+  else { warn.style.display='none'; }
+  confirm.disabled = taken || bad;
+  confirm.style.opacity = (taken || bad) ? '0.45' : '1';
+  confirm.style.pointerEvents = (taken || bad) ? 'none' : 'auto';
+  refreshIcons();
+}
+function confirmAddTable(){
+  const id = parseInt(document.getElementById('addtable-id').value);
+  const zone = document.getElementById('addtable-zone').value;
+  const cap = state.addCap || 4;
+  if (isNaN(id) || id < 1 || tables.some(t=>t.id===id)) { toast('Pick a free table number', 'warn'); return; }
   const spot = findFreeSpot(zone);
-  tables.push({ id:nextId, zone, cap:4, status:'empty', mx:spot.x, my:spot.y });
-  toast(`Table ${nextId} added — drag to place it`, 'success');
+  tables.push({ id, zone, cap, status:'empty', mx:spot.x, my:spot.y });
+  state.justAdded = id;
+  closeModal('addtable-modal');
+  // make sure the new table is on screen: map view, its zone, edit on
+  state.layout = 'map';
+  state.zone = zone;
+  state.editLayout = true;
+  document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.layout === 'map'));
+  document.querySelectorAll('.zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === zone));
+  toast(`Table ${id} added to ${zone} · seats ${cap}`, 'success');
   renderFloor();
+  // let the highlight ring play, then clear it
+  setTimeout(()=>{ state.justAdded = null; }, 2400);
 }
 function toggleEditLayout(){ state.editLayout = !state.editLayout; state.mergeSel = []; renderFloor(); }
 function mergeSelected(){
@@ -2643,23 +3089,20 @@ function openTableModal(id) {
     </div>
     <div class="modal-body">
 
-      ${(allAllergies.length || pacingNote || tOccasion || churnGuest || allDislikes.length) ? `<div class="alert-strip">
-        ${allAllergies.length ? `<div class="alert-chip red full">
-          ${ic('triangle-alert')}<span><strong>${allAllergies.join(', ').toUpperCase()} ALLERGY</strong> <span class="em">— confirm with kitchen before every course</span></span>
-        </div>` : ''}
-        ${tOccasion ? `<div class="alert-chip gold">
-          ${ic('gem')}<span>${tOccasion}${tOccasionName?` <span class="em">· ${tOccasionName}</span>`:''}</span>
-        </div>` : ''}
-        ${allDislikes.length ? `<div class="alert-chip amber">
-          ${ic('circle-slash')}<span>Avoid <span class="em">${allDislikes.join(', ')}</span></span>
-        </div>` : ''}
-        ${pacingNote ? `<div class="alert-chip amber">
-          ${ic('timer-reset')}<span>Keep courses moving</span>
-        </div>` : ''}
-        ${churnGuest ? `<div class="alert-chip red">
-          ${ic('alert-circle')}<span>Churn risk <span class="em">· comp digestif</span></span>
-        </div>` : ''}
-      </div>` : ''}
+      ${pol.aiSummary ? (function(){
+        const s = buildServiceSummary(t, { allAllergies, allDislikes, tOccasion, tOccasionName, pacingNote, churnGuest, pax, headerGuest, stage: plan.stage });
+        return `<div class="ai-summary">
+          <div class="ai-sum-head">
+            <span class="ai-badge">${ic('sparkles')} Pulse AI</span>
+            <span class="ai-sum-title">Service summary</span>
+            <span class="ai-sum-meta"><span class="live-dot"></span> live · ${pax} ${pax===1?'guest':'guests'} ordering</span>
+          </div>
+          <div class="ai-sum-text">${s.sentence}</div>
+          <div class="ai-bullets">
+            ${s.bullets.map(b => `<div class="ai-bullet ${b.tone}"><span class="ab-ic">${ic(b.icon)}</span><span>${b.text}</span></div>`).join('')}
+          </div>
+        </div>`;
+      })() : ''}
 
       ${headerGuest ? `<div class="party-header">
         <div class="party-avatar-stack">
@@ -2706,34 +3149,12 @@ function openTableModal(id) {
         <div class="tcol plan">
           <div class="tcol-head">
             <div class="tcol-head-l">${ic('chef-hat','sm')}<span class="tcol-title accent">Suggest next</span></div>
-            <span class="tcol-sub">scaled to ${plan.pax} · auto-updates</span>
-          </div>
-          <div class="tcol-body">
-            ${plan.cards.length ? plan.cards.map(c => `
-              <div class="plan-card ${c.lead?'lead':''} ${c.predictive?'predict':''}">
-                <div class="plan-course">${ic(c.icon)} ${c.course}</div>
-                <div class="plan-items">
-                  ${c.items.map(it => `<div class="plan-item">
-                    <span class="plan-item-qty">${it.qty}×</span>
-                    <span class="plan-item-name">${it.name}</span>
-                    <span class="plan-item-spread"></span>
-                    ${tagChip(it.tag)}
-                  </div>`).join('')}
-                </div>
-                <div class="plan-note">${c.allergyLabel ? `<span class="tag safe">${ic('shield-check')}${c.allergyLabel}</span>` : ''}${c.note}</div>
-              </div>`).join('') : `<div class="ot-empty">All caught up — nothing to bring right now.</div>`}
-
-            <div style="margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
-              ${plan.balance.map(b => {
-                const ok = b.got >= b.need;
-                return `<div class="balance-row ${ok?'ok':'gap'}">
-                  <span class="balance-icon">${ok?ic('circle-check','sm'):ic('circle-alert','sm')}</span>
-                  ${ok ? `${b.label} balanced` : `${b.label} — short ${b.need-b.got} for the table`}
-                  <span class="balance-count">${b.got}/${b.need}</span>
-                </div>`;
-              }).join('')}
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="tcol-sub">scaled to ${plan.pax}</span>
+              <button class="col-action" onclick="shuffleSuggestions(${t.id})">${ic('shuffle')} Shuffle</button>
             </div>
           </div>
+          <div class="tcol-body" id="suggest-body">${renderSuggestBody(plan)}</div>
         </div>
 
       </div>
@@ -2803,6 +3224,88 @@ function idealCounts(pax) {
 // Headcount at the table — QR/seating knows it even if only one phone is identified
 function paxOf(t) { return t.seatedPax || (t.party ? t.party.length : 0) || t.cap; }
 
+/* ════ AI SERVICE SUMMARY — the glanceable brief at the top ════
+   Static logic for now (the AI team plugs in here later). Composed from
+   the table's live data, so it rewrites itself as the party & orders grow. */
+function buildServiceSummary(t, ctx) {
+  const { allAllergies, allDislikes, tOccasion, tOccasionName, pacingNote, churnGuest, pax, headerGuest, stage } = ctx;
+  const stageWord = { seated:'just sat down', starters:'on starters', mains:'into mains', dessert:'at dessert', check:'wrapping up' }[stage] || 'mid-service';
+  const first = headerGuest ? headerGuest.name.split(' ')[0] : (t.guestName ? t.guestName.split(' ')[0] : null);
+
+  // lead with the thing that matters most for serving
+  let lead;
+  if (allAllergies.length) lead = `<strong>${allAllergies.join(' & ').toLowerCase()} allergy</strong> at the table — clear every plate with the kitchen first`;
+  else if (allDislikes.length) lead = `steer them away from <strong>${allDislikes.join(', ').toLowerCase()}</strong>`;
+  else lead = `no dietary flags on file`;
+
+  // who they are
+  let tenure;
+  if (headerGuest && headerGuest.visits >= 5) tenure = `${first} is a <strong>regular</strong> (${headerGuest.visits} visits) — greet warmly and lead with their usuals`;
+  else if (headerGuest && headerGuest.visits > 0) tenure = `${first} has dined here <strong>${headerGuest.visits}×</strong> — recognise them`;
+  else tenure = `${first || 'This party'} is <strong>new on record</strong> — make a strong first impression`;
+
+  // how to play the rest of service
+  let closer;
+  if (tOccasion) closer = `it's <strong>${tOccasion.toLowerCase()}</strong>${tOccasionName?` for ${tOccasionName}`:''} — mark it before dessert`;
+  else if (pacingNote) closer = `they like a <strong>brisk pace</strong> — keep courses moving`;
+  else if (stage==='dessert' || stage==='mains') closer = `they're settled in — read the table, no rush`;
+  else closer = `pace to the table's mood`;
+
+  const sentence = `<strong>Party of ${pax}</strong>, ${stageWord} — ${lead}. ${tenure}. Then, ${closer}.`;
+
+  const bullets = [];
+  if (allAllergies.length) bullets.push({ tone:'red', icon:'triangle-alert', text:`<strong>${allAllergies.join(', ')} allergy</strong> — confirm with kitchen before every course` });
+  if (allDislikes.length) bullets.push({ tone:'amber', icon:'circle-slash', text:`Avoid <strong>${allDislikes.join(', ')}</strong> in anything you bring` });
+  if (tOccasion) bullets.push({ tone:'gold', icon:'gem', text:`<strong>${tOccasion}</strong>${tOccasionName?` · ${tOccasionName}`:''} — a small gesture goes a long way` });
+  if (pacingNote) bullets.push({ tone:'amber', icon:'timer-reset', text:`Keep courses moving — they dislike long gaps between plates` });
+  if (churnGuest) bullets.push({ tone:'red', icon:'heart-handshake', text:`Win-back guest — a comped digestif lifts the odds they return` });
+  if (headerGuest && headerGuest.favFood && headerGuest.favFood.length) bullets.push({ tone:'green', icon:'utensils', text:`Usually orders <strong>${headerGuest.favFood.slice(0,2).join(', ')}</strong> — safe lead suggestions` });
+  bullets.push({ tone:'blue', icon:'users', text:`Plan scaled to <strong>${pax} ${pax===1?'guest':'guests'}</strong> — rewrites itself as more join` });
+
+  return { sentence, bullets };
+}
+
+/* Right column body — pulled out so "Shuffle" can re-render just this */
+function renderSuggestBody(plan) {
+  return `${plan.cards.length ? plan.cards.map((c, ci) => `
+    <div class="plan-card ${c.lead?'lead':''} ${c.predictive?'predict':''}" style="animation-delay:${ci*55}ms">
+      <div class="plan-head">
+        <span class="plan-course">${ic(c.icon)} ${c.course}</span>
+      </div>
+      <div class="plan-items">
+        ${c.items.map(it => `<div class="plan-item">
+          <span class="plan-item-qty">${it.qty}×</span>
+          <span class="plan-item-name">${it.name}</span>
+          ${tagChip(it.tag) || '<span></span>'}
+        </div>`).join('')}
+      </div>
+      ${(c.allergyLabel || c.note) ? `<div class="plan-note">${c.allergyLabel ? `<span class="note-safe">${ic('shield-check')} ${c.allergyLabel}</span>` : ''}${c.note ? `${c.allergyLabel?'<span style="opacity:.5">·</span> ':''}${c.note}` : ''}</div>` : ''}
+    </div>`).join('') : `<div class="ot-empty">All caught up — nothing to bring right now.</div>`}
+    <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+      <div class="balance-head">Course balance · for the table</div>
+      <div class="balance-grid">
+        ${plan.balance.map(b => {
+          const ok = b.got >= b.need;
+          return `<div class="bal-cell ${ok?'ok':'gap'}">
+            <span class="bal-ic">${ok?ic('check','xs'):ic('triangle-alert','xs')}</span>
+            <span class="bal-label">${b.label}</span>
+            <span class="bal-count">${b.got}/${b.need}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+/* Re-roll the suggestion picks without losing scroll position */
+function shuffleSuggestions(id) {
+  const t = tables.find(x => x.id === id); if (!t) return;
+  t._shuffle = (t._shuffle || 0) + 1;
+  const plan = buildServicePlan(t, phasePolicy(state.phase));
+  const body = document.getElementById('suggest-body');
+  if (body) { body.innerHTML = renderSuggestBody(plan); refreshIcons(); }
+  toast('Fresh suggestions', 'info');
+}
+
 /* ════ SERVICE PLAN — what to bring next, with quantities ════
    Reads the table's actual orders (items/drinks) and the party size,
    checks balance per course, and produces prioritized actions. */
@@ -2819,12 +3322,14 @@ function buildServicePlan(t, pol) {
   const dr = drinkQty(t), bottle = hasBottle(t);
   const allergyLabel = allergyNames.length ? allergyNames.join(' & ').toLowerCase() + '-safe' : null;
 
+  const shuffleN = t._shuffle || 0;   // bumped by the "Shuffle" button to re-roll picks
+  const rotate = (arr) => (arr.length && shuffleN) ? arr.slice(shuffleN % arr.length).concat(arr.slice(0, shuffleN % arr.length)) : arr;
   const safe = (pool) => pool.filter(i => isSafe(i, allergyKeys));
   const isUsualFood = (n) => lovedFood.some(f => f.toLowerCase().includes(n.toLowerCase()) || n.toLowerCase().includes(f.toLowerCase()));
   // build items: prefer the table's usual dishes (tag 'usual'), fill with new picks (tag 'try')
   const buildItems = (pool, deficit) => {
     const usual = pool.filter(i => isUsualFood(i.name));
-    const fresh = pool.filter(i => !isUsualFood(i.name));
+    const fresh = rotate(pool.filter(i => !isUsualFood(i.name)));
     const ordered = [...usual, ...fresh];
     const picks = ordered.slice(0, Math.min(2, Math.max(1, deficit)));
     if (picks.length === 1) return [{ qty: deficit, name: picks[0].name, tag: isUsualFood(picks[0].name)?'usual':'try' }];
@@ -2848,7 +3353,7 @@ function buildServicePlan(t, pol) {
       items=[{qty:neg, name:'Negroni', tag:'usual'}]; if (spr>0) items.push({qty:spr, name:'Aperol Spritz', tag:'try'});
     }
     else if (lovedDrinks.some(d=>/Sauvignon|white/i.test(d))) items=[{qty:1, name:'Sauvignon Blanc, bottle', tag:'usual'}];
-    else items=[{qty:deficit, name:'Aperol Spritz', tag:'try'}];
+    else { const opts=['Aperol Spritz','House Negroni','Gin & Tonic','Glass of Prosecco','Old Fashioned']; items=[{qty:deficit, name:opts[shuffleN % opts.length], tag:'try'}]; }
     cards.push({ course:'Drinks', icon:'martini', items,
       note: dr===0 ? paxNote('none served yet') : `${dr} of ${pax} have a drink` });
   }
@@ -3020,39 +3525,26 @@ function advanceDrink(id) {
 }
 
 function seatTable(id) {
-  const t = tables.find(x => x.id === id);
-  const pol = phasePolicy(state.phase);
-  // Phase 2+: open the proper "Seat a Guest" flow
-  if (pol.showReservations) {
-    state.pendingSeatTable = id;
-    // build the "assign table" picker from all open tables
-    const open = tables.filter(x => x.status === 'empty').sort((a,b)=>a.id-b.id);
-    const sel = document.getElementById('seat-table-select');
-    sel.innerHTML = open.map(x => `<option value="${x.id}" ${x.id===id?'selected':''}>Table ${x.id} · ${x.zone} · ${x.cap}-top</option>`).join('');
-    document.getElementById('seat-phone').value = '';
-    document.getElementById('seat-name').value = '';
-    document.getElementById('seat-info').value = '';
-    clearChips('seat-occasion'); clearChips('seat-allergy');
-    document.getElementById('seat-match-card').classList.remove('show');
-    document.getElementById('seat-title').textContent = 'Open Table';
-    document.getElementById('seat-sub').textContent = 'No login — phone or name auto-pulls a returning guest\'s profile';
-    document.getElementById('seat-modal').classList.add('show');
-    state.pendingSeatGuest = null;
-    state.pendingReservation = null;
-    state.seatNotice = '';
-    changeSeatTable(id);
-    return;
-  }
-  // Phase 1: simple anonymous seat
-  t.status = 'seated';
-  t.seatedMin = 0;
-  t.server = 'James';
-  t.party = [];
-  t.course = 'none';
-  t.progress = [false,false,false,false];
-  t.drinkProgress = [false,false,false];
-  toast(`Table ${id} opened`, 'info');
-  renderFloor();
+  // Always capture who's sitting down — never seat a table silently
+  state.pendingSeatTable = id;
+  // build the "assign table" picker from all open tables
+  const open = tables.filter(x => x.status === 'empty').sort((a,b)=>a.id-b.id);
+  const sel = document.getElementById('seat-table-select');
+  sel.innerHTML = open.map(x => `<option value="${x.id}" ${x.id===id?'selected':''}>Table ${x.id} · ${x.zone} · seats ${x.cap}</option>`).join('');
+  document.getElementById('seat-phone').value = '';
+  document.getElementById('seat-name').value = '';
+  document.getElementById('seat-info').value = '';
+  document.getElementById('seat-party').value = 2;
+  clearChips('seat-occasion'); clearChips('seat-allergy');
+  document.getElementById('seat-match-card').classList.remove('show');
+  document.getElementById('seat-title').textContent = 'Seat a guest';
+  document.getElementById('seat-sub').textContent = "Add who's sitting down — phone or name recognises a returning guest";
+  document.getElementById('seat-modal').classList.add('show');
+  state.pendingSeatGuest = null;
+  state.pendingReservation = null;
+  state.seatNotice = '';
+  changeSeatTable(id);
+  refreshIcons();
 }
 
 function changeSeatTable(id, keepPax) {
@@ -3061,7 +3553,7 @@ function changeSeatTable(id, keepPax) {
   state.pendingSeatTable = id;
   document.getElementById('seat-table-num').textContent = id;
   document.getElementById('seat-table-zone').textContent = t.zone;
-  document.getElementById('seat-table-cap').textContent = t.cap + '-top';
+  document.getElementById('seat-table-cap').textContent = 'seats ' + t.cap;
   const cn = document.getElementById('seat-confirm-num'); if (cn) cn.textContent = '· T'+id;
   const psel = document.getElementById('seat-party');
   if (psel && !keepPax) psel.value = Math.min(2, t.cap);
@@ -3128,7 +3620,7 @@ function openMoveTable(fromId) {
   document.getElementById('move-sub').textContent = `Move Table ${fromId}'s party to an open table`;
   const box = document.getElementById('move-options');
   box.innerHTML = open.length ? open.map(x => `<div class="move-opt" onclick="doMoveTable(${x.id})">
-    <div class="mo-num">${x.id}</div><div class="mo-sub">${x.zone} · ${x.cap}-top</div></div>`).join('')
+    <div class="mo-num">${x.id}</div><div class="mo-sub">${x.zone} · seats ${x.cap}</div></div>`).join('')
     : `<div class="ot-empty">No open tables right now.</div>`;
   document.getElementById('move-modal').classList.add('show');
   refreshIcons();
@@ -3147,31 +3639,88 @@ function doMoveTable(toId) {
   renderFloor();
 }
 
+// Pull a reservation's details into the open seat form (pax, occasion, allergies, notes, table)
+function applyReservationDetails(idx) {
+  const r = reservations[idx]; if (!r) return;
+  state.pendingReservation = idx;
+  // if their reserved table is still open, switch the assignment to it
+  if (r.table) {
+    const rt = tables.find(x => x.id === r.table);
+    const sel = document.getElementById('seat-table-select');
+    if (rt && rt.status === 'empty' && sel && [...sel.options].some(o => +o.value === r.table)) {
+      sel.value = r.table;
+      changeSeatTable(r.table, true);
+    }
+  }
+  const pEl = document.getElementById('seat-party'); if (pEl && r.party) pEl.value = r.party;
+  const iEl = document.getElementById('seat-info'); if (iEl && r.notes) iEl.value = r.notes;
+  setChips('seat-occasion', labelsToChipVals(r.occasion ? [r.occasion] : [], OCCASION_LABEL));
+  setChips('seat-allergy', labelsToChipVals(r.allergies || [], ALLERGY_LABEL));
+  refreshSeatMsg();
+}
+
 function seatLookup(value, mode) {
   const card = document.getElementById('seat-match-card');
   if (!value || value.length < 3) { card.classList.remove('show'); state.pendingSeatGuest = null; return; }
-  let match;
-  if (mode === 'phone') match = Object.values(guests).find(g => g.phone.replace(/\s/g,'').includes(value.replace(/\s/g,'')));
-  else match = Object.values(guests).find(g => g.name.toLowerCase().includes(value.toLowerCase()));
+  const phoneNorm = s => (s||'').replace(/\s/g,'');
+  const nameNorm = s => (s||'').toLowerCase();
+
+  // 1) Known guest profile
+  const match = mode === 'phone'
+    ? Object.values(guests).find(g => phoneNorm(g.phone).includes(phoneNorm(value)))
+    : Object.values(guests).find(g => nameNorm(g.name).includes(nameNorm(value)));
+
+  // 2) Tonight's reservation — recognises walk-ins / new guests with no saved profile
+  const resIdx = reservations.findIndex(r => !r.seated && (
+    mode === 'phone' ? (phoneNorm(value).length >= 4 && phoneNorm(r.phone).includes(phoneNorm(value)))
+                     : nameNorm(r.name).includes(nameNorm(value))
+  ));
+  const resv = resIdx >= 0 ? reservations[resIdx] : null;
+
   if (match) {
     state.pendingSeatGuest = match.id;
     card.classList.add('show');
     card.classList.remove('new');
-    // autofill the name for a returning guest
     const nameEl = document.getElementById('seat-name');
     if (mode === 'phone') nameEl.value = match.name;
-    const pol = phasePolicy(state.phase);
+    // if this guest also booked tonight, carry the reservation details
+    const linkedIdx = reservations.findIndex(r => !r.seated && r.guestId === match.id);
+    if (linkedIdx >= 0) applyReservationDetails(linkedIdx);
+    const linked = linkedIdx >= 0 ? reservations[linkedIdx] : null;
     card.innerHTML = `
       <div class="seat-match-name">${ic('user-check','sm')} ${match.name} ${match.vipTier === 'VIP' ? '<span class="briefing-tier vip" style="margin-left: 6px;">VIP</span>' : ''}</div>
       <div class="seat-match-meta">
         <span>${match.visits>0 ? `Returning · <strong>${match.visits}</strong> visits` : 'First visit here'}</span>
         ${match.visits>0 ? `<span>Last: <strong>${match.lastVisit}</strong></span>` : ''}
+        ${linked ? `<span>${ic('calendar-check','xs')} Booked <strong>${linked.time}</strong> · party of ${linked.party}</span>` : ''}
         <span class="rating-display" style="letter-spacing: 1.5px; font-size: 12px;">${ratingStars(match)}</span>
       </div>
       ${(match.allergies && match.allergies.length) || match.occasion ? `<div class="res-tags" style="margin-top: 10px;">${(match.allergies||[]).map(a=>`<div class="res-tag allergy">${ic('triangle-alert','xs')} ${a}</div>`).join('')}${match.occasion ? `<div class="res-tag occasion">${ic('gem','xs')} ${match.occasion}</div>` : ''}</div>` : ''}
     `;
     refreshIcons();
-  } else if (value.length >= 6) {
+    return;
+  }
+
+  if (resv) {
+    // matched a reservation with no saved profile — autofill & recognise
+    state.pendingSeatGuest = (resv.guestId && guests[resv.guestId]) ? resv.guestId : 'new';
+    document.getElementById('seat-name').value = resv.name;   // complete the name
+    applyReservationDetails(resIdx);
+    card.classList.add('show');
+    card.classList.remove('new');
+    card.innerHTML = `
+      <div class="seat-match-name">${ic('calendar-check','sm')} ${resv.name} <span class="briefing-tier" style="background:var(--gold-bg);color:var(--accent);border:1px solid #3a3122;margin-left:6px;">Reserved</span></div>
+      <div class="seat-match-meta">
+        <span>${resv.time} reservation · party of <strong>${resv.party}</strong></span>
+        ${resv.table ? `<span>${ic('map-pin','xs')} Table <strong>${resv.table}</strong></span>` : ''}
+      </div>
+      ${(resv.allergies && resv.allergies.length) || resv.occasion || resv.notes ? `<div class="res-tags" style="margin-top: 10px;">${(resv.allergies||[]).map(a=>`<div class="res-tag allergy">${ic('triangle-alert','xs')} ${a}</div>`).join('')}${resv.occasion ? `<div class="res-tag occasion">${ic('gem','xs')} ${resv.occasion}</div>` : ''}${resv.notes ? `<div class="res-tag">${resv.notes}</div>` : ''}</div>` : ''}
+    `;
+    refreshIcons();
+    return;
+  }
+
+  if (value.length >= 6) {
     state.pendingSeatGuest = 'new';
     card.classList.add('show','new');
     card.innerHTML = `<div class="seat-match-name" style="color: var(--text-dim);">${ic('user-plus','sm')} New guest</div><div class="seat-match-meta">No profile yet · we'll create one from tonight's order</div>`;
@@ -3342,18 +3891,24 @@ function renderReservations() {
         <button class="btn primary" onclick="openReservationForm()"><span style="font-weight:700">+</span> New</button>
       </div>
     </div>
+    <div class="search-bar">
+      ${ic('search','sm')}
+      <input id="res-search" placeholder="Search by name, table, occasion or allergy…" oninput="filterReservations(this.value)" />
+      <button class="search-clear" id="res-search-clear" onclick="document.getElementById('res-search').value=''; filterReservations('')" style="display:none;">${ic('x','sm')}</button>
+    </div>
     <div class="zone-tabs">
       <button class="zone-tab active">Tonight</button>
       <button class="zone-tab">Tomorrow</button>
       <button class="zone-tab">This Week</button>
     </div>
     <div class="res-grid">
-      <div class="res-list">
+      <div class="res-list" id="res-list">
         ${reservations.map((r, idx) => {
           const known = r.guestId && guests[r.guestId] && guests[r.guestId].visits>0;
           const cls = r.seated ? 'known' : (known ? 'known' : 'new');
           const tableTxt = r.table ? `Table ${r.table}` : 'No table yet';
-          return `<div class="res-time-block">
+          const searchKey = [r.name, r.time, r.table?('table '+r.table+' t'+r.table):'', r.occasion||'', (r.allergies||[]).join(' '), known?'regular':'new', r.notes||''].join(' ').toLowerCase();
+          return `<div class="res-time-block" data-search="${searchKey}">
           <div class="res-time">${r.time}</div>
           <div class="res-card ${cls}" ${r.guestId ? `onclick="openGuestBriefing('${r.guestId}')"` : ''}>
             <div class="res-row-1">
@@ -3378,6 +3933,7 @@ function renderReservations() {
             </div>
           </div>
         </div>`;}).join('')}
+        <div id="res-noresults" class="res-empty" style="display:none;">${ic('search-x','sm')} No reservations match your search.</div>
       </div>
       ${(()=>{
         const regs = reservations.filter(r=>r.guestId && guests[r.guestId] && guests[r.guestId].visits>0);
@@ -3406,6 +3962,22 @@ function renderReservations() {
     </div>
   `;
   refreshIcons();
+}
+
+/* Live filter the reservation list (no re-render → input keeps focus) */
+function filterReservations(q) {
+  q = (q || '').trim().toLowerCase();
+  const blocks = document.querySelectorAll('#res-list .res-time-block');
+  let shown = 0;
+  blocks.forEach(b => {
+    const match = !q || (b.dataset.search || '').includes(q);
+    b.style.display = match ? '' : 'none';
+    if (match) shown++;
+  });
+  const none = document.getElementById('res-noresults');
+  if (none) none.style.display = shown ? 'none' : 'flex';
+  const clr = document.getElementById('res-search-clear');
+  if (clr) clr.style.display = q ? 'inline-flex' : 'none';
 }
 
 /* Concierge now lives inside the Floor page (Phase 3) */
@@ -3479,7 +4051,7 @@ function openReservationForm() {
   const open = tables.filter(t=>t.status==='empty').sort((a,b)=>a.id-b.id);
   document.getElementById('res-table').innerHTML =
     `<option value="">Assign on arrival</option>` +
-    open.map(t=>`<option value="${t.id}">Table ${t.id} · ${t.zone} · ${t.cap}-top</option>`).join('');
+    open.map(t=>`<option value="${t.id}">Table ${t.id} · ${t.zone} · seats ${t.cap}</option>`).join('');
   state.resMatchGuest = null;
   document.getElementById('res-form-modal').classList.add('show');
 }
@@ -3564,16 +4136,16 @@ function openSeatPicker() {
 
 function applyPhase() {
   const desc = {
-    1: { name:'Phase 1 — The Briefing', desc:'QR data only · floor, briefing card, table recommendations · add guest info' },
-    2: { name:'Phase 2 — The Network', desc:'+ Reservations · seat-a-guest · editable floor map · AI search · predictive cues' },
+    1: { name:'Phase 1 — The Briefing', desc:'QR data only · floor, briefing card, table recommendations · seat a guest · add guest info' },
+    2: { name:'Phase 2 — The Network', desc:'+ Reservations · editable floor map · AI search · predictive cues' },
   };
   const d = desc[state.phase];
   document.getElementById('phase-name').textContent = d.name;
   document.getElementById('phase-desc').textContent = d.desc;
   const pol = phasePolicy(state.phase);
-  // Show "Seat a Guest" CTA only in Phase 2+
+  // "Seat a Guest" CTA available in every phase
   const seatCta = document.getElementById('seat-cta');
-  if (seatCta) seatCta.style.display = pol.showReservations ? 'inline-flex' : 'none';
+  if (seatCta) seatCta.style.display = 'inline-flex';
   // Lock Reservations until Phase 2 (keeps it clickable → shows locked view)
   document.querySelectorAll('.nav-tab').forEach(el => {
     if (el.dataset.view === 'reservations') el.classList.toggle('locked', !pol.showReservations);
@@ -3965,6 +4537,15 @@ function positionCenter(s){
   refreshIcons();
 }
 window.addEventListener('resize', ()=>{ if(coachActive){ const s=coachSteps[coachStep]; if(s.sel){ const el=document.querySelector(s.sel); if(el) placeCoach(el,s); } } });
+
+// Cursor-tracking spotlight — one delegated listener sets --mx/--my on the hovered card
+document.addEventListener('pointermove', (e) => {
+  const card = e.target.closest && e.target.closest('.table-tile, .cv, .res-card');
+  if (!card) return;
+  const r = card.getBoundingClientRect();
+  card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+  card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+}, { passive: true });
 
 // Init
 seedMapCoords(); renderFloor(); applyPhase();
