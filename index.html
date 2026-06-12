@@ -21,17 +21,17 @@
     --text: #f4f0e8;            /* warm ivory */
     --text-dim: #a8a094;        /* warm taupe */
     --text-faint: #6b6459;      /* muted warm gray */
-    --red: #e08a82;
-    --red-deep: #d9655c;
-    --red-bg: #261614;
-    --amber: #e6b765;
-    --amber-bg: #261d10;
-    --green: #74c39a;
-    --green-bg: #142420;
-    --blue: #8aabd6;
-    --blue-bg: #161f2a;
-    --purple: #b79fd6;
-    --purple-bg: #1f1a2a;
+    --red: #f5928a;
+    --red-deep: #e4685e;
+    --red-bg: #2c1715;
+    --amber: #f6c463;
+    --amber-bg: #2c2110;
+    --green: #6fd9a6;
+    --green-bg: #15291f;
+    --blue: #8fbaf0;
+    --blue-bg: #16222f;
+    --purple: #c5a5ef;
+    --purple-bg: #221b30;
     /* champagne is the brand/CTA accent — replaces the old teal */
     --gold: #d8c39a;
     --gold-bg: #221c12;
@@ -73,11 +73,25 @@
   body {
     display: flex; flex-direction: column; height: 100vh; height: 100dvh;
     background:
-      radial-gradient(1100px 560px at 82% -12%, rgba(216,195,154,0.06), transparent 62%),
-      radial-gradient(820px 460px at -5% 4%, rgba(216,195,154,0.025), transparent 58%),
+      radial-gradient(1200px 520px at 50% -16%, rgba(230,180,110,0.10), transparent 60%),  /* warm candlelight */
+      radial-gradient(1100px 560px at 84% -12%, rgba(216,195,154,0.06), transparent 62%),
+      radial-gradient(820px 460px at -6% 6%, rgba(216,195,154,0.03), transparent 58%),
       var(--bg);
   }
+  /* film grain — subtle filmic texture for richness */
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: 9000; pointer-events: none;
+    opacity: 0.05; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* gentle vignette to focus the room */
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: 8000; pointer-events: none;
+    background: radial-gradient(140% 120% at 50% 42%, transparent 64%, rgba(0,0,0,0.28));
+  }
   .topbar, .phase-strip { flex: 0 0 auto; }
+  .topbar, .main, .phase-strip { position: relative; z-index: 1; }   /* keep UI above texture base */
+  .topbar { z-index: 10; }
   /* high-contrast luxury serif — used for the brand/title moments only */
   .serif { font-family: var(--font-display); font-weight: 600; letter-spacing: 0; }
   .mono { font-family: var(--font-mono); font-feature-settings: "tnum"; }
@@ -180,20 +194,31 @@
   }
 
   .add-btn {
-    background: var(--surface-2);
-    border: 1px solid var(--border-strong);
-    padding: 8px 14px;
+    background: rgba(216,195,154,0.09);
+    border: 1px solid rgba(216,195,154,0.45);
+    padding: 9px 15px;
     border-radius: 9px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--accent-soft);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     transition: all 0.18s;
+    box-shadow: 0 2px 14px -6px rgba(216,195,154,0.4);
   }
-  .add-btn:hover { background: var(--surface-3); border-color: var(--border-strong); }
+  .add-btn i[data-lucide] { color: var(--accent); }
+  .add-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: 0 6px 20px -6px rgba(216,195,154,0.6);
+    transform: translateY(-1px);
+  }
+  .add-btn:hover i[data-lucide] { color: var(--accent-ink); }
+  .add-btn:active { transform: scale(0.97); }
   .add-btn .plus { color: var(--accent); font-weight: 600; font-size: 14px; }
+  .add-btn:hover .plus { color: var(--accent-ink); }
 
   /* ─── Main Layout ─── */
   .main {
@@ -214,6 +239,14 @@
     align-items: flex-end;
     margin-bottom: 48px;
   }
+  /* restaurant eyebrow above the page title — dine-in identity */
+  .floor-eyebrow {
+    display: inline-flex; align-items: center; gap: 9px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2.4px;
+    font-weight: 600; color: var(--accent); margin-bottom: 14px;
+  }
+  .floor-eyebrow i[data-lucide] { width: 14px; height: 14px; }
+  .floor-eyebrow::after { content: ''; width: 34px; height: 1px; background: linear-gradient(90deg, var(--accent), transparent); }
   .floor-title {
     font-size: 52px;
     font-weight: 500;
@@ -441,22 +474,24 @@
   }
   .merge-bar .sp { flex:1; }
   .table-tile {
-    background: linear-gradient(180deg, rgba(255,247,232,0.022), rgba(255,247,232,0) 58%), var(--surface);
+    background:
+      linear-gradient(180deg, rgba(255,247,232,0.03), rgba(255,247,232,0) 46%),
+      var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--r-md);
     padding: 20px;
     position: relative;
     cursor: pointer;
-    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    transition: border-color 0.22s, transform 0.22s cubic-bezier(0.2,0.7,0.2,1), box-shadow 0.22s;
     min-height: 164px;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-sm);
+    box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255,247,232,0.04);
   }
   .table-tile:hover {
     border-color: var(--border-strong);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,247,232,0.06);
   }
   /* ─── Cursor-tracking spotlight on interactive cards ─── */
   .table-tile, .cv, .res-card { position: relative; }
@@ -600,23 +635,30 @@
   .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(6,5,4,0.62);
+    backdrop-filter: blur(7px) saturate(118%);
+    -webkit-backdrop-filter: blur(7px) saturate(118%);
     z-index: 100;
     display: none;
     align-items: center;
     justify-content: center;
     padding: 24px;
   }
-  .modal-overlay.show { display: flex; }
+  .modal-overlay.show { display: flex; animation: overlayIn 0.24s ease both; }
+  @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(14px) scale(0.985); } to { opacity: 1; transform: none; } }
   .modal {
-    background: var(--surface);
+    background:
+      radial-gradient(135% 90% at 50% -8%, rgba(216,195,154,0.07), transparent 52%),
+      linear-gradient(180deg, #1b1813 0%, var(--surface) 38%);
     border: 1px solid var(--border-strong);
     border-radius: var(--r-xl);
     max-width: 920px;
     width: 100%;
     max-height: 94vh;
     overflow: auto;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,247,232,0.05);
+    animation: modalIn 0.36s cubic-bezier(0.2,0.7,0.2,1) both;
   }
   .modal.small { max-width: 600px; }
   .modal-head {
@@ -627,7 +669,9 @@
     align-items: center;
     position: sticky;
     top: 0;
-    background: var(--surface);
+    background: rgba(20,18,15,0.72);
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
     z-index: 5;
   }
   .modal-title {
@@ -672,20 +716,42 @@
 
   /* ─── AI service summary (top of the table view) ─── */
   .ai-summary {
-    background: linear-gradient(180deg, rgba(216,195,154,0.055), rgba(216,195,154,0.012) 60%), var(--surface-2);
-    border: 1px solid var(--border-strong);
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 140% at 0% 0%, rgba(216,195,154,0.08), transparent 45%),
+      linear-gradient(180deg, rgba(216,195,154,0.05), rgba(216,195,154,0.01) 60%), var(--surface-2);
+    border: 1px solid #3a3324;
     border-radius: var(--r-md);
     padding: 20px 22px;
     margin-bottom: 22px;
+    box-shadow: 0 8px 30px -16px rgba(216,195,154,0.25);
   }
+  /* a champagne highlight that sweeps the top edge — signals "AI, live" */
+  .ai-summary::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+    background-size: 45% 100%; background-repeat: no-repeat;
+    animation: aiEdge 5s ease-in-out infinite;
+  }
+  @keyframes aiEdge { 0% { background-position: -55% 0; } 100% { background-position: 155% 0; } }
   .ai-sum-head { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
   .ai-badge {
     display: inline-flex; align-items: center; gap: 6px;
     font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
-    color: var(--accent-ink); background: var(--accent);
+    color: var(--accent-ink);
+    background: linear-gradient(110deg, var(--accent) 28%, var(--accent-soft) 44%, #fdf4df 50%, var(--accent-soft) 56%, var(--accent) 72%);
+    background-size: 220% 100%;
     padding: 5px 10px; border-radius: 999px;
+    box-shadow: 0 2px 12px -3px rgba(216,195,154,0.55);
+    animation: aiShimmer 4.2s ease-in-out infinite;
   }
+  @keyframes aiShimmer { 0% { background-position: 150% 0; } 100% { background-position: -60% 0; } }
   .ai-badge i[data-lucide] { width: 12px; height: 12px; }
+  @media (prefers-reduced-motion: reduce) {
+    .ai-summary::before, .ai-badge { animation: none; }
+    .ai-badge { background: var(--accent); }
+  }
   .ai-sum-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.6px; font-weight: 600; color: var(--text-dim); }
   .ai-sum-meta { margin-left: auto; font-size: 11px; color: var(--text-faint); display: flex; align-items: center; gap: 7px; font-weight: 500; }
   .ai-sum-meta .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.7s ease-in-out infinite; }
@@ -1046,7 +1112,11 @@
     background: var(--surface-2);
   }
   .plan-card:last-child { margin-bottom: 0; }
-  .plan-card.lead { border-color: var(--accent); background: var(--gold-bg); }
+  .plan-card.lead {
+    border-color: #5a4d31;
+    background: radial-gradient(120% 130% at 0% 0%, rgba(216,195,154,0.1), transparent 55%), var(--gold-bg);
+    box-shadow: 0 10px 34px -18px rgba(216,195,154,0.4), inset 0 1px 0 rgba(216,195,154,0.08);
+  }
   .plan-card.predict { border-color: #2a1f3a; background: var(--purple-bg); }
   .plan-head {
     display: flex; align-items: center; gap: 8px;
@@ -1160,7 +1230,10 @@
     letter-spacing: -0.05em;
     margin-bottom: 6px;
     color: var(--accent);
+    text-shadow: 0 0 28px rgba(216,195,154,0.35);
+    animation: numPop 0.4s cubic-bezier(0.2,0.7,0.2,1) both;
   }
+  @keyframes numPop { from { opacity: 0; transform: scale(0.86); } to { opacity: 1; transform: none; } }
   .move-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
   .move-opt {
     background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
@@ -1209,16 +1282,21 @@
     gap: 7px;
     letter-spacing: -0.005em;
   }
-  .btn:hover { background: var(--surface-4); }
+  .btn:hover { background: var(--surface-4); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(0.975); }
   .btn.primary {
     background: var(--accent);
     color: var(--accent-ink);
     border-color: var(--accent);
     box-shadow: 0 4px 14px -4px rgba(216,195,154,0.5);
   }
-  .btn.primary:hover { background: var(--accent-soft); }
+  .btn.primary:hover { background: var(--accent-soft); box-shadow: 0 8px 22px -6px rgba(216,195,154,0.6); }
   .btn.ghost { background: transparent; }
   .btn.ghost:hover { background: var(--surface-2); }
+  /* tactile press on chips + tiles */
+  .chip-opt:active { transform: scale(0.96); }
+  @keyframes chipPop { 0% { transform: scale(0.9); } 60% { transform: scale(1.04); } 100% { transform: scale(1); } }
+  .chip-opt.selected { animation: chipPop 0.22s ease; }
 
   /* ─── Briefing card (guest modal) ─── */
   .briefing-head {
@@ -1540,17 +1618,30 @@
   .chip-opt.red.selected { background: var(--red-deep); border-color: var(--red-deep); color: #fff; }
   .chip-opt.amber.selected { background: var(--amber); border-color: var(--amber); color: var(--accent-ink); }
 
-  /* ─── Concierge / Manager ─── */
+  /* ─── Ask Pulse (AI) / Concierge ─── */
   .concierge-search {
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 12px;
-    padding: 4px;
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 200% at 0% 50%, rgba(216,195,154,0.07), transparent 40%),
+      var(--surface);
+    border: 1px solid #3a3324;
+    border-radius: var(--r-md);
+    padding: 5px;
     display: flex;
     gap: 8px;
     align-items: center;
     margin-bottom: 22px;
+    box-shadow: 0 8px 30px -16px rgba(216,195,154,0.3);
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
+  .concierge-search::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--accent-soft), transparent);
+    background-size: 40% 100%; background-repeat: no-repeat;
+    animation: aiEdge 5s ease-in-out infinite;
+  }
+  .concierge-search:focus-within { border-color: var(--accent); box-shadow: var(--ring), 0 8px 30px -14px rgba(216,195,154,0.4); }
   .concierge-search input {
     flex: 1;
     background: transparent;
@@ -1562,12 +1653,19 @@
   }
   .concierge-search input::placeholder { color: var(--text-faint); }
   .concierge-icon {
-    width: 36px; height: 36px;
-    background: var(--purple-bg);
-    color: var(--purple);
-    border-radius: 8px;
+    width: 38px; height: 38px;
+    color: var(--accent-ink);
+    background: linear-gradient(110deg, var(--accent) 28%, var(--accent-soft) 44%, #fdf4df 50%, var(--accent-soft) 56%, var(--accent) 72%);
+    background-size: 220% 100%;
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
     margin-left: 8px;
+    box-shadow: 0 2px 12px -3px rgba(216,195,154,0.55);
+    animation: aiShimmer 4.2s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .concierge-search::before, .concierge-icon { animation: none; }
+    .concierge-icon { background: var(--accent); }
   }
   .concierge-suggest { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
   .suggest-chip {
@@ -1681,26 +1779,29 @@
   /* ─── Toast ─── */
   .toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 28px;
     left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    background: var(--surface-3);
-    border: 1px solid var(--border-strong);
+    transform: translateX(-50%) translateY(80px) scale(0.96);
+    background: rgba(32,28,23,0.82);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(255,247,232,0.12);
     color: var(--text);
-    padding: 11px 18px;
-    border-radius: 10px;
+    padding: 13px 20px;
+    border-radius: 12px;
     font-size: 13px;
     z-index: 200;
     opacity: 0;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: opacity 0.28s, transform 0.34s cubic-bezier(0.34,1.45,0.4,1);
     display: flex;
     align-items: center;
     gap: 10px;
     font-weight: 500;
+    box-shadow: 0 18px 50px -16px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,247,232,0.07);
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
   .toast.success { border-left: 3px solid var(--green); }
-  .toast.info { border-left: 3px solid var(--blue); }
+  .toast.info { border-left: 3px solid var(--accent); }
   .toast.warn { border-left: 3px solid var(--amber); }
 
   /* ─── Phase strip ─── */
@@ -1960,6 +2061,198 @@
   .cv.d .nm { font-size:16px; font-weight:600; }
   .cv.d .meta { font-size:13px; color:var(--text-dim); margin:4px 0 14px; display:flex; align-items:center; gap:6px; }
 
+  /* theme toggle button (topbar) */
+  .theme-btn {
+    background: transparent; border: 1px solid var(--border-strong);
+    width: 38px; height: 38px; border-radius: var(--r-sm); color: var(--text-dim);
+    display: inline-flex; align-items: center; justify-content: center; transition: all 0.18s;
+  }
+  .theme-btn:hover { color: var(--text); border-color: var(--accent); }
+  .theme-btn.active { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); box-shadow: 0 2px 12px -3px rgba(216,195,154,0.55); }
+  .theme-btn i[data-lucide] { width: 17px; height: 17px; }
+
+  /* ═══════════════ GLASS UI — frosted, translucent variant ═══════════════ */
+  body.glass {
+    background:
+      radial-gradient(900px 620px at 82% -10%, rgba(216,195,154,0.16), transparent 58%),
+      radial-gradient(820px 600px at 4% 102%, rgba(150,110,210,0.12), transparent 55%),
+      radial-gradient(760px 520px at 10% 0%, rgba(90,150,210,0.10), transparent 55%),
+      radial-gradient(900px 500px at 100% 60%, rgba(230,150,90,0.08), transparent 55%),
+      var(--bg);
+  }
+  body.glass .topbar { background: rgba(22,19,15,0.55); }
+  body.glass .phase-strip { background: rgba(20,18,15,0.4); }
+  body.glass .table-tile,
+  body.glass .res-card,
+  body.glass .cv,
+  body.glass .lane,
+  body.glass .tcol,
+  body.glass .party-header,
+  body.glass .plan-card,
+  body.glass .briefing-panel,
+  body.glass .seat-match-card,
+  body.glass .metric-card,
+  body.glass .reco-block,
+  body.glass .bal-cell {
+    background: rgba(36,31,25,0.4) !important;
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    border-color: rgba(255,247,232,0.1) !important;
+  }
+  body.glass .search-bar,
+  body.glass .concierge-search {
+    background: rgba(36,31,25,0.42);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+  }
+  /* champagne-tinted glass for the AI + lead surfaces */
+  body.glass .ai-summary { background: rgba(216,195,154,0.1) !important; backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%); border-color: rgba(216,195,154,0.28) !important; }
+  body.glass .plan-card.lead { background: rgba(216,195,154,0.14) !important; }
+  body.glass .modal {
+    background: rgba(26,22,18,0.62) !important;
+    backdrop-filter: blur(30px) saturate(170%);
+    -webkit-backdrop-filter: blur(30px) saturate(170%);
+    border-color: rgba(255,247,232,0.12);
+  }
+  body.glass .modal-head { background: rgba(26,22,18,0.38); }
+  body.glass .input, body.glass .select, body.glass .textarea { background: rgba(255,247,232,0.055); }
+  body.glass .input:focus, body.glass .select:focus, body.glass .textarea:focus { background: rgba(255,247,232,0.09); }
+  /* deepen lift on glass cards */
+  body.glass .table-tile:hover, body.glass .res-card:hover { box-shadow: 0 18px 50px -20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,247,232,0.12); }
+
+  /* ═══════════════ PREMIUM MOTION & MICRO-INTERACTION LAYER ═══════════════ */
+  ::selection { background: rgba(216,195,154,0.3); color: var(--text); }
+  .main { scroll-behavior: smooth; }
+  button:focus-visible, .chip-opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 8px; }
+
+  /* champagne sheen on the big serif titles + wordmark */
+  .floor-title, .logo {
+    background: linear-gradient(115deg, #f9f4e9 55%, var(--accent) 115%);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .logo .logo-dot { -webkit-text-fill-color: initial; }
+
+  /* zone labels get an ornamental fading rule, like a menu section */
+  .zone-label { display: flex; align-items: center; gap: 14px; }
+  .zone-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent 70%); }
+
+  /* view crossfade on tab switch */
+  .view.active { animation: viewIn 0.34s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* staggered entrance for floor tiles, map tables & reservation rows */
+  @keyframes tileIn { from { opacity: 0; transform: translateY(12px) scale(0.985); } to { opacity: 1; transform: none; } }
+  .tile-in { animation: tileIn 0.46s cubic-bezier(0.2,0.7,0.2,1) both; animation-delay: var(--d, 0ms); }
+
+  /* modal content rises in sequence the first time it opens */
+  .modal.anim-in .modal-body > * { animation: riseIn 0.4s cubic-bezier(0.2,0.7,0.2,1) both; }
+  .modal.anim-in .modal-body > *:nth-child(1) { animation-delay: 40ms; }
+  .modal.anim-in .modal-body > *:nth-child(2) { animation-delay: 95ms; }
+  .modal.anim-in .modal-body > *:nth-child(3) { animation-delay: 150ms; }
+  .modal.anim-in .modal-body > *:nth-child(4) { animation-delay: 205ms; }
+  .modal.anim-in .modal-body > *:nth-child(5) { animation-delay: 260ms; }
+  @keyframes riseIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* journey bar feels alive — lines draw in, the current node breathes */
+  .journey-line.done { transform-origin: left; animation: growX 0.5s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes growX { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .journey-node.current .journey-dot { animation: dotBreathe 2.6s ease-in-out infinite; }
+  @keyframes dotBreathe {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(216,195,154,0.35); }
+    50% { box-shadow: 0 0 0 7px rgba(216,195,154,0); }
+  }
+
+  /* empty tables invite the host on hover */
+  .table-tile.empty { transition: opacity 0.22s, border-color 0.22s, transform 0.22s; }
+  .table-tile.empty:hover { opacity: 1; border-color: rgba(216,195,154,0.45); }
+  .table-tile.empty .seat-hint {
+    position: absolute; left: 20px; bottom: 18px;
+    display: inline-flex; align-items: center; gap: 7px;
+    color: var(--accent); font-size: 12px; font-weight: 600;
+    opacity: 0; transform: translateY(5px); transition: opacity 0.22s, transform 0.22s;
+    pointer-events: none;
+  }
+  .table-tile.empty:hover .seat-hint { opacity: 1; transform: none; }
+  .table-tile.empty:hover .tile-bottom { opacity: 0; }
+
+  /* phase-strip restaurant signature, like a letterpress footer */
+  .strip-rest { font-family: var(--font-display); font-style: italic; font-size: 13.5px; color: var(--text-dim); letter-spacing: 0.01em; }
+
+  /* hairline dividers between header stats — menu-card etiquette */
+  .floor-stats .stat { position: relative; padding-left: 40px; }
+  .floor-stats .stat::before {
+    content: ''; position: absolute; left: 0; top: 6px; bottom: 2px; width: 1px;
+    background: linear-gradient(180deg, transparent, var(--border-strong) 30%, var(--border-strong) 70%, transparent);
+  }
+  .floor-stats .stat:first-of-type { padding-left: 0; }
+  .floor-stats .stat:first-of-type::before { display: none; }
+
+  /* topbar sits on a champagne hairline instead of a flat border */
+  .topbar { border-bottom: none; }
+  .topbar::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(216,195,154,0.28) 18%, rgba(216,195,154,0.28) 82%, transparent);
+  }
+
+  /* reservation timeline — quiet rail beside the times */
+  .res-time { position: relative; }
+  .res-time::after {
+    content: ''; position: absolute; right: -10px; top: 20px; width: 5px; height: 5px;
+    border-radius: 50%; background: var(--border-strong); transition: background 0.2s, box-shadow 0.2s;
+  }
+  .res-time-block:hover .res-time::after { background: var(--accent); box-shadow: 0 0 10px rgba(216,195,154,0.5); }
+
+  /* status whisper — occupied tiles glow their state color on hover */
+  .table-tile.seated:hover { border-color: rgba(143,186,240,0.5); }
+  .table-tile.ordered:hover { border-color: rgba(111,217,166,0.5); }
+  .table-tile.attention:hover { border-color: rgba(246,196,99,0.6); }
+  .table-tile.overdue:hover { border-color: rgba(245,146,138,0.6); }
+
+  /* ─── WAITER'S EYE — vibrant status system ─── */
+  /* every occupied tile wears its state as a glowing top bar — scannable across the room */
+  .table-tile.seated, .table-tile.ordered, .table-tile.attention, .table-tile.overdue { overflow: hidden; }
+  .table-tile.seated::before, .table-tile.ordered::before, .table-tile.attention::before, .table-tile.overdue::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    z-index: 1; pointer-events: none;
+  }
+  .table-tile.seated::before { background: linear-gradient(90deg, var(--blue), rgba(143,186,240,0.15)); box-shadow: 0 0 14px rgba(143,186,240,0.35); }
+  .table-tile.ordered::before { background: linear-gradient(90deg, var(--green), rgba(111,217,166,0.15)); box-shadow: 0 0 14px rgba(111,217,166,0.35); }
+  .table-tile.attention::before { background: linear-gradient(90deg, var(--amber), rgba(246,196,99,0.2)); box-shadow: 0 0 16px rgba(246,196,99,0.45); }
+  .table-tile.overdue::before { background: linear-gradient(90deg, var(--red), rgba(245,146,138,0.2)); box-shadow: 0 0 16px rgba(245,146,138,0.5); }
+  /* tables that need a waiter literally pulse for attention */
+  .table-tile.attention { animation: needsEye 2.8s ease-in-out infinite; }
+  .table-tile.overdue { animation: needsEyeRed 1.9s ease-in-out infinite; }
+  @keyframes needsEye {
+    0%, 100% { box-shadow: var(--shadow-sm), 0 0 0 0 rgba(246,196,99,0.3); }
+    50% { box-shadow: var(--shadow-sm), 0 0 0 7px rgba(246,196,99,0); }
+  }
+  @keyframes needsEyeRed {
+    0%, 100% { box-shadow: var(--shadow-sm), 0 0 0 0 rgba(245,146,138,0.4); }
+    50% { box-shadow: var(--shadow-sm), 0 0 0 9px rgba(245,146,138,0); }
+  }
+  /* active course pip glows — where is this table in its meal, at a glance */
+  .cpip.active { box-shadow: inset 0 0 0 1.5px var(--blue), 0 0 12px rgba(143,186,240,0.4); }
+  .tile-bottom.overdue, .tile-bottom.warn { font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) {
+    .table-tile.attention, .table-tile.overdue { animation: none; }
+  }
+
+  /* ─── Ripple — presses answer from the exact point of touch ─── */
+  .btn, .add-btn, .nav-tab, .zone-tab, .chip-opt { position: relative; overflow: hidden; }
+  .table-tile, .res-card { overflow: hidden; }
+  .ripple {
+    position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
+    background: radial-gradient(circle, rgba(255,248,235,0.3) 0%, rgba(216,195,154,0.14) 40%, transparent 70%);
+    transform: scale(0);
+    animation: rippleGo 0.55s ease-out forwards;
+  }
+  @keyframes rippleGo { to { transform: scale(1); opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .view.active, .tile-in, .modal.anim-in .modal-body > *, .journey-line.done, .journey-node.current .journey-dot { animation: none !important; }
+  }
+
   /* ═══════════════ TABLET (touch-first) ═══════════════ */
   @media (max-width: 1180px) {
     html, body { font-size: 14px; }
@@ -1985,7 +2278,7 @@
     .modal-close { width: 40px; height: 40px; }
   }
 
-  /* Portrait tablet — stack the two-column areas */
+  /* Portrait tablet — stack the two-column areas, compact the topbar */
   @media (max-width: 920px) {
     .tdetail { grid-template-columns: 1fr; gap: 12px; }
     .res-grid { grid-template-columns: 1fr; }
@@ -1993,15 +2286,37 @@
     .lanes { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
     .floor-header { flex-wrap: wrap; gap: 14px; }
-    .floor-title { font-size: 24px; }
+    .floor-title { font-size: 30px; }
     .briefing-stats { grid-template-columns: repeat(2, 1fr); }
-    .btn-lbl { display: none; }            /* Add Guest Info → icon only */
     .table-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); }
+    /* topbar must never force horizontal overflow */
+    .topbar { gap: 8px; padding: 0 10px; }
+    .logo { font-size: 22px; }
+    .nav-tabs { margin-left: 2px; }
+    .nav-tab { padding: 9px 11px; font-size: 13px; }
+    .theme-btn, .tut-help-btn { width: 36px; height: 36px; }
+    .add-btn { padding: 9px 11px; font-size: 12px; }
+    .phase-switch button { padding: 8px 9px; font-size: 10px; }
+    .floor-stats { gap: 22px; }
+    .floor-stats .stat { padding-left: 22px; }
   }
 
+  /* Phone — topbar wraps into two rows, everything stays reachable */
   @media (max-width: 680px) {
     .table-grid { grid-template-columns: 1fr 1fr; }
-    .floor-stats { width: 100%; justify-content: space-between; }
+    .floor-stats { width: 100%; justify-content: space-between; gap: 12px; }
+    .floor-stats .stat { padding-left: 16px; }
+    .topbar { flex-wrap: wrap; height: auto; min-height: 54px; padding: 8px 10px; row-gap: 6px; }
+    .topbar::after { display: none; }
+    .topbar { border-bottom: 1px solid var(--border); }
+    .logo { font-size: 21px; }
+    .spacer { flex: 1 1 0; min-width: 0; }
+    .phase-switch { margin-left: auto; }
+    .floor-title { font-size: 27px; }
+    .floor-eyebrow { letter-spacing: 1.6px; font-size: 10px; }
+    .view { padding: 16px 12px 48px; }
+    .strip-rest { display: none; }
+    .phase-strip { padding: 7px 12px; }
   }
 
   /* coarse-pointer (touch) — kill hover transforms that feel laggy */
@@ -2025,6 +2340,7 @@
     <button class="nav-tab" data-view="reservations">Reservations</button>
   </div>
   <div class="spacer"></div>
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Glass UI"><i data-lucide="gem"></i></button>
   <button class="tut-help-btn" onclick="startFollow()" title="Follow-along walkthrough"><i data-lucide="help-circle"></i></button>
   <button class="add-btn" onclick="openGuestInfoModal()"><i data-lucide="user-plus" class="sm"></i> <span class="btn-lbl">Add Guest Info</span></button>
   <div class="clock" id="clock">19:24</div>
@@ -2036,7 +2352,7 @@
 
 <div class="phase-strip" id="phase-strip">
   <div><strong id="phase-name">Phase 1 — The Briefing</strong> · <span id="phase-desc">Existing QR data only · floor view, briefing card, course nudges</span></div>
-  <div>Bella Notte · Orchard Rd, Singapore</div>
+  <div class="strip-rest">Bella Notte · Orchard Rd, Singapore</div>
 </div>
 
 <div class="main">
@@ -2045,6 +2361,7 @@
   <div class="view active" id="view-floor">
     <div class="floor-header">
       <div>
+        <div class="floor-eyebrow"><i data-lucide="utensils-crossed"></i> Bella Notte · Dinner Service</div>
         <div class="floor-title serif">Tonight's Service</div>
         <div class="floor-subtitle" id="floor-subtitle">Friday, 7 June · existing diners detected from QR orders</div>
       </div>
@@ -2531,13 +2848,21 @@ const reservations = [
   { time:'20:30', name:'James Tan', phone:'+65 9777 6666', party:4, table:4, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'' },
 ];
 
-const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic' };
+const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true };
+
+function toggleTheme() {
+  state.theme = state.theme === 'glass' ? 'solid' : 'glass';
+  document.body.classList.toggle('glass', state.theme === 'glass');
+  const b = document.getElementById('theme-btn');
+  if (b) b.classList.toggle('active', state.theme === 'glass');
+  toast(state.theme === 'glass' ? 'Glass UI on' : 'Solid UI on', 'info');
+}
 
 // Lucide icon helper. Sizes: '' (16), sm (14), lg (20), xl (24)
 function ic(name, size) {
   return `<i data-lucide="${name}"${size ? ' class="'+size+'"' : ''}></i>`;
 }
-function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
+function refreshIcons() { if (window.lucide) window.lucide.createIcons({ attrs: { 'stroke-width': 1.8 } }); }
 
 // ── shared capture vocabulary (reservation + walk-in stay consistent) ──
 const ALLERGY_LABEL = { nuts:'Nuts', shellfish:'Shellfish', dairy:'Dairy', gluten:'Gluten', vegetarian:'Vegetarian', vegan:'Vegan', halal:'Halal' };
@@ -2637,6 +2962,14 @@ function renderFloor() {
     });
     container.innerHTML = html;
   }
+  // staggered entrance — only on view/zone/layout/phase changes, never on action re-renders
+  if (state.animFloor) {
+    container.querySelectorAll('.table-tile, .tbl').forEach((el, i) => {
+      el.style.setProperty('--d', Math.min(i * 26, 500) + 'ms');
+      el.classList.add('tile-in');
+    });
+    state.animFloor = false;
+  }
   refreshIcons();
   // keep zone-tab counts in sync (tables can be added in Edit mode)
   document.querySelectorAll('#zone-tabs .zone-tab').forEach(b=>{
@@ -2648,7 +2981,18 @@ function renderFloor() {
   const free = tables.filter(t=>t.status==='empty').length;
   const attention = tables.filter(t=>['attention','overdue'].includes(t.status)).length;
   const covers = occupied.reduce((s,t)=>s+paxOf(t),0);
-  const setNum=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  // numbers roll to their new value instead of snapping — feels live
+  const setNum=(id,v)=>{
+    const e=document.getElementById(id); if(!e) return;
+    const from=parseInt(e.textContent)||0, to=+v;
+    if(from===to){ e.textContent=to; return; }
+    const t0=performance.now(), dur=420;
+    (function tick(now){
+      const p=Math.min(1,(now-t0)/dur), ease=1-Math.pow(1-p,3);
+      e.textContent=Math.round(from+(to-from)*ease);
+      if(p<1) requestAnimationFrame(tick);
+    })(t0);
+  };
   setNum('stat-seated', occupied.length); setNum('stat-free', free); setNum('stat-attention', attention);
   const sub = document.getElementById('floor-subtitle');
   if (state.phase === 1) sub.textContent = `Friday, 7 June · ${occupied.length} tables seated · ${covers} covers · recognised from QR orders`;
@@ -2670,7 +3014,8 @@ function renderTile(t, pol) {
     return `<div class="table-tile empty" data-id="${t.id}" onclick="seatTable(${t.id})">
       <div class="tile-top"><div class="tile-num">${t.id}</div></div>
       <div class="tile-party">Seats ${t.cap}</div>
-      <div class="tile-bottom" style="color: var(--text-faint);">Empty</div>
+      <div class="tile-bottom" style="color: var(--text-faint); transition: opacity 0.2s;">Empty</div>
+      <div class="seat-hint">${ic('armchair','sm')} Seat a guest</div>
     </div>`;
   }
   const guest = t.party && t.party[0] ? guests[t.party[0]] : null;
@@ -2984,7 +3329,7 @@ function addTable(){
   document.getElementById('addtable-id').value = nextTableId();
   document.getElementById('addtable-zone').value = zone;
   setChips('addtable-cap', ['4']);
-  document.getElementById('addtable-modal').classList.add('show');
+  showModal('addtable-modal');
   syncAddTable();
   refreshIcons();
 }
@@ -3057,6 +3402,7 @@ function openTableModal(id) {
   const pol = phasePolicy(state.phase);
   const modal = document.getElementById('table-modal');
   const content = document.getElementById('table-modal-content');
+  const wasOpen = modal.classList.contains('show');
   const guest = t.party && t.party[0] ? guests[t.party[0]] : null;
 
   // Concerns — merge the matched profile with info captured at booking/seating
@@ -3083,7 +3429,7 @@ function openTableModal(id) {
       <div style="display: flex; align-items: center; gap: 8px;">
         <span class="pax-pill">${ic('users','sm')} ${pax} ${pax===1?'guest':'guests'}</span>
         <span class="live-pill"><span class="live-dot"></span> Live from QR</span>
-        <button class="add-btn" onclick="openGuestInfoModal()" style="font-size: 12px; padding: 7px 12px;"><span class="plus">+</span> Guest info</button>
+        <button class="add-btn" onclick="openGuestInfoModal()" style="font-size: 12px; padding: 8px 13px;">${ic('user-plus','sm')} Add guest info</button>
         <button class="modal-close" onclick="closeModal('table-modal')"><i data-lucide="x" class="sm"></i></button>
       </div>
     </div>
@@ -3167,7 +3513,9 @@ function openTableModal(id) {
       </div>
     </div>
   `;
+  content.classList.toggle('anim-in', !wasOpen);   // choreograph sections only on first open
   modal.classList.add('show');
+  if (!wasOpen) content.scrollTop = 0;             // always open at the top, never mid-scroll
   refreshIcons();
 }
 
@@ -3539,7 +3887,7 @@ function seatTable(id) {
   document.getElementById('seat-match-card').classList.remove('show');
   document.getElementById('seat-title').textContent = 'Seat a guest';
   document.getElementById('seat-sub').textContent = "Add who's sitting down — phone or name recognises a returning guest";
-  document.getElementById('seat-modal').classList.add('show');
+  showModal('seat-modal');
   state.pendingSeatGuest = null;
   state.pendingReservation = null;
   state.seatNotice = '';
@@ -3607,7 +3955,7 @@ function seatReservation(idx) {
   document.getElementById('seat-sub').textContent = `${r.time} reservation · party of ${r.party}`;
   state.pendingSeatGuest = null;
   if (r.phone) seatLookup(r.phone, 'phone');     // recognise returning guest
-  document.getElementById('seat-modal').classList.add('show');
+  showModal('seat-modal');
   changeSeatTable(target, true);                 // keepPax — don't stomp the reservation's party size
   document.getElementById('seat-party').value = r.party || 2;
   refreshSeatMsg();
@@ -3622,7 +3970,7 @@ function openMoveTable(fromId) {
   box.innerHTML = open.length ? open.map(x => `<div class="move-opt" onclick="doMoveTable(${x.id})">
     <div class="mo-num">${x.id}</div><div class="mo-sub">${x.zone} · seats ${x.cap}</div></div>`).join('')
     : `<div class="ot-empty">No open tables right now.</div>`;
-  document.getElementById('move-modal').classList.add('show');
+  showModal('move-modal');
   refreshIcons();
 }
 function doMoveTable(toId) {
@@ -3863,6 +4211,7 @@ function openGuestBriefing(gid) {
     </div>
   `;
   modal.classList.add('show');
+  const gsheet = modal.querySelector('.modal'); if (gsheet) gsheet.scrollTop = 0;
   refreshIcons();
 }
 
@@ -3884,6 +4233,7 @@ function renderReservations() {
   c.innerHTML = `
     <div class="floor-header">
       <div>
+        <div class="floor-eyebrow"><i data-lucide="calendar-heart"></i> Bella Notte · The Book</div>
         <div class="floor-title serif">Reservations</div>
         <div class="floor-subtitle">Tonight · ${reservations.length} bookings · ${resCovers} covers${resSeated?` · ${resSeated} seated`:''} · doors open in 36 min</div>
       </div>
@@ -3961,6 +4311,13 @@ function renderReservations() {
       </div>`;})()}
     </div>
   `;
+  if (state.animRes) {
+    c.querySelectorAll('.res-time-block').forEach((el, i) => {
+      el.style.setProperty('--d', Math.min(i * 38, 480) + 'ms');
+      el.classList.add('tile-in');
+    });
+    state.animRes = false;
+  }
   refreshIcons();
 }
 
@@ -4031,11 +4388,18 @@ function switchView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.getElementById('view-' + v).classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.toggle('active', el.dataset.view === v));
-  if (v === 'floor') { renderFloor(); updateConciergeBar(); }
-  if (v === 'reservations') renderReservations();
+  if (v === 'floor') { state.animFloor = true; renderFloor(); updateConciergeBar(); }
+  if (v === 'reservations') { state.animRes = true; renderReservations(); }
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+// open an overlay and make sure its sheet starts at the top (never mid-scroll)
+function showModal(id) {
+  const o = document.getElementById(id);
+  o.classList.add('show');
+  const m = o.querySelector('.modal');
+  if (m) m.scrollTop = 0;
+}
 
 function openReservationForm() {
   // reset every field so a new booking starts clean
@@ -4053,7 +4417,7 @@ function openReservationForm() {
     `<option value="">Assign on arrival</option>` +
     open.map(t=>`<option value="${t.id}">Table ${t.id} · ${t.zone} · seats ${t.cap}</option>`).join('');
   state.resMatchGuest = null;
-  document.getElementById('res-form-modal').classList.add('show');
+  showModal('res-form-modal');
 }
 
 function resLookup(value) {
@@ -4096,7 +4460,7 @@ function saveReservation() {
   renderReservations();
 }
 function openGuestInfoModal(gid) {
-  document.getElementById('guest-info-modal').classList.add('show');
+  showModal('guest-info-modal');
   const pol = phasePolicy(state.phase);
   document.getElementById('gi-occasion-wrap').style.display = pol.showReservations ? 'flex' : 'none';
   if (gid && guests[gid]) {
@@ -4154,8 +4518,8 @@ function applyPhase() {
   if (state.view === 'reservations' && !pol.showReservations) { switchView('floor'); return; }
   updateConciergeBar();
   // Re-render current
-  if (state.view === 'floor') renderFloor();
-  if (state.view === 'reservations') renderReservations();
+  if (state.view === 'floor') { state.animFloor = true; renderFloor(); }
+  if (state.view === 'reservations') { state.animRes = true; renderReservations(); }
 }
 
 document.getElementById('phase-switch').addEventListener('click', e => {
@@ -4174,6 +4538,7 @@ document.getElementById('zone-tabs').addEventListener('click', e => {
   if (btn && btn.dataset.zone) {
     state.zone = btn.dataset.zone;
     document.querySelectorAll('#zone-tabs .zone-tab').forEach(b => b.classList.toggle('active', b.dataset.zone === state.zone));
+    state.animFloor = true;
     renderFloor();
   }
 });
@@ -4182,6 +4547,7 @@ document.getElementById('view-toggle').addEventListener('click', e => {
   if (btn && btn.dataset.layout) {
     state.layout = btn.dataset.layout;
     document.querySelectorAll('#view-toggle button').forEach(b => b.classList.toggle('active', b.dataset.layout === state.layout));
+    state.animFloor = true;
     renderFloor();
   }
 });
@@ -4538,13 +4904,40 @@ function positionCenter(s){
 }
 window.addEventListener('resize', ()=>{ if(coachActive){ const s=coachSteps[coachStep]; if(s.sel){ const el=document.querySelector(s.sel); if(el) placeCoach(el,s); } } });
 
-// Cursor-tracking spotlight — one delegated listener sets --mx/--my on the hovered card
+// Cursor-tracking spotlight + 3D tilt — cards lean toward the cursor like place cards
+const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)').matches;
+const NO_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let _tilted = null;
 document.addEventListener('pointermove', (e) => {
   const card = e.target.closest && e.target.closest('.table-tile, .cv, .res-card');
+  if (_tilted && _tilted !== card) { _tilted.style.transform = ''; _tilted = null; }
   if (!card) return;
   const r = card.getBoundingClientRect();
-  card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-  card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+  card.style.setProperty('--mx', (px * 100) + '%');
+  card.style.setProperty('--my', (py * 100) + '%');
+  if (FINE_POINTER && !NO_MOTION && !card.classList.contains('empty')) {
+    card.style.transform = `translateY(-3px) perspective(700px) rotateX(${(0.5 - py) * 4}deg) rotateY(${(px - 0.5) * 4}deg)`;
+    _tilted = card;
+  }
+}, { passive: true });
+document.addEventListener('pointerout', (e) => {
+  const card = e.target.closest && e.target.closest('.table-tile, .cv, .res-card');
+  if (card && (!e.relatedTarget || !card.contains(e.relatedTarget))) { card.style.transform = ''; if (_tilted === card) _tilted = null; }
+}, { passive: true });
+
+// Ripple — every press answers from the exact point of touch
+document.addEventListener('pointerdown', (e) => {
+  if (NO_MOTION) return;
+  const el = e.target.closest && e.target.closest('.btn, .table-tile, .res-card, .chip-opt, .add-btn, .nav-tab, .zone-tab');
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  const d = Math.max(r.width, r.height) * 2.2;
+  const rip = document.createElement('span');
+  rip.className = 'ripple';
+  rip.style.cssText = `width:${d}px;height:${d}px;left:${e.clientX - r.left - d/2}px;top:${e.clientY - r.top - d/2}px;`;
+  el.appendChild(rip);
+  rip.addEventListener('animationend', () => rip.remove());
 }, { passive: true });
 
 // Init
