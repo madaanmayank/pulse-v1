@@ -4882,17 +4882,42 @@ function coachAdvance(){
   coachStep++; runCoach();
 }
 // one document-level capture listener: only a real click INSIDE the target advances
+let coachAdvancing = false;   // debounce — a double-tap must not skip two steps
 document.addEventListener('click', (e)=>{
-  if (!coachActive) return;
+  if (!coachActive || coachAdvancing) return;
   const s = coachSteps[coachStep];
   if (s.advance !== 'click' || !s.sel) return;
   const t = document.querySelector(s.sel);
-  if (t && (t === e.target || t.contains(e.target))) setTimeout(coachAdvance, 380);
+  if (t && (t === e.target || t.contains(e.target))) { coachAdvancing = true; setTimeout(coachAdvance, 380); }
 }, true);
 document.addEventListener('keydown', (e)=>{ if(coachActive && e.key==='Escape') endFollow(); });
 
+/* Hard interaction shield — while the tour runs, ONLY two things are tappable:
+   the tip card itself, and (on click steps) the highlighted target.
+   Everything else is swallowed so stray taps can never derail the tour. */
+function coachGuard(e){
+  if (!coachActive) return;
+  if (e.target.closest && e.target.closest('#coach-tip')) return;        // tour controls
+  const s = coachSteps[coachStep];
+  if (s && s.advance === 'click' && s.sel){
+    const t = document.querySelector(s.sel);
+    if (t && (t === e.target || t.contains(e.target))) return;           // the one intended action
+  }
+  e.stopPropagation();
+  e.preventDefault();
+}
+['click','dblclick','pointerdown','pointerup','mousedown','mouseup','touchstart'].forEach(ev =>
+  document.addEventListener(ev, coachGuard, { capture: true, passive: false }));
+
 function runCoach(){
   if (coachWait){ clearTimeout(coachWait); coachWait=null; }
+  coachAdvancing = false;
+  // shield the whole screen while views/modals settle — stale cutouts must not leak clicks
+  const T = document.getElementById('coach-t');
+  if (T){
+    T.style.cssText = 'display:block;left:0;top:0;width:100vw;height:100vh;';
+    ['coach-r','coach-b','coach-l'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display='none'; });
+  }
   const s = coachSteps[coachStep];
   if (s.pre) { try { s.pre(); } catch(e){} }
   waitForCoachEl(s, 0);
