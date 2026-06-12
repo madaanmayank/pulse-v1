@@ -2026,6 +2026,81 @@
   }
   .coach-back:hover { color: var(--text); border-color: var(--text-faint); }
   .coach-back i[data-lucide] { width: 15px; height: 15px; }
+  .coach-done-ic {
+    width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-ink); background: var(--accent);
+    box-shadow: 0 8px 30px -8px rgba(216,195,154,0.65);
+    animation: numPop 0.45s cubic-bezier(0.25,1.3,0.4,1) both;
+  }
+  .coach-done-ic i[data-lucide] { width: 26px; height: 26px; }
+  .coach-tip.finale { text-align: center; }
+  .coach-tip.finale .coach-k { margin-left: auto; margin-right: auto; }
+  .coach-fin-hint { font-size: 11px; color: var(--text-faint); margin-top: 12px; }
+
+  /* ═══════════ TABLE-ASSIGNMENT CINEMATIC ═══════════ */
+  .curate-overlay {
+    position: fixed; inset: 0; z-index: 380;
+    display: none; align-items: center; justify-content: center; padding: 24px;
+    background: rgba(8,7,5,0.82);
+    backdrop-filter: blur(16px) saturate(130%);
+    -webkit-backdrop-filter: blur(16px) saturate(130%);
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .curate-overlay.show { opacity: 1; }
+  .curate-card { text-align: center; max-width: 440px; width: 100%; }
+  .curate-kicker {
+    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
+    color: var(--accent-ink);
+    background: linear-gradient(110deg, var(--accent) 28%, var(--accent-soft) 44%, #fdf4df 50%, var(--accent-soft) 56%, var(--accent) 72%);
+    background-size: 220% 100%;
+    padding: 5px 11px; border-radius: 999px;
+    animation: aiShimmer 3.5s ease-in-out infinite;
+  }
+  .curate-kicker i[data-lucide] { width: 12px; height: 12px; }
+  .curate-table {
+    font-family: var(--font-mono); font-size: 66px; font-weight: 600;
+    color: var(--accent); letter-spacing: -0.04em; line-height: 1;
+    text-shadow: 0 0 36px rgba(216,195,154,0.4);
+    animation: numPop 0.45s cubic-bezier(0.25,1.3,0.4,1) both;
+  }
+  .curate-name { font-family: var(--font-display); font-size: 31px; font-weight: 600; margin: 8px 0 28px; }
+  .curate-rows { display: flex; flex-direction: column; gap: 13px; width: fit-content; margin: 0 auto; text-align: left; }
+  .cur-row {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 14.5px; font-weight: 500; color: var(--text-faint);
+    opacity: 0; transform: translateY(7px); transition: all 0.32s cubic-bezier(0.2,0.7,0.2,1);
+  }
+  .cur-row.active { opacity: 1; transform: none; color: var(--text-dim); }
+  .cur-row.done { color: var(--text); }
+  .cur-ic {
+    width: 23px; height: 23px; border-radius: 50%; flex: none;
+    display: inline-flex; align-items: center; justify-content: center; background: var(--surface-3);
+  }
+  .cur-ic i[data-lucide] { width: 12px; height: 12px; }
+  .cur-row.done .cur-ic { background: var(--green-bg); color: var(--green); }
+  .cur-spin {
+    width: 11px; height: 11px; border-radius: 50%;
+    border: 2px solid rgba(216,195,154,0.22); border-top-color: var(--accent);
+    animation: curSpin 0.65s linear infinite;
+  }
+  @keyframes curSpin { to { transform: rotate(360deg); } }
+  .curate-ready {
+    margin-top: 26px; display: inline-flex; align-items: center; gap: 8px;
+    color: var(--accent-ink); background: var(--accent);
+    font-weight: 700; font-size: 13px; padding: 10px 20px; border-radius: 999px;
+    opacity: 0; transform: scale(0.92);
+    transition: all 0.32s cubic-bezier(0.25,1.3,0.4,1);
+    box-shadow: 0 8px 28px -8px rgba(216,195,154,0.65);
+  }
+  .curate-ready.show { opacity: 1; transform: none; }
+  /* the assigned table flashes champagne so the waiter's eye lands on it */
+  .table-tile.assigned-flash { border-color: var(--accent) !important; animation: assignedPulse 0.75s ease-in-out 2 !important; }
+  @keyframes assignedPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(216,195,154,0.5); }
+    50% { box-shadow: 0 0 0 14px rgba(216,195,154,0); }
+  }
 
   /* ═══════════ CARD DESIGN LAB (compare iterations) ═══════════ */
   .cardlab-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; gap:16px; }
@@ -3082,7 +3157,7 @@ function renderTile(t, pol) {
     return `<div class="tile-glyph ${color}">${ic(ICONS[g.glyph] || 'circle')}</div>`;
   }).join('')}</div>` : '';
 
-  return `<div class="table-tile ${t.status}" data-id="${t.id}" onclick="openTableModal(${t.id})">
+  return `<div class="table-tile ${t.status} ${state.assignedFlash===t.id?'assigned-flash':''}" data-id="${t.id}" onclick="openTableModal(${t.id})">
     <div class="tile-top">
       <div class="tile-num">${t.id}</div>
       ${glyphHtml}
@@ -3292,7 +3367,7 @@ function renderMapTable(t, pol, room) {
   const {w,h,shape} = tblSize(t.cap);
   const pax = t.status==='empty' ? 0 : paxOf(t);
   const sel = state.editLayout && state.mergeSel.includes(t.id) ? 'sel' : '';
-  const fresh = state.justAdded === t.id ? 'just-added' : '';
+  const fresh = (state.justAdded === t.id || state.assignedFlash === t.id) ? 'just-added' : '';
   const glyphs = tileGlyphs(t, pol); const g = glyphs[0];
   const gColor = g ? (g.cat==='allergy'?'red':g.cat==='occasion'?'amber':g.cat==='vip'?'gold':'amber') : '';
   let badge = g ? `<div class="tbl-badge ${gColor}">${ic(ICONS[g.glyph]||'circle')}</div>` : '';
@@ -4169,11 +4244,73 @@ function confirmSeat() {
   }
 
   const who = g ? g.name.split(' ')[0] : (typedName || 'guest');
-  toast(`Table ${id} open · ${who} seated`, 'success');
   state.pendingReservation = null;
   closeModal('seat-modal');
   renderFloor();
   if (state.view === 'reservations') renderReservations();
+  // cinematic: profile → preferences → curated evening, then take the waiter to the table
+  curateAndReveal(id, who);
+}
+
+/* ═══ TABLE-ASSIGNMENT CINEMATIC ═══
+   Plays the moment a table is opened: loads the guest's world in three beats,
+   then redirects the waiter — flash the assigned table and open it, fast.
+   Pure timed animation: works identically with touch, no hover needed. */
+function curateAndReveal(tableId, who) {
+  let ov = document.getElementById('curate-overlay');
+  if (!ov) { ov = document.createElement('div'); ov.id = 'curate-overlay'; ov.className = 'curate-overlay'; document.body.appendChild(ov); }
+  const isNew = !who || who === 'guest';
+  const rows = [
+    [isNew ? 'Creating a guest profile' : `Loading ${who}’s profile`, 'user-round'],
+    ['Reading preferences & allergies', 'heart'],
+    ['Curating their evening', 'sparkles'],
+  ];
+  ov.innerHTML = `<div class="curate-card">
+      <div class="curate-kicker">${ic('sparkles')} Pulse AI</div>
+      <div class="curate-table">T${tableId}</div>
+      <div class="curate-name">${isNew ? 'New guest' : who}</div>
+      <div class="curate-rows">${rows.map((r, i) => `<div class="cur-row" id="cur-${i}"><span class="cur-ic"><span class="cur-spin"></span></span><span>${r[0]}</span></div>`).join('')}</div>
+      <div class="curate-ready" id="curate-ready">${ic('check','sm')} Table ${tableId} is ready</div>
+    </div>`;
+  ov.style.display = 'flex';
+  void ov.offsetWidth;             // reflow so the fade-in transition always runs
+  ov.classList.add('show');
+  refreshIcons();
+
+  const START = 140, STEP = 400;
+  const finishRow = (i) => {
+    const el = document.getElementById('cur-' + i); if (!el) return;
+    el.classList.add('done');
+    el.querySelector('.cur-ic').innerHTML = ic('check','xs');
+    refreshIcons();
+  };
+  rows.forEach((_, i) => setTimeout(() => {
+    const el = document.getElementById('cur-' + i); if (!el) return;
+    el.classList.add('active');
+    if (i > 0) finishRow(i - 1);
+  }, START + i * STEP));
+  const rowsDone = START + rows.length * STEP;
+  setTimeout(() => {
+    finishRow(rows.length - 1);
+    const rd = document.getElementById('curate-ready'); if (rd) rd.classList.add('show');
+  }, rowsDone);
+
+  setTimeout(() => {
+    ov.classList.remove('show');
+    setTimeout(() => { ov.style.display = 'none'; }, 300);
+    if (coachActive) { toast(`Table ${tableId} open · ${isNew ? 'guest' : who} seated`, 'success'); return; }  // the tour drives what happens next
+    // redirect: land the waiter on the table
+    if (state.view !== 'floor') switchView('floor');
+    state.assignedFlash = tableId;
+    renderFloor();
+    const el = document.querySelector(`#floor-content [data-id="${tableId}"]`);
+    if (el) el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    setTimeout(() => {
+      state.assignedFlash = null;
+      openTableModal(tableId);
+      renderFloor();
+    }, 740);
+  }, rowsDone + 560);
 }
 
 function seatAnonymous() {
@@ -4905,6 +5042,8 @@ function coachGuard(e){
   }
   e.stopPropagation();
   e.preventDefault();
+  // finale: a tap anywhere closes the tour (still swallowed so nothing underneath fires)
+  if (s && s.advance === 'done' && e.type === 'click') endFollow();
 }
 ['click','dblclick','pointerdown','pointerup','mousedown','mouseup','touchstart'].forEach(ev =>
   document.addEventListener(ev, coachGuard, { capture: true, passive: false }));
@@ -4957,21 +5096,31 @@ function placeCoach(el, s){
 function coachTipHtml(s){
   const isClick = s.advance==='click', isDone = s.advance==='done';
   const dots = coachSteps.map((_,i)=>`<span class="cdot ${i<coachStep?'past':''} ${i===coachStep?'on':''}"></span>`).join('');
+  if (isDone) return `<div class="coach-done-ic">${ic('badge-check')}</div>
+    <div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
+    <h4>${s.title}</h4><p>${s.body}</p>
+    <div class="coach-dots">${dots}</div>
+    <div class="coach-foot">
+      <button class="coach-next ghost" onclick="startFollow()">${ic('rotate-ccw','xs')} Replay</button>
+      <button class="coach-next" onclick="coachAdvance()">Finish</button>
+    </div>
+    <div class="coach-fin-hint">or tap anywhere to close</div>`;
   return `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
     <h4>${s.title}</h4><p>${s.body}</p>
     <div class="coach-dots">${dots}</div>
     <div class="coach-foot">
       <button class="coach-skip" onclick="endFollow()">Skip tour</button>
       <div class="coach-foot-r">
-        ${coachStep>0 && !isDone ? `<button class="coach-back" onclick="coachBack()" title="Back">${ic('chevron-left')}</button>` : ''}
+        ${coachStep>0 ? `<button class="coach-back" onclick="coachBack()" title="Back">${ic('chevron-left')}</button>` : ''}
         ${isClick ? `<span class="coach-hint">${ic('mouse-pointer-click')} Tap it</span><button class="coach-next ghost" onclick="coachAdvance()">Do it for me</button>`
-                  : `<button class="coach-next" onclick="coachAdvance()">${isDone?'Finish':'Next'}</button>`}
+                  : `<button class="coach-next" onclick="coachAdvance()">Next</button>`}
       </div>
     </div>`;
 }
 
 function positionTip(r, s){
   const tip=document.getElementById('coach-tip');
+  tip.classList.toggle('finale', s.advance==='done');
   tip.innerHTML = coachTipHtml(s);
   tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
   const tw=330, th=tip.offsetHeight||170, gap=16, vw=innerWidth, vh=innerHeight;
@@ -4997,6 +5146,7 @@ function positionCenter(s){
   const ring=document.getElementById('coach-ring'); ring.style.display='none';
   const tip=document.getElementById('coach-tip');
   tip.style.display='block';
+  tip.classList.toggle('finale', s.advance==='done');
   tip.innerHTML = coachTipHtml(s);
   tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
   const tw=330, th=tip.offsetHeight||170;
