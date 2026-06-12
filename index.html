@@ -795,6 +795,15 @@
     align-items: center;
     gap: 18px;
   }
+  /* the whole guest strip is tappable — briefing or add-info */
+  .party-header.clickable { cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.2s; }
+  .party-header.clickable:hover {
+    border-color: rgba(216,195,154,0.4);
+    background: linear-gradient(180deg, rgba(216,195,154,0.045), rgba(216,195,154,0.01)), var(--surface-2);
+    transform: translateY(-1px);
+  }
+  .ph-go { margin-left: auto; color: var(--text-faint); flex-shrink: 0; transition: color 0.2s, transform 0.2s; }
+  .party-header.clickable:hover .ph-go { color: var(--accent); transform: translateX(3px); }
   .party-avatar-stack { display: flex; }
   .party-avatar {
     width: 44px; height: 44px;
@@ -1964,32 +1973,59 @@
   .tut-input .cursor { display:inline-block; width:1px; background:var(--accent); animation: blink 1s step-end infinite; }
   @keyframes blink { 50% { opacity: 0; } }
 
-  /* ═══════════ FOLLOW-ALONG COACH MARKS ═══════════ */
-  .coach-panel { position: fixed; background: rgba(6,6,8,0.74); z-index: 340; transition: all 0.25s ease; }
+  /* ═══════════ FOLLOW-ALONG COACH MARKS (v2) ═══════════ */
+  .coach-panel { position: fixed; background: rgba(6,5,4,0.7); backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); z-index: 340; transition: all 0.28s cubic-bezier(0.2,0.7,0.2,1); }
   .coach-ring {
-    position: fixed; z-index: 341; border: 2px solid var(--accent); border-radius: 12px;
-    box-shadow: 0 0 0 4px rgba(216,195,154,0.22); pointer-events: none; transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
+    position: fixed; z-index: 341; border: 2px solid var(--accent); border-radius: 14px;
+    box-shadow: 0 0 0 4px rgba(216,195,154,0.22), 0 0 30px rgba(216,195,154,0.2);
+    pointer-events: none; transition: all 0.28s cubic-bezier(0.2,0.7,0.2,1);
   }
   .coach-ring.click { animation: ringPulse 1.4s ease-in-out infinite; }
-  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(216,195,154,0.22); } 50% { box-shadow: 0 0 0 8px rgba(216,195,154,0.10); } }
+  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(216,195,154,0.25), 0 0 30px rgba(216,195,154,0.2); } 50% { box-shadow: 0 0 0 10px rgba(216,195,154,0.06), 0 0 40px rgba(216,195,154,0.3); } }
   .coach-tip {
-    position: fixed; z-index: 342; background: var(--surface); border: 1px solid var(--border-strong);
-    border-radius: 14px; padding: 16px 18px; width: 300px; box-shadow: var(--shadow-lg);
-    transition: all 0.25s cubic-bezier(0.2,0.7,0.2,1);
+    position: fixed; z-index: 342;
+    background:
+      radial-gradient(130% 100% at 50% -10%, rgba(216,195,154,0.08), transparent 55%),
+      rgba(26,23,19,0.92);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(216,195,154,0.22);
+    border-radius: 18px; padding: 20px 22px 16px; width: 330px;
+    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,247,232,0.07);
+    transition: left 0.3s cubic-bezier(0.2,0.7,0.2,1), top 0.3s cubic-bezier(0.2,0.7,0.2,1);
   }
-  .coach-k { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; font-weight: 700; color: var(--accent); display:flex; align-items:center; gap:6px; margin-bottom: 8px; }
-  .coach-k i[data-lucide] { width: 13px; height: 13px; }
-  .coach-tip h4 { font-family: var(--font-display); font-size: 24px; font-weight: 600; letter-spacing: 0; margin-bottom: 6px; }
-  .coach-tip p { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+  .coach-tip.pop { animation: coachPop 0.34s cubic-bezier(0.25,1.2,0.35,1) both; }
+  @keyframes coachPop { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: none; } }
+  .coach-k {
+    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 1.3px; font-weight: 700;
+    color: var(--accent-ink); background: var(--accent); padding: 4px 10px; border-radius: 999px;
+  }
+  .coach-k i[data-lucide] { width: 12px; height: 12px; }
+  .coach-tip h4 { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: 0; margin-bottom: 7px; }
+  .coach-tip p { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
   .coach-tip p strong { color: var(--text); font-weight: 600; }
-  .coach-foot { display:flex; align-items:center; justify-content:space-between; margin-top: 14px; gap: 10px; }
-  .coach-count { font-size: 11px; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+  .coach-dots { display: flex; gap: 5px; margin: 15px 0 13px; }
+  .coach-dots .cdot { height: 3px; flex: 1; border-radius: 2px; background: var(--surface-4); transition: background 0.25s; }
+  .coach-dots .cdot.past { background: rgba(216,195,154,0.45); }
+  .coach-dots .cdot.on { background: var(--accent); box-shadow: 0 0 8px rgba(216,195,154,0.5); }
+  .coach-foot { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
+  .coach-foot-r { display:flex; align-items:center; gap: 8px; }
   .coach-hint { font-size: 12px; color: var(--accent); font-weight: 600; display:inline-flex; align-items:center; gap:6px; }
   .coach-hint i[data-lucide] { width: 13px; height: 13px; animation: tapNudge 1.2s ease-in-out infinite; }
   @keyframes tapNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
   .coach-skip { font-size: 12px; color: var(--text-faint); }
   .coach-skip:hover { color: var(--text-dim); }
-  .coach-next { background: var(--accent); color: #2b2112; font-weight: 600; font-size: 13px; padding: 8px 14px; border-radius: 9px; }
+  .coach-next { background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 9px; box-shadow: 0 3px 12px -4px rgba(216,195,154,0.55); transition: all 0.15s; }
+  .coach-next:hover { background: var(--accent-soft); }
+  .coach-next.ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border-strong); box-shadow: none; padding: 8px 13px; }
+  .coach-next.ghost:hover { color: var(--text); border-color: var(--text-faint); }
+  .coach-back {
+    width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border-strong);
+    color: var(--text-dim); display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .coach-back:hover { color: var(--text); border-color: var(--text-faint); }
+  .coach-back i[data-lucide] { width: 15px; height: 15px; }
 
   /* ═══════════ CARD DESIGN LAB (compare iterations) ═══════════ */
   .cardlab-head { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:28px; gap:16px; }
@@ -2345,8 +2381,8 @@
   <button class="add-btn" onclick="openGuestInfoModal()"><i data-lucide="user-plus" class="sm"></i> <span class="btn-lbl">Add Guest Info</span></button>
   <div class="clock" id="clock">19:24</div>
   <div class="phase-switch" id="phase-switch">
-    <button data-phase="1" class="active">PHASE 1</button>
-    <button data-phase="2">PHASE 2</button>
+    <button data-phase="1">PHASE 1</button>
+    <button data-phase="2" class="active">PHASE 2</button>
   </div>
 </div>
 
@@ -2848,7 +2884,7 @@ const reservations = [
   { time:'20:30', name:'James Tan', phone:'+65 9777 6666', party:4, table:4, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'' },
 ];
 
-const state = { phase:1, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true };
+const state = { phase:2, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true };
 
 function toggleTheme() {
   state.theme = state.theme === 'glass' ? 'solid' : 'glass';
@@ -3450,10 +3486,10 @@ function openTableModal(id) {
         </div>`;
       })() : ''}
 
-      ${headerGuest ? `<div class="party-header">
+      ${headerGuest ? `<div class="party-header clickable" onclick="openGuestBriefing('${t.party[0]}')" title="Open guest briefing">
         <div class="party-avatar-stack">
           ${t.party.map(gid => guests[gid] ? `<div class="party-avatar" onclick="event.stopPropagation(); openGuestBriefing('${gid}')">${guests[gid].initials}</div>` : '').join('')}
-          ${t.party.length < t.cap ? `<div class="party-avatar add" onclick="openGuestInfoModal()" title="Add guest">+</div>` : ''}
+          ${t.party.length < t.cap ? `<div class="party-avatar add" onclick="event.stopPropagation(); openGuestInfoModal()" title="Add guest">+</div>` : ''}
         </div>
         <div class="party-info">
           <div class="party-name-row">
@@ -3467,15 +3503,17 @@ function openTableModal(id) {
             <div class="meta-chip"><span class="spend-tier" style="font-size: 13px; letter-spacing: 1px;">${'$'.repeat(headerGuest.spend)}</span> <span style="color: var(--text-faint); font-size: 11px;">avg $${headerGuest.avgPerCover}</span></div>
           </div>
         </div>
-      </div>` : `<div class="party-header">
-        <div class="party-avatar-stack"><div class="party-avatar add" onclick="openGuestInfoModal()">+</div></div>
+        <div class="ph-go">${ic('chevron-right','lg')}</div>
+      </div>` : `<div class="party-header clickable" onclick="openGuestInfoModal()" title="Add guest info">
+        <div class="party-avatar-stack"><div class="party-avatar add" onclick="event.stopPropagation(); openGuestInfoModal()">+</div></div>
         <div class="party-info">
           <div class="party-name-row"><div class="party-name">${t.guestName || 'Walk-in'}</div></div>
           <div class="party-meta-row">
             <div class="meta-chip">${ic('users','sm')} <strong>${pax}</strong> ${pax===1?'guest':'guests'}</div>
-            <div class="meta-chip">${ic('user-plus','sm')} ${t.guestName? 'Walk-in' : 'No profile yet'}</div>
+            <div class="meta-chip">${ic('user-plus','sm')} ${t.guestName? 'Walk-in · tap to add details' : 'No profile yet · tap to add'}</div>
           </div>
         </div>
+        <div class="ph-go">${ic('chevron-right','lg')}</div>
       </div>`}
 
       ${renderJourney(t)}
@@ -4785,37 +4823,41 @@ document.addEventListener('keydown', e=>{
 /* ════════════════════════════════════════════════════════
    FOLLOW-ALONG — click-through coach marks over the real UI
    ════════════════════════════════════════════════════════ */
-let coachStep = 0, coachActive = false, coachHandler = null, coachEl = null;
+let coachStep = 0, coachActive = false, coachWait = null;
 
 function setPhase(p){ state.phase=p; document.querySelectorAll('#phase-switch button').forEach(b=>b.classList.toggle('active', b.dataset.phase==p)); applyPhase(); }
 
+/* ═══ Follow-along v2 — every step verifies its own outcome, so it can never desync.
+   Click steps also offer "Next": pressing it performs the action for you (post). ═══ */
 const coachSteps = [
-  { sel:'.nav-tab[data-view="reservations"]', advance:'click',
-    pre:()=>{ closeAllModals(); setPhase(2); state.layout='grid'; switchView('floor'); },
-    k:['calendar','Step 1'], title:'Open Reservations', body:'Every shift starts with tonight\'s bookings. <strong>Tap Reservations.</strong>' },
-  { sel:'#reservations-content .res-card', advance:'click',
-    pre:()=>{ switchView('reservations'); },
-    k:['user','Step 2'], title:'Open a guest', body:'These are tonight\'s bookings. <strong>Tap a guest</strong> to see their briefing card.' },
-  { sel:'#guest-modal .modal', advance:'next', place:'right',
-    k:['id-card','Step 3'], title:'The briefing card', body:'Allergies first, then the occasion, then what to suggest. You glance — you never read.' },
-  { sel:'#seat-cta', advance:'click',
-    pre:()=>{ closeModal('guest-modal'); switchView('floor'); },
-    k:['armchair','Step 4'], title:'Seat a guest', body:'A guest arrives. <strong>Tap “Seat a Guest”</strong> to open a table.' },
-  { sel:'#seat-modal .modal', advance:'next', place:'left',
-    pre:()=>{ const ph=document.getElementById('seat-phone'); if(ph){ ph.value='+65 9234 5678'; seatLookup('+65 9234 5678','phone'); } },
-    k:['user-check','Step 5'], title:'Recognised instantly', body:'Type a phone and a <strong>returning guest is recognised</strong> — name & preferences auto-fill. Set pax, then continue.' },
-  { sel:'#seat-modal .btn.primary', advance:'click',
-    k:['check','Step 6'], title:'Open the table', body:'<strong>Tap “Open Table”</strong> — the table goes live with their profile attached.' },
-  { sel:'.table-tile[data-id="5"]', advance:'click',
-    pre:()=>{ closeAllModals(); switchView('floor'); },
-    k:['layout-grid','Step 7'], title:'Manage a table', body:'Back on the floor. <strong>Tap a seated table</strong> to see what to do next.' },
+  { sel:'.table-tile[data-id="1"]', advance:'click',
+    pre:()=>{ closeAllModals(); setPhase(2); state.layout='grid'; state.zone='all'; switchView('floor'); },
+    post:()=>{ if(!document.getElementById('table-modal').classList.contains('show')) openTableModal(1); },
+    k:['layout-grid','Step 1'], title:'Every table, one glance', body:'Live cards for the whole room — status bar, course, party size. <strong>Tap Table 1.</strong>' },
+  { sel:'#table-modal .ai-summary', advance:'next', place:'bottom',
+    k:['sparkles','Step 2'], title:'Pulse AI briefs you', body:'Allergies, occasion, pace — one glanceable brief that <strong>rewrites itself live</strong> as the table orders.' },
   { sel:'#table-modal .tcol.plan', advance:'next', place:'left',
-    k:['chef-hat','Step 8'], title:'What to bring next', body:'Pulse lays out the next move — <strong>named dishes, quantities for the table, allergy-safe</strong>. It updates as their order lands.' },
-  { sel:'#view-toggle button[data-layout="map"]', advance:'click',
+    k:['chef-hat','Step 3'], title:'What to bring next', body:'Named dishes, quantities scaled to the party, always allergy-safe. <strong>Shuffle</strong> re-rolls the picks.' },
+  { sel:'#table-modal .party-header', advance:'next', place:'bottom',
+    k:['users','Step 4'], title:'The guest section', body:'<strong>Tap anywhere on this strip</strong> to open the guest\'s full briefing — or add who else sat down.' },
+  { sel:'#seat-cta', advance:'click',
     pre:()=>{ closeAllModals(); switchView('floor'); },
-    k:['map','Step 9'], title:'Your real floor', body:'<strong>Tap Map</strong> to see the room as it actually is — and merge tables for big parties in Edit.' },
+    post:()=>{ if(!document.getElementById('seat-modal').classList.contains('show')) openSeatPicker(); },
+    k:['armchair','Step 5'], title:'Seat a guest', body:'A walk-in arrives. <strong>Tap “Seat a Guest”.</strong>' },
+  { sel:'#seat-modal .seat-match-card', advance:'next', place:'bottom',
+    pre:()=>{ const ph=document.getElementById('seat-phone'); if(ph){ ph.value='+65 9234 5678'; seatLookup('+65 9234 5678','phone'); } },
+    k:['user-check','Step 6'], title:'Recognised instantly', body:'A phone number pulls the profile — <strong>name, visits and allergies auto-fill</strong>. Reservations match too.' },
+  { sel:'#seat-modal .btn.primary', advance:'click',
+    post:()=>{ if(document.getElementById('seat-modal').classList.contains('show')) confirmSeat(); },
+    k:['check','Step 7'], title:'Open the table', body:'<strong>Tap “Open Table”</strong> — it goes live with the guest\'s profile attached.' },
+  { sel:'.nav-tab[data-view="reservations"]', advance:'click',
+    pre:()=>{ closeAllModals(); },
+    post:()=>{ if(state.view!=='reservations') switchView('reservations'); },
+    k:['calendar','Step 8'], title:'Tonight\'s book', body:'<strong>Tap Reservations</strong> — every booking with occasions, allergies and history.' },
+  { sel:'#view-reservations .search-bar', advance:'next', place:'bottom',
+    k:['search','Step 9'], title:'Find anyone', body:'Search by name, table, occasion or allergy — even guests who booked without a profile.' },
   { sel:null, advance:'done',
-    k:['check-circle','Done'], title:'That\'s the whole loop', body:'Recognise → suggest → serve → turn. Replay anytime from the ? button.' },
+    k:['check-circle','Done'], title:'That\'s the loop', body:'Glance → recognise → serve → turn. Replay anytime from the <strong>?</strong> button.' },
 ];
 
 function closeAllModals(){ document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show')); }
@@ -4830,24 +4872,46 @@ function setCoachVisible(v){
   ['coach-t','coach-r','coach-b','coach-l','coach-ring','coach-tip'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display = v?'block':'none'; });
 }
 function startFollow(){ const ov=document.getElementById('tut-overlay'); if(ov) ov.classList.remove('show'); ensureCoachDom(); coachStep=0; coachActive=true; setCoachVisible(true); runCoach(); }
-function endFollow(){ coachActive=false; setCoachVisible(false); detachCoachClick(); try{localStorage.setItem('pulse_tut_seen','1')}catch(e){} }
-function detachCoachClick(){ if(coachHandler&&coachEl){ coachEl.removeEventListener('click', coachHandler, true); coachHandler=null; coachEl=null; } }
-function coachNext(){ detachCoachClick(); if(coachStep>=coachSteps.length-1){ endFollow(); return; } coachStep++; runCoach(); }
+function endFollow(){ coachActive=false; if(coachWait){clearTimeout(coachWait); coachWait=null;} setCoachVisible(false); try{localStorage.setItem('pulse_tut_seen','1')}catch(e){} }
+function coachBack(){ if(coachStep>0){ coachStep--; runCoach(); } }
+// advance = run this step's post (so the demo state is guaranteed), then move on
+function coachAdvance(){
+  const s = coachSteps[coachStep];
+  if (s.post) { try { s.post(); } catch(e){} }
+  if (coachStep >= coachSteps.length-1){ endFollow(); return; }
+  coachStep++; runCoach();
+}
+// one document-level capture listener: only a real click INSIDE the target advances
+document.addEventListener('click', (e)=>{
+  if (!coachActive) return;
+  const s = coachSteps[coachStep];
+  if (s.advance !== 'click' || !s.sel) return;
+  const t = document.querySelector(s.sel);
+  if (t && (t === e.target || t.contains(e.target))) setTimeout(coachAdvance, 380);
+}, true);
+document.addEventListener('keydown', (e)=>{ if(coachActive && e.key==='Escape') endFollow(); });
 
 function runCoach(){
+  if (coachWait){ clearTimeout(coachWait); coachWait=null; }
   const s = coachSteps[coachStep];
-  if (s.pre) s.pre();
-  // let DOM settle (view switches / modals), then position
-  setTimeout(()=>{
-    if (s.advance==='done' || !s.sel){ positionCenter(s); return; }
-    const el = document.querySelector(s.sel);
-    if (!el){ // brief retry then center fallback
-      setTimeout(()=>{ const e2=document.querySelector(s.sel); if(e2) placeCoach(e2,s); else positionCenter(s); }, 200);
-      return;
-    }
-    el.scrollIntoView({block:'center', inline:'center'});
-    setTimeout(()=>placeCoach(el, s), 180);
-  }, s.pre ? 300 : 60);
+  if (s.pre) { try { s.pre(); } catch(e){} }
+  waitForCoachEl(s, 0);
+}
+// poll until the target exists AND is visible; fall back to a centered card (with Next) so you can never get stuck
+function waitForCoachEl(s, tries){
+  if (!coachActive || s !== coachSteps[coachStep]) return;
+  if (s.advance==='done' || !s.sel){ positionCenter(s); return; }
+  const el = document.querySelector(s.sel);
+  const r = el && el.getBoundingClientRect();
+  const visible = el && r && r.width > 2 && r.height > 2;
+  if (visible){
+    el.scrollIntoView({ block:'center', inline:'nearest' });
+    setTimeout(()=>{ if (coachActive && s === coachSteps[coachStep]) placeCoach(el, s); }, 200);
+  } else if (tries < 25){
+    coachWait = setTimeout(()=>waitForCoachEl(s, tries+1), 90);
+  } else {
+    positionCenter(s);   // target never appeared — show the card centered, Next still works
+  }
 }
 
 function placeCoach(el, s){
@@ -4863,46 +4927,77 @@ function placeCoach(el, s){
   ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
   ring.className = 'coach-ring' + (s.advance==='click'?' click':'');
   positionTip(r, s);
-  if (s.advance==='click'){ coachEl=el; coachHandler=()=>{ setTimeout(coachNext, 420); }; el.addEventListener('click', coachHandler, true); }
+}
+
+function coachTipHtml(s){
+  const isClick = s.advance==='click', isDone = s.advance==='done';
+  const dots = coachSteps.map((_,i)=>`<span class="cdot ${i<coachStep?'past':''} ${i===coachStep?'on':''}"></span>`).join('');
+  return `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
+    <h4>${s.title}</h4><p>${s.body}</p>
+    <div class="coach-dots">${dots}</div>
+    <div class="coach-foot">
+      <button class="coach-skip" onclick="endFollow()">Skip tour</button>
+      <div class="coach-foot-r">
+        ${coachStep>0 && !isDone ? `<button class="coach-back" onclick="coachBack()" title="Back">${ic('chevron-left')}</button>` : ''}
+        ${isClick ? `<span class="coach-hint">${ic('mouse-pointer-click')} Tap it</span><button class="coach-next ghost" onclick="coachAdvance()">Do it for me</button>`
+                  : `<button class="coach-next" onclick="coachAdvance()">${isDone?'Finish':'Next'}</button>`}
+      </div>
+    </div>`;
 }
 
 function positionTip(r, s){
   const tip=document.getElementById('coach-tip');
-  const isClick = s.advance==='click';
-  tip.innerHTML = `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
-    <h4>${s.title}</h4><p>${s.body}</p>
-    <div class="coach-foot">
-      <button class="coach-skip" onclick="endFollow()">Skip</button>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="coach-count">${coachStep+1}/${coachSteps.length}</span>
-        ${isClick ? `<span class="coach-hint">${ic('mouse-pointer-click')} Tap it</span>` : `<button class="coach-next" onclick="coachNext()">${s.advance==='done'?'Finish':'Next'}</button>`}
-      </div>
-    </div>`;
-  const tw=300, th=tip.offsetHeight||150, gap=14, vw=innerWidth, vh=innerHeight;
+  tip.innerHTML = coachTipHtml(s);
+  tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
+  const tw=330, th=tip.offsetHeight||170, gap=16, vw=innerWidth, vh=innerHeight;
   let left, top;
   const place = s.place || 'auto';
   if (place==='right' && r.right+gap+tw < vw){ left=r.right+gap; top=Math.min(Math.max(12,r.top), vh-th-12); }
   else if (place==='left' && r.left-gap-tw > 0){ left=r.left-gap-tw; top=Math.min(Math.max(12,r.top), vh-th-12); }
+  else if (place==='bottom' && r.bottom+gap+th < vh){ left=Math.min(Math.max(12,r.left+r.width/2-tw/2), vw-tw-12); top=r.bottom+gap; }
   else if (r.bottom+gap+th < vh){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.bottom+gap; }
   else if (r.top-gap-th > 0){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.top-gap-th; }
-  else { left=(vw-tw)/2; top=vh-th-20; }
+  else if (r.right+gap+tw < vw){ left=r.right+gap; top=Math.min(Math.max(12,r.top), vh-th-12); }
+  else if (r.left-gap-tw > 0){ left=r.left-gap-tw; top=Math.min(Math.max(12,r.top), vh-th-12); }
+  else { left=(vw-tw)/2; top=vh-th-24; }
+  left = Math.min(Math.max(10, left), vw-tw-10);
+  top = Math.min(Math.max(10, top), vh-th-10);
   tip.style.left=left+'px'; tip.style.top=top+'px';
   refreshIcons();
 }
 
 function positionCenter(s){
   setCoachVisible(true);
-  ['coach-t','coach-r','coach-b','coach-l'].forEach((id,i)=>{ const e=document.getElementById(id); e.style.display='block'; if(i===0){e.style.cssText='display:block;inset:0;width:100vw;height:100vh;left:0;top:0;';} else e.style.display='none'; });
+  ['coach-t','coach-r','coach-b','coach-l'].forEach((id,i)=>{ const e=document.getElementById(id); if(i===0){e.style.cssText='display:block;left:0;top:0;width:100vw;height:100vh;';} else e.style.display='none'; });
   const ring=document.getElementById('coach-ring'); ring.style.display='none';
   const tip=document.getElementById('coach-tip');
   tip.style.display='block';
-  tip.innerHTML = `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div><h4>${s.title}</h4><p>${s.body}</p>
-    <div class="coach-foot"><span></span><button class="coach-next" onclick="endFollow()">Finish</button></div>`;
-  const tw=300, th=tip.offsetHeight||150;
+  tip.innerHTML = coachTipHtml(s);
+  tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
+  const tw=330, th=tip.offsetHeight||170;
   tip.style.left=(innerWidth-tw)/2+'px'; tip.style.top=(innerHeight-th)/2+'px';
   refreshIcons();
 }
-window.addEventListener('resize', ()=>{ if(coachActive){ const s=coachSteps[coachStep]; if(s.sel){ const el=document.querySelector(s.sel); if(el) placeCoach(el,s); } } });
+// keep the spotlight glued to its target through resize and scroll
+function coachReposition(){
+  if (!coachActive) return;
+  const s = coachSteps[coachStep];
+  if (!s.sel) return;
+  const el = document.querySelector(s.sel);
+  if (el){ const r = el.getBoundingClientRect(); if (r.width>2){
+    const pad=6, vw=innerWidth, vh=innerHeight;
+    const T=document.getElementById('coach-t'), R=document.getElementById('coach-r'), B=document.getElementById('coach-b'), L=document.getElementById('coach-l');
+    T.style.cssText = `display:block;left:0;top:0;width:${vw}px;height:${Math.max(0,r.top-pad)}px`;
+    B.style.cssText = `display:block;left:0;top:${r.bottom+pad}px;width:${vw}px;height:${Math.max(0,vh-r.bottom-pad)}px`;
+    L.style.cssText = `display:block;left:0;top:${r.top-pad}px;width:${Math.max(0,r.left-pad)}px;height:${r.height+pad*2}px`;
+    R.style.cssText = `display:block;left:${r.right+pad}px;top:${r.top-pad}px;width:${Math.max(0,vw-r.right-pad)}px;height:${r.height+pad*2}px`;
+    const ring=document.getElementById('coach-ring');
+    ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
+    ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
+  }}
+}
+window.addEventListener('resize', coachReposition);
+document.addEventListener('scroll', coachReposition, true);
 
 // Cursor-tracking spotlight + 3D tilt — cards lean toward the cursor like place cards
 const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)').matches;
