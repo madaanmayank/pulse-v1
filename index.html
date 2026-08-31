@@ -784,6 +784,283 @@
   .col-action i[data-lucide] { width: 13px; height: 13px; transition: transform 0.4s ease; }
   .col-action:hover i[data-lucide] { transform: rotate(180deg); }
 
+  /* ═══════════════════════════════════════════════════════════
+     ACTION INTELLIGENCE — signal → why → action → done
+     Colour discipline: red = immediate intervention only,
+     amber = needs attention, neutral/champagne = opportunity.
+     The ACTION is always the dominant element, never the reasoning.
+     ═══════════════════════════════════════════════════════════ */
+
+  /* section headers — "NEEDS YOUR ATTENTION" / "OPPORTUNITY" / "GUEST" */
+  .sec-head {
+    display: flex; align-items: center; gap: 11px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 2.2px; font-weight: 700;
+    color: var(--text-faint); margin: 24px 0 12px;
+  }
+  .sec-head:first-child { margin-top: 0; }
+  .sec-head::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-strong), transparent 72%); }
+  .sec-head.urgent { color: var(--red); }
+  .sec-head.urgent::after { background: linear-gradient(90deg, rgba(245,146,138,0.35), transparent 72%); }
+  .sec-head i[data-lucide] { width: 13px; height: 13px; }
+
+  /* ── the action card ── */
+  .act-card {
+    position: relative;
+    background: var(--surface-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--r-md);
+    padding: 16px 18px 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    animation: actIn 0.4s cubic-bezier(0.2,0.7,0.2,1) both;
+  }
+  @keyframes actIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .act-card:last-child { margin-bottom: 0; }
+  /* severity is carried by a left edge + the title colour — never by shouting the whole card */
+  .act-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  }
+  .act-card.red::before { background: linear-gradient(180deg, var(--red), rgba(245,146,138,0.25)); box-shadow: 0 0 16px rgba(245,146,138,0.4); }
+  .act-card.amber::before { background: linear-gradient(180deg, var(--amber), rgba(246,196,99,0.25)); box-shadow: 0 0 16px rgba(246,196,99,0.35); }
+  .act-card.neutral::before { background: linear-gradient(180deg, var(--accent), rgba(216,195,154,0.2)); }
+  .act-card.red { background: linear-gradient(180deg, rgba(245,146,138,0.05), transparent 55%), var(--surface-2); }
+  .act-card.amber { background: linear-gradient(180deg, rgba(246,196,99,0.04), transparent 55%), var(--surface-2); }
+
+  /* service recovery is historical risk, not a live event — visually distinct */
+  .act-card.historical {
+    background:
+      repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(245,146,138,0.035) 10px, rgba(245,146,138,0.035) 20px),
+      var(--surface-2);
+    border-style: dashed;
+  }
+
+  .act-title {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px;
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .act-title i[data-lucide] { width: 15px; height: 15px; flex-shrink: 0; }
+  .act-card.red .act-title { color: var(--red); }
+  .act-card.amber .act-title { color: var(--amber); }
+  .act-card.neutral .act-title { color: var(--accent); }
+  .act-why { font-size: 13.5px; line-height: 1.55; color: var(--text-dim); margin-bottom: 14px; }
+  .act-why strong { color: var(--text); font-weight: 600; }
+
+  /* THE ACTION — the strongest element on the card. Whole bar is one tap target. */
+  .act-do {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    width: 100%; text-align: left;
+    background: var(--accent); color: var(--accent-ink);
+    border: none; border-radius: 11px;
+    padding: 15px 18px;
+    font-family: var(--font-ui);
+    font-size: 15px; font-weight: 700; letter-spacing: -0.005em;
+    box-shadow: 0 5px 18px -6px rgba(216,195,154,0.55);
+    transition: transform 0.16s, box-shadow 0.16s, background 0.16s;
+    cursor: pointer;
+  }
+  .act-do:hover { background: var(--accent-soft); box-shadow: 0 9px 26px -7px rgba(216,195,154,0.65); }
+  .act-do:active { transform: scale(0.985); }
+  .act-do .act-do-lbl { flex: 1; }
+  .act-do .act-do-done {
+    display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+    font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+    background: rgba(43,33,18,0.16); padding: 6px 11px; border-radius: 999px;
+  }
+  .act-do .act-do-done i[data-lucide] { width: 13px; height: 13px; }
+
+  /* manager actions read as escalation, not routine service */
+  .act-card.mgr .act-do { background: linear-gradient(115deg, var(--accent), var(--accent-deep)); }
+
+  /* ── completed state — collapses so resolved noise leaves the screen ── */
+  .act-done-row {
+    display: flex; align-items: center; gap: 9px;
+    font-size: 13px; font-weight: 600; color: var(--green);
+    background: var(--green-bg); border: 1px solid #1d3a2c;
+    border-radius: 10px; padding: 11px 15px; margin-bottom: 10px;
+    animation: doneIn 0.38s cubic-bezier(0.25,1.3,0.4,1) both;
+  }
+  @keyframes doneIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+  .act-done-row i[data-lucide] { width: 15px; height: 15px; }
+  .act-done-row .act-undo { margin-left: auto; font-size: 11px; color: var(--text-faint); font-weight: 500; }
+  .act-done-row .act-undo:hover { color: var(--text-dim); }
+  .act-card.clearing { animation: actOut 0.45s ease forwards; }
+  @keyframes actOut { to { opacity: 0; transform: translateY(-6px); max-height: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; } }
+
+  /* ── "+N more" — extra signals stay collapsed so we never overload ── */
+  .act-more {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim);
+    background: transparent; border: 1px dashed var(--border-strong);
+    border-radius: 10px; padding: 11px 15px; margin-top: 2px;
+    transition: all 0.16s;
+  }
+  .act-more:hover { color: var(--accent); border-color: var(--accent); }
+  .act-more i[data-lucide] { width: 14px; height: 14px; }
+
+  /* ── all clear ── */
+  .act-clear {
+    display: flex; align-items: center; gap: 11px;
+    font-size: 14px; font-weight: 500; color: var(--text-dim);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: var(--r-md); padding: 18px 20px;
+  }
+  .act-clear .ac-ic {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--green-bg); color: var(--green);
+  }
+  .act-clear .ac-ic i[data-lucide] { width: 16px; height: 16px; }
+
+  /* ═══ EXPERIENCE HEALTH ═══ */
+  .health-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.2px;
+    padding: 5px 11px; border-radius: 999px;
+    background: var(--surface-3); color: var(--text-dim);
+  }
+  .health-pill .hdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .health-pill.green { background: var(--green-bg); color: var(--green); }
+  .health-pill.green .hdot { background: var(--green); }
+  .health-pill.amber { background: var(--amber-bg); color: var(--amber); }
+  .health-pill.amber .hdot { background: var(--amber); animation: pulse 2.4s ease-in-out infinite; }
+  .health-pill.red { background: var(--red-bg); color: var(--red); }
+  .health-pill.red .hdot { background: var(--red); animation: pulse 1.5s ease-in-out infinite; }
+
+  /* one primary indicator on the floor tile — dot + action count, never an icon pile */
+  .tile-health {
+    display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  }
+  .tile-health .hdot { width: 8px; height: 8px; border-radius: 50%; }
+  .tile-health.green .hdot { background: var(--green); box-shadow: 0 0 8px rgba(111,217,166,0.5); }
+  .tile-health.amber .hdot { background: var(--amber); box-shadow: 0 0 9px rgba(246,196,99,0.55); animation: pulse 2.4s ease-in-out infinite; }
+  .tile-health.red .hdot { background: var(--red); box-shadow: 0 0 10px rgba(245,146,138,0.6); animation: pulse 1.5s ease-in-out infinite; }
+  .tile-health .hcount {
+    min-width: 17px; height: 17px; padding: 0 5px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+  }
+  .tile-health.red .hcount { background: var(--red); color: #241110; }
+  .tile-health.amber .hcount { background: var(--amber); color: #241d0c; }
+  .tile-health.neutral .hcount { background: var(--accent); color: var(--accent-ink); }
+  /* the tile's footer line carries the top action when there is one */
+  .tile-action { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .tile-action i[data-lucide] { width: 11px; height: 11px; }
+  .tile-action.red { color: var(--red); }
+  .tile-action.amber { color: var(--amber); }
+  .tile-action.neutral { color: var(--accent); }
+
+  /* ═══ PROGRESSIVE DISCLOSURE — context stays folded until asked for ═══ */
+  .ctx-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .ctx-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12.5px; font-weight: 500; color: var(--text-dim);
+    background: var(--surface-2); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 9px;
+  }
+  .ctx-chip i[data-lucide] { width: 13px; height: 13px; color: var(--text-faint); }
+  .ctx-chip strong { color: var(--text); font-weight: 600; }
+  .ctx-chip.red { background: var(--red-bg); border-color: #3a1f1c; color: var(--red); }
+  .ctx-chip.red i[data-lucide] { color: var(--red); }
+  .ctx-chip.gold { background: var(--gold-bg); border-color: #3a3122; color: var(--accent); }
+  .ctx-chip.gold i[data-lucide] { color: var(--accent); }
+  .disclose {
+    display: flex; align-items: center; gap: 8px; width: 100%;
+    font-size: 12.5px; font-weight: 600; color: var(--text-dim);
+    background: transparent; border: none; padding: 4px 0;
+    transition: color 0.16s;
+  }
+  .disclose:hover { color: var(--accent); }
+  .disclose i[data-lucide] { width: 14px; height: 14px; transition: transform 0.24s; }
+  .disclose.open i.chev[data-lucide] { transform: rotate(180deg); }
+  .disclose-body { display: none; padding-top: 12px; }
+  .disclose-body.open { display: block; animation: riseIn 0.3s ease both; }
+  .kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 14px 22px; }
+  .kv { display: flex; flex-direction: column; gap: 3px; }
+  .kv-k { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.3px; color: var(--text-faint); font-weight: 700; }
+  .kv-v { font-size: 13.5px; font-weight: 600; color: var(--text); }
+
+  /* ═══ REMEMBER THIS — staff teach the system, under 10 seconds ═══ */
+  .rem-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; color: var(--text-dim);
+    background: transparent; border: 1px dashed var(--border-strong);
+    border-radius: 9px; padding: 9px 14px; transition: all 0.16s;
+  }
+  .rem-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .rem-btn i[data-lucide] { width: 14px; height: 14px; }
+  .rem-cats { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 20px; }
+  .rem-cat {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13.5px; font-weight: 500; color: var(--text-dim);
+    background: var(--surface-2); border: 1px solid var(--border-strong);
+    border-radius: 999px; padding: 11px 16px; transition: all 0.16s;
+  }
+  .rem-cat i[data-lucide] { width: 15px; height: 15px; }
+  .rem-cat:hover { color: var(--text); border-color: var(--text-faint); }
+  .rem-cat.selected { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; animation: chipPop 0.22s ease; }
+  .rem-cat.selected i[data-lucide] { color: var(--accent-ink); }
+
+  /* ═══ MANAGER VIEW — "where should I spend my next 10 minutes" ═══ */
+  .mgr-group { margin-bottom: 34px; }
+  .mgr-card {
+    display: flex; align-items: stretch; gap: 0;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    border-radius: var(--r-md); overflow: hidden; margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  }
+  .mgr-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: rgba(216,195,154,0.35); }
+  .mgr-t {
+    flex: none; width: 82px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px;
+    background: var(--surface-2); border-right: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .mgr-t .mt-num { font-family: var(--font-mono); font-size: 25px; font-weight: 600; letter-spacing: -0.03em; }
+  .mgr-t .mt-lbl { font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-faint); font-weight: 700; }
+  .mgr-card.red .mgr-t { background: var(--red-bg); }
+  .mgr-card.red .mt-num { color: var(--red); }
+  .mgr-card.amber .mgr-t { background: var(--amber-bg); }
+  .mgr-card.amber .mt-num { color: var(--amber); }
+  .mgr-card.neutral .mt-num { color: var(--accent); }
+  .mgr-body { flex: 1; padding: 15px 18px; min-width: 0; }
+  .mgr-guest { font-family: var(--font-display); font-size: 21px; font-weight: 600; margin-bottom: 3px; }
+  .mgr-why { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .mgr-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+  .mgr-act { flex: none; display: flex; align-items: center; padding: 15px 18px 15px 6px; }
+  .mgr-act .act-do { width: auto; min-width: 190px; }
+  .mgr-empty {
+    display: flex; align-items: center; gap: 12px;
+    padding: 26px 22px; color: var(--text-dim); font-size: 14px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-md);
+  }
+  .mgr-empty .me-ic {
+    width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--green-bg); color: var(--green);
+  }
+
+  /* ═══ LIVE SIGNAL — a behaviour signal arriving feels like it just happened ═══ */
+  .act-card.arriving { animation: signalArrive 0.6s cubic-bezier(0.2,0.7,0.2,1) both; }
+  @keyframes signalArrive {
+    0% { opacity: 0; transform: translateY(-10px) scale(0.98); box-shadow: 0 0 0 0 rgba(216,195,154,0.5); }
+    55% { opacity: 1; transform: none; box-shadow: 0 0 0 12px rgba(216,195,154,0); }
+    100% { opacity: 1; transform: none; }
+  }
+  .live-tag {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+    font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-faint);
+  }
+  .live-tag .ldot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1.6s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .act-card, .act-card.arriving, .act-done-row { animation: none; }
+    .tile-health .hdot, .health-pill .hdot, .live-tag .ldot { animation: none; }
+  }
+
   /* ─── Party header ─── */
   .party-header {
     background: var(--surface-2);
@@ -1627,7 +1904,7 @@
   .chip-opt.red.selected { background: var(--red-deep); border-color: var(--red-deep); color: #fff; }
   .chip-opt.amber.selected { background: var(--amber); border-color: var(--amber); color: var(--accent-ink); }
 
-  /* ─── Ask Pulse (AI) / Concierge ─── */
+  /* ─── Floor search / concierge ─── */
   .concierge-search {
     position: relative;
     overflow: hidden;
@@ -1854,190 +2131,6 @@
   }
   .locked-sub { color: var(--text-dim); font-size: 14px; max-width: 460px; margin: 0 auto 24px; line-height: 1.5; }
 
-  /* ═══════════ TUTORIAL / GUIDED TOUR ═══════════ */
-  .tut-overlay {
-    position: fixed; inset: 0; z-index: 300;
-    background: rgba(5,5,6,0.82);
-    display: none; align-items: center; justify-content: center;
-    padding: 24px;
-  }
-  .tut-overlay.show { display: flex; }
-  .tut-card {
-    width: 100%; max-width: 720px;
-    background: var(--surface);
-    border: 1px solid var(--border-strong);
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-    display: flex; flex-direction: column;
-    max-height: 92vh;
-  }
-  .tut-progress {
-    display: flex; gap: 6px; padding: 16px 22px 0;
-  }
-  .tut-progress .pip {
-    height: 3px; flex: 1; border-radius: 2px; background: var(--surface-4);
-    overflow: hidden; position: relative;
-  }
-  .tut-progress .pip.done { background: var(--accent); }
-  .tut-progress .pip.active::after {
-    content: ''; position: absolute; inset: 0; background: var(--accent);
-    transform-origin: left; animation: pipFill 0.5s ease forwards;
-  }
-  @keyframes pipFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-
-  .tut-stage {
-    min-height: 300px;
-    padding: 28px 28px 8px;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-  }
-  .tut-stage-inner { width: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; }
-
-  .tut-body { padding: 8px 32px 4px; text-align: center; }
-  .tut-kicker {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 1.6px;
-    font-weight: 700; color: var(--accent); margin-bottom: 10px;
-    display: inline-flex; align-items: center; gap: 7px;
-  }
-  .tut-kicker i[data-lucide] { width: 14px; height: 14px; }
-  .tut-title { font-family: var(--font-display); font-size: 40px; font-weight: 600; letter-spacing: 0; margin-bottom: 12px; }
-  .tut-narr { font-size: 14.5px; color: var(--text-dim); line-height: 1.6; max-width: 540px; margin: 0 auto; }
-  .tut-narr strong { color: var(--text); font-weight: 600; }
-
-  .tut-foot {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 24px 22px; gap: 12px;
-  }
-  .tut-skip { font-size: 12px; color: var(--text-faint); font-weight: 500; }
-  .tut-skip:hover { color: var(--text-dim); }
-  .tut-nav { display: flex; gap: 8px; align-items: center; }
-  .tut-step-count { font-size: 12px; color: var(--text-faint); font-variant-numeric: tabular-nums; margin-right: 6px; }
-
-  /* scene entrance + staggered pops */
-  .tut-anim { animation: tutIn 0.42s cubic-bezier(0.2,0.7,0.2,1) both; }
-  @keyframes tutIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-  .pop { animation: popIn 0.45s cubic-bezier(0.2,0.7,0.2,1) both; }
-  @keyframes popIn { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: none; } }
-
-  /* welcome scene */
-  .tut-hero-dot {
-    width: 16px; height: 16px; border-radius: 50%; background: var(--accent);
-    box-shadow: 0 0 24px var(--accent); animation: pulse 2s ease-in-out infinite; margin-bottom: 6px;
-  }
-  .tut-logo { font-family: var(--font-display); font-size: 48px; font-weight: 600; letter-spacing: 0.01em; }
-
-  /* mini reservation rows for the tour */
-  .tut-resrow { display: flex; gap: 12px; align-items: center; width: 100%; max-width: 460px; }
-  .tut-restime { font-family:"Geist Mono",monospace; font-size: 13px; color: var(--text-dim); width: 46px; flex-shrink:0; }
-
-  /* symbol legend grid */
-  .tut-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 22px; width: 560px; max-width: 100%; }
-  .tut-leg { display: flex; align-items: center; gap: 11px; font-size: 13px; color: var(--text-dim); }
-  .tut-leg strong { color: var(--text); font-weight: 600; }
-  .tut-leg-ic {
-    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center; background: var(--surface-3);
-  }
-  .tut-leg-ic i[data-lucide] { width: 15px; height: 15px; }
-  .tut-leg-ic.red { background: var(--red-bg); color: var(--red); }
-  .tut-leg-ic.amber { background: var(--amber-bg); color: var(--amber); }
-  .tut-leg-ic.gold { background: var(--gold-bg); color: var(--accent); }
-  .tut-leg-ic.green { background: var(--green-bg); color: var(--green); }
-  .tut-leg-ic.blue { background: var(--blue-bg); color: var(--blue); }
-  .tut-leg-ic.purple { background: var(--purple-bg); color: var(--purple); }
-
-  /* a guided "states" rail */
-  .tut-rail { display: flex; align-items: stretch; gap: 0; width: 100%; max-width: 580px; }
-  .tut-statecard {
-    flex: 1; background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 12px; padding: 12px; text-align: left;
-  }
-  .tut-help-btn {
-    background: transparent; border: 1px solid var(--border-strong);
-    width: 34px; height: 34px; border-radius: 9px; color: var(--text-dim);
-    display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;
-  }
-  .tut-help-btn:hover { color: var(--text); border-color: var(--accent); }
-  .tut-help-btn i[data-lucide] { width: 17px; height: 17px; }
-
-  /* mini phone-match card for the open-table scene */
-  .tut-match {
-    background: var(--gold-bg); border: 1px solid #3a3122; border-radius: 12px;
-    padding: 14px 16px; width: 420px; max-width: 100%; text-align: left;
-  }
-  .tut-input {
-    background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px;
-    padding: 11px 14px; font-size: 14px; color: var(--text); width: 420px; max-width: 100%; text-align: left;
-  }
-  .tut-input .cursor { display:inline-block; width:1px; background:var(--accent); animation: blink 1s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-
-  /* ═══════════ FOLLOW-ALONG COACH MARKS (v2) ═══════════ */
-  .coach-panel { position: fixed; background: rgba(6,5,4,0.7); backdrop-filter: blur(2.5px); -webkit-backdrop-filter: blur(2.5px); z-index: 340; transition: all 0.28s cubic-bezier(0.2,0.7,0.2,1); }
-  .coach-ring {
-    position: fixed; z-index: 341; border: 2px solid var(--accent); border-radius: 14px;
-    box-shadow: 0 0 0 4px rgba(216,195,154,0.22), 0 0 30px rgba(216,195,154,0.2);
-    pointer-events: none; transition: all 0.28s cubic-bezier(0.2,0.7,0.2,1);
-  }
-  .coach-ring.click { animation: ringPulse 1.4s ease-in-out infinite; }
-  @keyframes ringPulse { 0%,100% { box-shadow: 0 0 0 4px rgba(216,195,154,0.25), 0 0 30px rgba(216,195,154,0.2); } 50% { box-shadow: 0 0 0 10px rgba(216,195,154,0.06), 0 0 40px rgba(216,195,154,0.3); } }
-  .coach-tip {
-    position: fixed; z-index: 342;
-    background:
-      radial-gradient(130% 100% at 50% -10%, rgba(216,195,154,0.08), transparent 55%),
-      rgba(26,23,19,0.92);
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
-    border: 1px solid rgba(216,195,154,0.22);
-    border-radius: 18px; padding: 20px 22px 16px; width: 330px;
-    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,247,232,0.07);
-    transition: left 0.3s cubic-bezier(0.2,0.7,0.2,1), top 0.3s cubic-bezier(0.2,0.7,0.2,1);
-  }
-  .coach-tip.pop { animation: coachPop 0.34s cubic-bezier(0.25,1.2,0.35,1) both; }
-  @keyframes coachPop { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: none; } }
-  .coach-k {
-    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
-    font-size: 10px; text-transform: uppercase; letter-spacing: 1.3px; font-weight: 700;
-    color: var(--accent-ink); background: var(--accent); padding: 4px 10px; border-radius: 999px;
-  }
-  .coach-k i[data-lucide] { width: 12px; height: 12px; }
-  .coach-tip h4 { font-family: var(--font-display); font-size: 26px; font-weight: 600; letter-spacing: 0; margin-bottom: 7px; }
-  .coach-tip p { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
-  .coach-tip p strong { color: var(--text); font-weight: 600; }
-  .coach-dots { display: flex; gap: 5px; margin: 15px 0 13px; }
-  .coach-dots .cdot { height: 3px; flex: 1; border-radius: 2px; background: var(--surface-4); transition: background 0.25s; }
-  .coach-dots .cdot.past { background: rgba(216,195,154,0.45); }
-  .coach-dots .cdot.on { background: var(--accent); box-shadow: 0 0 8px rgba(216,195,154,0.5); }
-  .coach-foot { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
-  .coach-foot-r { display:flex; align-items:center; gap: 8px; }
-  .coach-hint { font-size: 12px; color: var(--accent); font-weight: 600; display:inline-flex; align-items:center; gap:6px; }
-  .coach-hint i[data-lucide] { width: 13px; height: 13px; animation: tapNudge 1.2s ease-in-out infinite; }
-  @keyframes tapNudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2px); } }
-  .coach-skip { font-size: 12px; color: var(--text-faint); }
-  .coach-skip:hover { color: var(--text-dim); }
-  .coach-next { background: var(--accent); color: var(--accent-ink); font-weight: 600; font-size: 13px; padding: 9px 16px; border-radius: 9px; box-shadow: 0 3px 12px -4px rgba(216,195,154,0.55); transition: all 0.15s; }
-  .coach-next:hover { background: var(--accent-soft); }
-  .coach-next.ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border-strong); box-shadow: none; padding: 8px 13px; }
-  .coach-next.ghost:hover { color: var(--text); border-color: var(--text-faint); }
-  .coach-back {
-    width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border-strong);
-    color: var(--text-dim); display: inline-flex; align-items: center; justify-content: center; transition: all 0.15s;
-  }
-  .coach-back:hover { color: var(--text); border-color: var(--text-faint); }
-  .coach-back i[data-lucide] { width: 15px; height: 15px; }
-  .coach-done-ic {
-    width: 54px; height: 54px; border-radius: 50%; margin: 0 auto 14px;
-    display: flex; align-items: center; justify-content: center;
-    color: var(--accent-ink); background: var(--accent);
-    box-shadow: 0 8px 30px -8px rgba(216,195,154,0.65);
-    animation: numPop 0.45s cubic-bezier(0.25,1.3,0.4,1) both;
-  }
-  .coach-done-ic i[data-lucide] { width: 26px; height: 26px; }
-  .coach-tip.finale { text-align: center; }
-  .coach-tip.finale .coach-k { margin-left: auto; margin-right: auto; }
-  .coach-fin-hint { font-size: 11px; color: var(--text-faint); margin-top: 12px; }
-
   /* ═══════════ TABLE-ASSIGNMENT CINEMATIC ═══════════ */
   .curate-overlay {
     position: fixed; inset: 0; z-index: 380;
@@ -2204,6 +2297,12 @@
   body.glass .seat-match-card,
   body.glass .metric-card,
   body.glass .reco-block,
+  body.glass .act-card,
+  body.glass .mgr-card,
+  body.glass .mgr-t,
+  body.glass .ctx-chip,
+  body.glass .act-clear,
+  body.glass .mgr-empty,
   body.glass .bal-cell {
     background: rgba(36,31,25,0.4) !important;
     backdrop-filter: blur(18px) saturate(150%);
@@ -2379,7 +2478,6 @@
     .phase-switch button { padding: 9px 14px; }
     .filter-chip, .chip-opt { padding: 10px 14px; }
     .table-tile { min-height: 156px; padding: 16px; }
-    .tut-help-btn { width: 40px; height: 40px; }
     .add-btn { padding: 10px 14px; }
     /* full-screen sheets for modals — easier on a tablet */
     .modal-overlay { padding: 0; align-items: stretch; justify-content: stretch; }
@@ -2405,7 +2503,7 @@
     .logo { font-size: 22px; }
     .nav-tabs { margin-left: 2px; }
     .nav-tab { padding: 9px 11px; font-size: 13px; }
-    .theme-btn, .tut-help-btn { width: 36px; height: 36px; }
+    .theme-btn { width: 36px; height: 36px; }
     .add-btn { padding: 9px 11px; font-size: 12px; }
     .phase-switch button { padding: 8px 9px; font-size: 10px; }
     .floor-stats { gap: 22px; }
@@ -2428,6 +2526,22 @@
     .view { padding: 16px 12px 48px; }
     .strip-rest { display: none; }
     .phase-strip { padding: 7px 12px; }
+    /* action cards stack their action bar on phones */
+    .act-do { flex-direction: column; align-items: stretch; gap: 10px; text-align: center; }
+    .act-do .act-do-done { justify-content: center; }
+    .mgr-card { flex-wrap: wrap; }
+    .mgr-t { width: 100%; flex-direction: row; gap: 9px; padding: 10px; border-right: none; border-bottom: 1px solid var(--border); }
+    .mgr-act { width: 100%; padding: 0 15px 15px; }
+    .mgr-act .act-do { width: 100%; min-width: 0; }
+  }
+
+  /* Tablet — the primary device. Bigger tap targets on every new control. */
+  @media (max-width: 1180px) {
+    .act-do { padding: 17px 20px; font-size: 15.5px; min-height: 58px; }
+    .act-more, .rem-btn, .disclose { min-height: 46px; }
+    .rem-cat { padding: 13px 18px; }
+    .ctx-chip { padding: 9px 14px; }
+    .mgr-act .act-do { min-width: 170px; }
   }
 
   /* coarse-pointer (touch) — kill hover transforms that feel laggy */
@@ -2449,10 +2563,10 @@
   <div class="nav-tabs" id="nav-tabs">
     <button class="nav-tab active" data-view="floor">Floor</button>
     <button class="nav-tab" data-view="reservations">Reservations</button>
+    <button class="nav-tab" data-view="manager">Manager</button>
   </div>
   <div class="spacer"></div>
   <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle Glass UI"><i data-lucide="gem"></i></button>
-  <button class="tut-help-btn" onclick="startFollow()" title="Follow-along walkthrough"><i data-lucide="help-circle"></i></button>
   <button class="add-btn" onclick="openGuestInfoModal()"><i data-lucide="user-plus" class="sm"></i> <span class="btn-lbl">Add Guest Info</span></button>
   <div class="clock" id="clock">19:24</div>
   <div class="phase-switch" id="phase-switch">
@@ -2488,7 +2602,7 @@
     <div id="floor-concierge" style="display:none;">
       <div class="concierge-search">
         <div class="concierge-icon"><i data-lucide="sparkles"></i></div>
-        <input type="text" id="concierge-input" placeholder="Ask Pulse — “what wine for Anika's lamb?” · “who'll order dessert?”" onkeydown="if(event.key==='Enter')askConcierge()" />
+        <input type="text" id="concierge-input" placeholder="Search the floor — “what wine for Anika's lamb?” · “who hasn't ordered?”" onkeydown="if(event.key==='Enter')askConcierge()" />
         <button class="btn primary" style="margin-right: 4px;" onclick="askConcierge()">Ask</button>
       </div>
       <div id="concierge-results"></div>
@@ -2516,6 +2630,11 @@
   <!-- ─── RESERVATIONS ─── -->
   <div class="view" id="view-reservations">
     <div id="reservations-content"></div>
+  </div>
+
+  <!-- ─── MANAGER ─── -->
+  <div class="view" id="view-manager">
+    <div id="manager-content"></div>
   </div>
 </div>
 
@@ -2711,6 +2830,40 @@
   </div>
 </div>
 
+<!-- Remember this — staff teach the system what it didn't know. Under 10 seconds. -->
+<div class="modal-overlay" id="remember-modal">
+  <div class="modal small">
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Remember this</div>
+        <div class="modal-sub" id="rem-sub">Anything worth knowing next time they dine</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('remember-modal')"><i data-lucide="x" class="sm"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="label" style="margin-bottom:12px;">What kind of thing?</div>
+      <div class="rem-cats" id="rem-cats">
+        <button class="rem-cat" data-cat="Preference" onclick="pickRemCat('Preference')"><i data-lucide="heart"></i> Preference</button>
+        <button class="rem-cat" data-cat="Dietary" onclick="pickRemCat('Dietary')"><i data-lucide="wheat-off"></i> Dietary restriction</button>
+        <button class="rem-cat" data-cat="Occasion" onclick="pickRemCat('Occasion')"><i data-lucide="gem"></i> Occasion</button>
+        <button class="rem-cat" data-cat="Seating" onclick="pickRemCat('Seating')"><i data-lucide="armchair"></i> Seating preference</button>
+        <button class="rem-cat" data-cat="Conversation" onclick="pickRemCat('Conversation')"><i data-lucide="message-circle"></i> Conversation</button>
+        <button class="rem-cat" data-cat="Other" onclick="pickRemCat('Other')"><i data-lucide="bookmark"></i> Other</button>
+      </div>
+      <div id="rem-input-wrap" style="display:none;">
+        <div class="field full">
+          <div class="label" id="rem-input-label">What should we remember?</div>
+          <input class="input" id="rem-input" placeholder="Keep it short — one line" onkeydown="if(event.key==='Enter')saveRemember()" />
+        </div>
+        <div class="actions-row" style="justify-content:flex-end;">
+          <button class="btn ghost" onclick="closeModal('remember-modal')">Cancel</button>
+          <button class="btn primary" onclick="saveRemember()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Add Guest Info (always available) -->
 <div class="modal-overlay" id="guest-info-modal">
   <div class="modal small">
@@ -2773,25 +2926,6 @@
 <div class="toast" id="toast"></div>
 
 <!-- ═══ GUIDED TOUR ═══ -->
-<div class="tut-overlay" id="tut-overlay">
-  <div class="tut-card">
-    <div class="tut-progress" id="tut-progress"></div>
-    <div class="tut-stage"><div class="tut-stage-inner" id="tut-stage"></div></div>
-    <div class="tut-body">
-      <div class="tut-kicker" id="tut-kicker"></div>
-      <div class="tut-title" id="tut-title"></div>
-      <div class="tut-narr" id="tut-narr"></div>
-    </div>
-    <div class="tut-foot">
-      <button class="tut-skip" onclick="endTutorial()">Skip tour</button>
-      <div class="tut-nav">
-        <span class="tut-step-count" id="tut-count"></span>
-        <button class="btn ghost" id="tut-back" onclick="tutPrev()">Back</button>
-        <button class="btn primary" id="tut-next" onclick="tutNext()">Next</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
 /* ════════════════════════════════════════════════════════
@@ -2815,6 +2949,7 @@ const guests = {
     notes:'Slow pacing flagged last visit — keep courses moving',
     vipTier:'Regular', networkTier:'gold',
     upsellAffinity:0.78, advocacy:87,
+    tasteTags:['Italian','red wine'], seatingPref:'Patio, away from the bar',
   },
   'g2': { id:'g2', name:'Rohan Sharma', initials:'RS', phone:'+65 9123 4568',
     visits:4, networkVisits:14, lastVisit:'12 days ago',
@@ -2841,6 +2976,7 @@ const guests = {
     pastRatings:[5,5,5,4,5,5,4,5], avgRating:4.75,
     notes:'High advocacy — brought 6 different parties · chef should say hi',
     vipTier:'VIP', networkTier:'platinum',
+    tasteTags:['truffle','red meat'], seatingPref:'Corner banquette',
   },
   'g4': { id:'g4', name:'Sofia Chen', initials:'SC', phone:'+65 9345 6789',
     visits:5, networkVisits:11, lastVisit:'21 days ago',
@@ -2882,6 +3018,20 @@ const guests = {
     pastRatings:[5,4,5,5,5,4,5,5], avgRating:4.75,
     networkTier:'silver', vipTier:'Network Regular',
   },
+  'g8': { id:'g8', name:'Kenji Watanabe', initials:'KW', phone:'+65 9401 2255',
+    visits:6, networkVisits:9, lastVisit:'19 days ago',
+    spend:4, avgPerCover:2650,
+    favFood:['Beef Tartare','Wagyu Ribeye'],
+    favDrinks:['Yamazaki 12','Barolo 2018'],
+    suggestedDrink:{name:'Yamazaki 12, neat',type:'spirit',reason:'Orders it most visits'},
+    suggestedMain:{name:'Wagyu Ribeye',reason:'Ordered 4 of 6 visits'},
+    upsell:{name:'Truffle Fries',reason:'Adds these to the ribeye most visits'},
+    allergies:['Nuts'], dislikes:['Spicy food'],
+    pastRatings:[5,4,5,5,4,5], avgRating:4.67,
+    notes:'Dislikes long gaps between courses — keep the pace up',
+    vipTier:'Regular', networkTier:'gold',
+    tasteTags:['red meat','whisky'], seatingPref:'Quiet corner',
+  },
   'g7': { id:'g7', name:'Raj Mehta', initials:'RM', phone:'+65 9678 9012',
     visits:7, networkVisits:7, lastVisit:'78 days ago',
     spend:3, avgPerCover:1800,
@@ -2895,12 +3045,15 @@ const guests = {
     notes:'⚠ Rating declining — last 3 visits all 3★ · 78 days since last visit',
     vipTier:'Regular',
     churnRisk:true,
+    tasteTags:['red meat','Italian'],
+    // a real, specific thing that went wrong — service recovery is grounded, never inferred
+    prevIssue:{ when:'last visit', rating:3, note:'Waited 25 minutes between starters and mains' },
   },
 };
 
 const tables = [
   // INDOOR
-  { id:1, zone:'indoor', cap:6, status:'ordered', server:'James', party:['g1','g3','g4','g5'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,false,false], seatedMin:38, glyphs:['vip','nut','anniversary'], glyphCat:['vip','allergy','occasion'], drinkAgeMin:26,
+  { id:1, zone:'indoor', cap:6, status:'ordered', server:'James', party:['g8'], seatedPax:4, course:'mains', progress:[true,false,false,false], drinkProgress:[true,false,false], seatedMin:38, glyphs:['nut'], glyphCat:['allergy'], drinkAgeMin:26,
     items:[{name:'Burrata',course:'apps',served:true,qty:2}, {name:'Beef Tartare',course:'apps',served:true,qty:1}, {name:'Heirloom Salad',course:'apps',served:true,qty:1}],
     drinks:[{name:'Negroni',course:'aperitif',qty:2,served:true}, {name:'Aperol Spritz',course:'aperitif',qty:2,served:true}] },
   { id:2, zone:'indoor', cap:4, status:'ordered', server:'James', seatedPax:2, party:['g5'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,false,false], seatedMin:18, glyphs:['birthday'], glyphCat:['occasion'],
@@ -2914,8 +3067,10 @@ const tables = [
     items:[{name:'Burrata',course:'apps',served:true,qty:1}, {name:'Beef Tartare',course:'apps',served:true,qty:1}, {name:'Mushroom Risotto',course:'mains',served:false,qty:1}, {name:'Lamb Shank',course:'mains',served:false,qty:1}],
     drinks:[{name:'Aperol Spritz',course:'aperitif',qty:1,served:true}, {name:'Negroni',course:'aperitif',qty:1,served:true}, {name:'Barolo 2018',course:'wine',qty:1,served:true,bottle:true}] },
   { id:6, zone:'patio', cap:2, status:'empty' },
-  { id:7, zone:'patio', cap:2, status:'seated', server:'Aisha', party:[], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:6,
-    items:[], drinks:[] },
+  // menu opened but nothing viewed — they may not know how to start
+  { id:7, zone:'patio', cap:2, status:'seated', server:'Aisha', party:[], seatedPax:2, course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:6,
+    items:[], drinks:[],
+    sw:{ menuOpenMin:5, itemsViewed:0, lastActivityMin:5 } },
   { id:8, zone:'indoor', cap:4, status:'ordered', server:'James', seatedPax:2, party:['g3'], course:'apps', progress:[false,false,false,false], drinkProgress:[true,false,false], seatedMin:11, glyphs:['vip'],
     items:[{name:'Truffle Arancini',course:'apps',served:false,qty:1}, {name:'Vitello Tonnato',course:'apps',served:false,qty:1}],
     drinks:[{name:'Negroni',course:'aperitif',qty:1,served:true}] },
@@ -2923,16 +3078,22 @@ const tables = [
     items:[{name:'Bruschetta',course:'apps',served:true,qty:2}, {name:'Pizza Diavola',course:'mains',served:true,qty:2}, {name:'Tiramisu',course:'dessert',served:true,qty:2}],
     drinks:[{name:'House Red',course:'wine',qty:1,served:true,bottle:true}] },
   { id:10, zone:'indoor', cap:2, status:'empty' },
-  { id:11, zone:'indoor', cap:4, status:'seated', server:'Maria', party:[], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:2,
-    items:[], drinks:[] },
+  // FLAGSHIP SmartWeb signal: they've been on the wine list 4 minutes and haven't ordered
+  { id:11, zone:'indoor', cap:4, status:'seated', server:'Maria', party:[], seatedPax:4, course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:9,
+    items:[], drinks:[],
+    sw:{ cat:'Wine', catMin:4, lastActivityMin:0, menuOpenMin:7 } },
   { id:12, zone:'patio', cap:4, status:'ordered', server:'Aisha', seatedPax:4, party:['g7'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,true,false], seatedMin:28, glyphs:['attention'], glyphCat:['attention'],
     items:[{name:'Beef Carpaccio',course:'apps',served:true,qty:1}, {name:'Crudo',course:'apps',served:true,qty:1}, {name:'Osso Buco',course:'mains',served:false,qty:2}, {name:'Tagliata',course:'mains',served:false,qty:2}],
     drinks:[{name:'Negroni',course:'aperitif',qty:4,served:true}, {name:'Barolo',course:'wine',qty:1,served:true,bottle:true}] },
   { id:13, zone:'outdoor', cap:4, status:'empty' },
-  { id:14, zone:'outdoor', cap:2, status:'ordered', server:'Tom', party:[], course:'apps', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:14,
-    items:[{name:'Caesar Salad',course:'apps',served:false,qty:1}], drinks:[] },
-  { id:15, zone:'patio', cap:6, status:'seated', server:'Aisha', party:['g6'], course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:1, glyphs:['celebration'], glyphCat:['occasion'],
-    items:[], drinks:[] },
+  // keeps opening the same premium item without adding it — hesitating on price or detail
+  { id:14, zone:'outdoor', cap:2, status:'ordered', server:'Tom', party:[], seatedPax:2, course:'apps', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:14,
+    items:[{name:'Caesar Salad',course:'apps',served:false,qty:1}], drinks:[],
+    sw:{ repeatItem:'Wagyu Ribeye', repeatViews:4, lastActivityMin:1 } },
+  // an explicit request raised from the table — the one signal that is never ambiguous
+  { id:15, zone:'patio', cap:6, status:'seated', server:'Aisha', party:['g6'], seatedPax:6, course:'none', progress:[false,false,false,false], drinkProgress:[false,false,false], seatedMin:4, glyphs:['celebration'], glyphCat:['occasion'],
+    items:[], drinks:[],
+    sw:{ requestPending:true, requestText:'Could we see the wine list?', requestMin:2, lastActivityMin:2 } },
   { id:16, zone:'indoor', cap:2, status:'empty' },
   { id:17, zone:'outdoor', cap:4, status:'empty' },
   { id:18, zone:'indoor', cap:4, status:'ordered', server:'Maria', seatedPax:4, party:['g4'], course:'apps', progress:[false,false,false,false], drinkProgress:[true,false,false], seatedMin:8, glyphs:['vip','gluten'], glyphCat:['vip','allergy'],
@@ -2959,7 +3120,8 @@ const reservations = [
   { time:'20:30', name:'James Tan', phone:'+65 9777 6666', party:4, table:4, zone:'indoor', status:'new', allergies:[], occasion:'', notes:'' },
 ];
 
-const state = { phase:2, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true };
+const state = { phase:2, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true,
+  actExpanded:{}, discOpen:{}, remTable:null, remCat:null };
 
 function toggleTheme() {
   state.theme = state.theme === 'glass' ? 'solid' : 'glass';
@@ -3031,11 +3193,15 @@ const phasePolicy = (p) => ({
   showReservations: p >= 2,
   showPreShift: false,
   showConcierge: p >= 2,
-  showManager: false,
+  showManager: p >= 2,
   predictiveCues: p >= 2,
   aiSummary: p >= 2,
   occasionInBanner: p >= 2,
   occasionInBriefing: p >= 2,
+  // Per-course service timing (Seated → Starters → Mains → Dessert → Check) is not
+  // something we can read today — it needs kitchen/pass events we don't yet receive.
+  // Kept behind Phase 3 rather than faked, so nothing on screen claims what we can't measure.
+  courseJourney: p >= 3,
 });
 
 function avgRating(g) { return g && g.pastRatings && g.pastRatings.length ? g.pastRatings.reduce((a,b)=>a+b,0)/g.pastRatings.length : 0; }
@@ -3151,22 +3317,37 @@ function renderTile(t, pol) {
   if (state.cardDesign && state.cardDesign !== 'classic') return renderCardVariant(t, pol, state.cardDesign);
 
   const timeClass = t.status === 'overdue' ? 'overdue' : (t.status === 'attention' ? 'warn' : '');
-  const glyphs = tileGlyphs(t, pol);
+  // ONE primary indicator + safety. An icon pile is not a status indicator, so the
+  // only glyph that survives on the tile is an allergy — everything else lives inside.
+  const glyphs = tileGlyphs(t, pol).filter(g => g.cat === 'allergy').slice(0, 1);
   const glyphHtml = glyphs.length ? `<div class="tile-glyphs">${glyphs.map(g => {
     const color = g.cat === 'allergy' ? 'red' : g.cat === 'occasion' ? 'amber' : g.cat === 'vip' ? 'gold' : g.cat === 'attention' ? 'amber' : '';
     return `<div class="tile-glyph ${color}">${ic(ICONS[g.glyph] || 'circle')}</div>`;
   }).join('')}</div>` : '';
 
+  // ONE primary indicator: how the experience is going, and how many things need doing.
+  const sig = tableSignals(t, pol);
+  const openCount = sig.attention.length + sig.opportunity.length;
+  const hLevel = sig.health.level === 'green' && openCount ? 'neutral' : sig.health.level;
+  const healthHtml = `<span class="tile-health ${hLevel}">
+      <span class="hdot"></span>${openCount ? `<span class="hcount">${openCount}</span>` : ''}
+    </span>`;
+  // when something needs doing, the footer says what — otherwise it stays operational
+  const top = sig.primary[0];
+  const footLeft = top
+    ? `<span class="tile-action ${top.severity}">${ic(top.icon,'xs')} ${top.title}</span>`
+    : `<span>${time}m · ${t.course === 'mains' ? 'mains' : t.course === 'apps' ? 'starters' : t.course === 'dessert' ? 'dessert' : 'just seated'}</span>`;
+
   return `<div class="table-tile ${t.status} ${state.assignedFlash===t.id?'assigned-flash':''}" data-id="${t.id}" onclick="openTableModal(${t.id})">
     <div class="tile-top">
       <div class="tile-num">${t.id}</div>
-      ${glyphHtml}
+      <div style="display:flex;align-items:center;gap:8px;">${glyphHtml}${healthHtml}</div>
     </div>
     <div class="tile-party">${partyName}</div>
     <div class="tile-pax">${ic('users','xs')} ${pax} pax${ratingHtml}</div>
-    ${coursePips(t.progress.map((p,i)=> p?2 : (i===t.progress.findIndex(x=>!x)?1:0)))}
+    ${pol.courseJourney ? coursePips(t.progress.map((p,i)=> p?2 : (i===t.progress.findIndex(x=>!x)?1:0))) : ''}
     <div class="tile-bottom ${timeClass}">
-      <span>${time}m · ${t.course === 'mains' ? 'mains' : t.course === 'apps' ? 'starters' : t.course === 'dessert' ? 'dessert' : 'just seated'}</span>
+      ${footLeft}
       <span class="tile-server">${t.server || ''}</span>
     </div>
   </div>`;
@@ -3530,6 +3711,8 @@ function openTableModal(id) {
   const plan = buildServicePlan(t, pol);
   const headerGuest = guest ? guest : null;
   const pax = paxOf(t);
+  // what matters about this table right now, ranked and capped
+  const sig = tableSignals(t, pol);
 
   content.innerHTML = `
     <div class="modal-head">
@@ -3538,28 +3721,12 @@ function openTableModal(id) {
         <div class="modal-sub">Server ${t.server || 'unassigned'} · seated ${t.seatedMin}m ago</div>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="health-pill ${sig.health.level}"><span class="hdot"></span> ${sig.health.reason}</span>
         <span class="pax-pill">${ic('users','sm')} ${pax} ${pax===1?'guest':'guests'}</span>
-        <span class="live-pill"><span class="live-dot"></span> Live from QR</span>
-        <button class="add-btn" onclick="openGuestInfoModal()" style="font-size: 12px; padding: 8px 13px;">${ic('user-plus','sm')} Add guest info</button>
         <button class="modal-close" onclick="closeModal('table-modal')"><i data-lucide="x" class="sm"></i></button>
       </div>
     </div>
     <div class="modal-body">
-
-      ${pol.aiSummary ? (function(){
-        const s = buildServiceSummary(t, { allAllergies, allDislikes, tOccasion, tOccasionName, pacingNote, churnGuest, pax, headerGuest, stage: plan.stage });
-        return `<div class="ai-summary">
-          <div class="ai-sum-head">
-            <span class="ai-badge">${ic('sparkles')} Pulse AI</span>
-            <span class="ai-sum-title">Service summary</span>
-            <span class="ai-sum-meta"><span class="live-dot"></span> live · ${pax} ${pax===1?'guest':'guests'} ordering</span>
-          </div>
-          <div class="ai-sum-text">${s.sentence}</div>
-          <div class="ai-bullets">
-            ${s.bullets.map(b => `<div class="ai-bullet ${b.tone}"><span class="ab-ic">${ic(b.icon)}</span><span>${b.text}</span></div>`).join('')}
-          </div>
-        </div>`;
-      })() : ''}
 
       ${headerGuest ? `<div class="party-header clickable" onclick="openGuestBriefing('${t.party[0]}')" title="Open guest briefing">
         <div class="party-avatar-stack">
@@ -3591,7 +3758,14 @@ function openTableModal(id) {
         <div class="ph-go">${ic('chevron-right','lg')}</div>
       </div>`}
 
-      ${renderJourney(t)}
+      <!-- ACTIONS FIRST. What to do outranks what we know. -->
+      ${renderTableActions(t, sig)}
+
+      <!-- GUEST — the few facts that change service, detail folded away -->
+      ${renderGuestSection(t, sig)}
+
+      <div class="sec-head">${ic('clipboard-list')} Order</div>
+      ${pol.courseJourney ? renderJourney(t) : ''}
 
       <div class="tdetail">
 
@@ -3620,6 +3794,7 @@ function openTableModal(id) {
 
       <div class="actions-row">
         <button class="demo-btn" onclick="simulateOrder(${t.id})">${ic('play','xs')} Demo: next order arrives</button>
+        <button class="demo-btn" onclick="simulateSignal(${t.id})">${ic('radio','xs')} Demo: live signal</button>
         <div style="flex:1"></div>
         <button class="btn" onclick="openMoveTable(${t.id})"><i data-lucide="arrow-right-left" class="sm"></i> Move table</button>
         <button class="btn ghost" onclick="closeModal('table-modal')">Close</button>
@@ -3684,6 +3859,519 @@ function idealCounts(pax) {
 
 // Headcount at the table — QR/seating knows it even if only one phone is identified
 function paxOf(t) { return t.seatedPax || (t.party ? t.party.length : 0) || t.cap; }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ACTION INTELLIGENCE ENGINE
+   Turns what we already know into: why this matters → what to do → done.
+
+   Design rules encoded here:
+   · Every signal must be derivable from a field we actually hold. No invented
+     signals (we never claim "the main course is late" — we cannot measure it).
+   · Every signal must change what a staff member does, or it is context.
+   · tier: attention (act now) > opportunity (materially better experience) > context.
+   · severity: red only for immediate intervention, amber for attention,
+     neutral for opportunity. Colour restraint is a product requirement.
+   · Never surface more than MAX_PRIMARY action cards; the rest collapse.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const MAX_PRIMARY = 2;   // hard cap — more than this and we recreate the overload problem
+
+// completed / dismissed actions, keyed "<tableId>:<signalId>"
+const actionState = {};
+// the learning loop: signal → recommended action → staff action → outcome
+const actionLog = [];
+
+function actKey(tableId, id) { return tableId + ':' + id; }
+function isActioned(tableId, id) { return !!actionState[actKey(tableId, id)]; }
+
+function daysSince(lastVisit) {
+  if (!lastVisit) return null;
+  const m = String(lastVisit).match(/(\d+)\s*day/i);
+  return m ? parseInt(m[1]) : null;
+}
+
+/* Everything a signal condition is allowed to read. Built once per table. */
+function signalContext(t, pol) {
+  const profiles = (t.party || []).map(g => guests[g]).filter(Boolean);
+  const guest = profiles[0] || null;
+  const profAllergies = profiles.flatMap(p => p.allergies || []);
+  const allergies = [...new Set([...(t.allergies || []), ...profAllergies])];
+  const dislikes = [...new Set(profiles.flatMap(p => p.dislikes || []))];
+  const profOcc = profiles.find(p => p.occasion);
+  const occasion = t.occasion || (profOcc && profOcc.occasion) || '';
+  const occasionName = (t.guestName || (profOcc && profOcc.name) || (guest && guest.name) || '').split(' ')[0];
+  return {
+    t, pol, guest, profiles,
+    pax: paxOf(t),
+    stage: tableStage(t),
+    mins: t.seatedMin || 0,
+    items: t.items || [],
+    drinks: t.drinks || [],
+    sw: t.sw || {},
+    allergies, dislikes, occasion, occasionName,
+    prevIssue: profiles.map(p => p.prevIssue).find(Boolean) || null,
+    churn: pol.predictiveCues ? profiles.find(p => p.churnRisk) : null,
+    gap: guest ? daysSince(guest.lastVisit) : null,
+    notes: profiles.map(p => p.notes).filter(Boolean),
+    // things staff have taught us — from the guest's profile and from tonight
+    remembered: [...(profiles.flatMap(pr => pr.remembered || [])), ...(t.remembered || [])],
+  };
+}
+
+/* ── THE CATALOG ─────────────────────────────────────────────────────────
+   Copy is deliberately operational and human. A waiter does not care that
+   software inferred something; they care what to do about it.            */
+const SIGNALS = [
+
+  /* ══ ATTENTION · live, act now ══════════════════════════════════════ */
+  {
+    id:'guest-request', tier:'attention', severity:'red', audience:'waiter', icon:'bell-ring',
+    live:true, score:100,
+    when:c => c.sw.requestPending,
+    title:'Guest needs assistance',
+    why:c => `They asked from the table${c.sw.requestMin ? ` <strong>${c.sw.requestMin} min ago</strong>` : ''}${c.sw.requestText ? `: “${c.sw.requestText}”` : '.'}`,
+    action:'Respond to the table', done:'Responded to the table',
+  },
+  {
+    id:'course-overdue', tier:'attention', severity:'red', audience:'waiter', icon:'timer-off',
+    score:92,
+    when:c => c.t.status === 'overdue',
+    title:'Table has been waiting',
+    why:c => `Seated <strong>${c.mins} min</strong> and still on ${STAGE_WORD[c.stage] || 'this course'}.`,
+    action:'Check the pass and update them', done:'Table updated',
+  },
+  {
+    id:'seated-no-order', tier:'attention', severity:'amber', audience:'waiter', icon:'clock',
+    score:86,
+    // a more specific signal (we can see WHY they haven't ordered) always wins over this generic one
+    when:c => c.t.status !== 'empty' && c.t.status !== 'paid' && !c.items.length && c.mins >= 8
+      && !c.sw.requestPending && !(c.sw.cat && c.sw.catMin >= 3) && !(c.sw.menuOpenMin >= 4 && c.sw.itemsViewed === 0),
+    title:'No order yet',
+    why:c => `Seated <strong>${c.mins} min</strong> with nothing ordered.`,
+    action:'Check in with the table', done:'Checked in',
+  },
+  {
+    id:'ordering-stalled', tier:'attention', severity:'amber', audience:'waiter', icon:'book-open',
+    live:true, score:80,
+    when:c => c.sw.menuOpenMin >= 4 && c.sw.itemsViewed === 0 && !c.items.length,
+    title:'Ordering hasn’t started',
+    why:c => `The menu has been open <strong>${c.sw.menuOpenMin} min</strong> with nothing opened yet.`,
+    action:'Offer to walk them through the menu', done:'Walked them through the menu',
+  },
+  {
+    id:'needs-attention', tier:'attention', severity:'amber', audience:'waiter', icon:'circle-alert',
+    score:74,
+    when:c => c.t.status === 'attention',
+    title:'Table needs a check-in',
+    why:c => `Seated <strong>${c.mins} min</strong> and progressing slowly through ${STAGE_WORD[c.stage] || 'service'}.`,
+    action:'Check in with the table', done:'Checked in',
+  },
+  {
+    id:'drinks-low', tier:'attention', severity:'amber', audience:'waiter', icon:'rotate-ccw',
+    score:66,
+    when:c => c.drinks.length && (c.t.drinkAgeMin || 0) >= 20 && (c.stage === 'starters' || c.stage === 'mains'),
+    title:'Glasses running low',
+    why:c => `The round was poured <strong>${c.t.drinkAgeMin} min ago</strong>.`,
+    action:'Offer another round', done:'Round offered',
+  },
+  {
+    id:'ready-to-turn', tier:'attention', severity:'neutral', audience:'waiter', icon:'badge-check',
+    score:58,
+    when:c => c.t.status === 'paid',
+    title:'Bill paid',
+    why:c => `The party has settled and the table is free to reset.`,
+    action:'Clear and turn the table', done:'Table cleared',
+  },
+
+  /* ══ SERVICE RECOVERY · historical risk, not a live event ═══════════ */
+  {
+    id:'prev-service-issue', tier:'attention', severity:'red', audience:'waiter', icon:'heart-crack',
+    historical:true, score:96,
+    when:c => !!c.prevIssue,
+    title:'Previous service issue',
+    why:c => `${c.prevIssue.when === 'last visit' ? 'Last visit' : c.prevIssue.when}: ${c.prevIssue.note.toLowerCase()}${c.prevIssue.rating ? ` · rated <strong>${c.prevIssue.rating}★</strong>` : ''}.`,
+    action:'Prioritise this table', done:'Table prioritised',
+  },
+  {
+    id:'ratings-slipping', tier:'attention', severity:'amber', audience:'waiter', icon:'trending-down',
+    historical:true, score:70,
+    when:c => c.churn && !c.prevIssue,
+    title:'Ratings have been slipping',
+    why:c => `${c.churn.name.split(' ')[0]}’s last three visits averaged <strong>${(c.churn.pastRatings.slice(-3).reduce((a,b)=>a+b,0)/3).toFixed(1)}★</strong>${c.gap ? ` and it has been ${c.gap} days` : ''}.`,
+    action:'Check in early and often', done:'Checking in early',
+  },
+
+  /* ══ OPPORTUNITY · materially better experience ════════════════════ */
+  {
+    id:'browsing-category', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'wine',
+    live:true, score:88,
+    when:c => c.sw.cat && c.sw.catMin >= 3,
+    title:'Guest may need assistance',
+    why:c => `They have been on the <strong>${c.sw.cat.toLowerCase()} list for ${c.sw.catMin} min</strong> without ordering.`,
+    action:c => `Offer help choosing ${/wine|drink/i.test(c.sw.cat) ? 'a wine' : `from ${c.sw.cat.toLowerCase()}`}`,
+    done:'Assistance offered',
+  },
+  {
+    id:'repeated-item', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'eye',
+    live:true, score:76,
+    when:c => c.sw.repeatItem && c.sw.repeatViews >= 3,
+    title:'Undecided on a dish',
+    why:c => `They have opened <strong>${c.sw.repeatItem}</strong> ${c.sw.repeatViews} times without adding it.`,
+    action:c => `Talk them through the ${c.sw.repeatItem}`, done:'Dish explained',
+  },
+  {
+    id:'occasion', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'gem',
+    score:84,
+    when:c => !!c.occasion && c.pol.occasionInBanner,
+    title:c => c.occasion.replace(/ tonight$/i, ''),
+    why:c => `${c.occasionName || 'This party'} is celebrating with you tonight.`,
+    action:'Acknowledge the occasion', done:'Occasion acknowledged',
+  },
+  {
+    id:'returning-guest', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'star',
+    score:72,
+    when:c => c.guest && c.guest.visits >= 3,
+    title:'Returning guest',
+    why:c => `${c.guest.name.split(' ')[0]} has dined here <strong>${c.guest.visits} times</strong>${c.guest.lastVisit ? `, last ${c.guest.lastVisit}` : ''}.`,
+    action:'Welcome them back by name', done:'Welcomed back',
+  },
+  {
+    id:'long-absence', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'calendar-clock',
+    score:64,
+    when:c => c.guest && c.guest.visits > 0 && c.gap !== null && c.gap >= 60 && !c.churn,
+    title:'First visit in a while',
+    why:c => `${c.guest.name.split(' ')[0]} last dined here <strong>${c.gap} days ago</strong>.`,
+    action:'Make them feel remembered', done:'Guest welcomed back',
+  },
+  {
+    id:'usual-order', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'utensils',
+    score:60,
+    when:c => c.guest && (c.guest.favFood || []).length && (c.stage === 'seated' || c.stage === 'starters') && !c.items.length,
+    title:'They have a usual',
+    why:c => `${c.guest.name.split(' ')[0]} usually orders <strong>${c.guest.favFood.slice(0,2).join(' and ')}</strong>.`,
+    action:'Lead with their usual', done:'Usual suggested',
+  },
+  {
+    id:'network-first-visit', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'network',
+    score:68,
+    when:c => c.pol.showNetworkBadge && c.guest && c.guest.visits === 0 && (c.guest.networkVisits || 0) >= 5,
+    title:'Known guest, first time here',
+    why:c => `${c.guest.name.split(' ')[0]} has dined <strong>${c.guest.networkVisits} times</strong> across the group but never at this restaurant.`,
+    action:'Introduce the room properly', done:'Room introduced',
+  },
+  {
+    id:'upsell', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'plus-circle',
+    score:52,
+    when:c => c.guest && c.guest.upsell && c.items.length > 0 && c.stage !== 'check',
+    title:'Something they usually add',
+    why:c => `${c.guest.upsell.reason}.`,
+    action:c => `Mention the ${c.guest.upsell.name}`, done:'Mentioned',
+  },
+
+  /* ══ MANAGER · where should I spend my next 10 minutes ═════════════ */
+  {
+    id:'mgr-recovery', tier:'attention', severity:'red', audience:'manager', icon:'heart-handshake',
+    historical:true, score:98,
+    // a loyal guest whose experience slipped is exactly who a manager should see, whatever they spend
+    when:c => c.prevIssue && c.guest && (c.guest.vipTier === 'VIP' || (c.guest.spend || 0) >= 4 || (c.guest.visits || 0) >= 5),
+    title:'Recovery needs you',
+    why:c => `High-value guest whose last visit went wrong: ${c.prevIssue.note.toLowerCase()}.`,
+    action:'Visit the table personally', done:'Manager visited',
+  },
+  {
+    id:'mgr-multiple', tier:'attention', severity:'red', audience:'manager', icon:'layers',
+    score:90,
+    when:c => c._attnCount >= 2,
+    title:'Several signals at once',
+    why:c => `<strong>${c._attnCount} things</strong> need attention on this table at the same time.`,
+    action:'Visit the table', done:'Manager visited',
+  },
+  {
+    id:'mgr-vip', tier:'opportunity', severity:'neutral', audience:'manager', icon:'crown',
+    score:78,
+    when:c => c.guest && c.guest.vipTier === 'VIP' && !c.prevIssue,
+    title:'Priority guest dining',
+    why:c => `${c.guest.name.split(' ')[0]} — ${c.guest.visits} visits, avg $${c.guest.avgPerCover} a cover.`,
+    action:'Personally welcome them', done:'Guest welcomed',
+  },
+  {
+    id:'mgr-occasion', tier:'opportunity', severity:'neutral', audience:'manager', icon:'gift',
+    score:74,
+    when:c => c.occasion && c.guest && (c.guest.spend || 0) >= 4 && c.pol.occasionInBanner,
+    title:'Occasion worth marking',
+    why:c => `${c.occasionName} is celebrating and is one of your best guests.`,
+    action:'Send something to the table', done:'Sent to the table',
+  },
+];
+
+const STAGE_WORD = { seated:'being seated', starters:'starters', mains:'mains', dessert:'dessert', check:'the check' };
+
+/* Resolve a value that may be a function of context. */
+function sv(v, c) { return typeof v === 'function' ? v(c) : v; }
+
+/* Evaluate the catalog for one table. Returns grouped, ranked, capped signals. */
+function tableSignals(t, pol) {
+  if (!t || t.status === 'empty') return { attention:[], opportunity:[], manager:[], done:[], primary:[], overflow:[], health:{ level:'none', reason:'' }, ctx:null };
+  const c = signalContext(t, pol);
+
+  const evaluate = (list) => list.filter(s => { try { return !!s.when(c); } catch (e) { return false; } })
+    .map(s => ({
+      id:s.id, tier:s.tier, severity:s.severity, audience:s.audience, icon:s.icon,
+      live:!!s.live, historical:!!s.historical, score:s.score,
+      title:sv(s.title, c), why:sv(s.why, c), action:sv(s.action, c), doneLabel:sv(s.done, c),
+      actioned:isActioned(t.id, s.id),
+    }));
+
+  // waiter signals first — the manager "several signals" rule needs their count
+  const waiterAll = evaluate(SIGNALS.filter(s => s.audience === 'waiter'));
+  c._attnCount = waiterAll.filter(s => s.tier === 'attention' && !s.actioned).length;
+  const managerAll = evaluate(SIGNALS.filter(s => s.audience === 'manager'));
+
+  const open = waiterAll.filter(s => !s.actioned);
+  const done = waiterAll.concat(managerAll).filter(s => s.actioned);
+
+  const byScore = (a, b) => (SIG_TIER_RANK[a.tier] - SIG_TIER_RANK[b.tier]) || (b.score - a.score);
+  const attention = open.filter(s => s.tier === 'attention').sort(byScore);
+  const opportunity = open.filter(s => s.tier === 'opportunity').sort(byScore);
+
+  // ranked: attention always outranks opportunity, then by score. Cap the primaries.
+  const ranked = attention.concat(opportunity);
+  const primary = ranked.slice(0, MAX_PRIMARY);
+  const overflow = ranked.slice(MAX_PRIMARY);
+
+  return {
+    attention, opportunity, done, primary, overflow,
+    manager: managerAll.filter(s => !s.actioned).sort(byScore),
+    health: tableHealth(t, attention, c),
+    ctx: c,
+  };
+}
+
+const SIG_TIER_RANK = { attention:0, opportunity:1, context:2 };
+
+/* Experience health — always explainable in one sentence, never an opaque score. */
+function tableHealth(t, attention, c) {
+  if (!t || t.status === 'empty') return { level:'none', reason:'' };
+  const red = attention.find(s => s.severity === 'red');
+  if (red) return { level:'red', reason:red.title, count:attention.length };
+  const amber = attention.find(s => s.severity === 'amber');
+  if (amber) return { level:'amber', reason:amber.title, count:attention.length };
+  if (t.status === 'paid') return { level:'green', reason:'Bill paid · ready to turn', count:attention.length };
+  return { level:'green', reason:'Experience looks healthy', count:0 };
+}
+
+/* Mark an action done. This is the moment that creates a new kind of
+   restaurant data: what the staff actually did. */
+function markAction(tableId, id, audience) {
+  const t = tables.find(x => x.id === tableId); if (!t) return;
+  const sig = SIGNALS.find(s => s.id === id);
+  actionState[actKey(tableId, id)] = { at:(t.seatedMin || 0), audience:audience || 'waiter' };
+  actionLog.push({ tableId, signalId:id, action:sig ? sv(sig.action, signalContext(t, phasePolicy(state.phase))) : id, audience:audience || 'waiter', stage:tableStage(t) });
+  toast(sig ? sv(sig.done, signalContext(t, phasePolicy(state.phase))) : 'Done', 'success');
+  if (state.view === 'manager') { renderManager(); }
+  else { openTableModal(tableId); }
+  renderFloor();
+}
+function undoAction(tableId, id) {
+  delete actionState[actKey(tableId, id)];
+  if (state.view === 'manager') renderManager(); else openTableModal(tableId);
+  renderFloor();
+}
+
+/* ─── Rendering: the action IS the interface ─────────────────────────── */
+
+function renderActionCard(tableId, s, audience) {
+  const cls = [ 'act-card', s.severity, s.historical ? 'historical' : '', s.live ? 'arriving' : '', audience === 'manager' ? 'mgr' : '' ].filter(Boolean).join(' ');
+  return `<div class="${cls}">
+    <div class="act-title">${ic(s.icon)} <span>${s.title}</span>${s.live ? `<span class="live-tag"><span class="ldot"></span> Live</span>` : (s.historical ? `<span class="live-tag">Previous visit</span>` : '')}</div>
+    <div class="act-why">${s.why}</div>
+    <button class="act-do" onclick="event.stopPropagation(); markAction(${tableId}, '${s.id}', '${audience || 'waiter'}')">
+      <span class="act-do-lbl">${s.action}</span>
+      <span class="act-do-done">${ic('check')} Mark done</span>
+    </button>
+  </div>`;
+}
+
+function renderDoneRow(tableId, s) {
+  return `<div class="act-done-row">${ic('circle-check')} <span>${s.doneLabel}</span>
+    <button class="act-undo" onclick="event.stopPropagation(); undoAction(${tableId}, '${s.id}')">Undo</button>
+  </div>`;
+}
+
+/* The two action sections. Never more than MAX_PRIMARY cards; rest collapse. */
+function renderTableActions(t, sig) {
+  const expanded = !!state.actExpanded[t.id];
+  const shown = expanded ? sig.attention.concat(sig.opportunity) : sig.primary;
+  const attn = shown.filter(s => s.tier === 'attention');
+  const opp  = shown.filter(s => s.tier === 'opportunity');
+  const hidden = expanded ? 0 : sig.overflow.length;
+  let html = '';
+
+  if (attn.length) {
+    html += `<div class="sec-head urgent">${ic('circle-alert')} Needs your attention</div>`;
+    html += attn.map(s => renderActionCard(t.id, s, 'waiter')).join('');
+  }
+  if (opp.length) {
+    html += `<div class="sec-head">${ic('hand-heart')} Opportunity</div>`;
+    html += opp.map(s => renderActionCard(t.id, s, 'waiter')).join('');
+  }
+  if (hidden) {
+    html += `<button class="act-more" onclick="toggleActMore(${t.id})">${ic('plus')} ${hidden} more ${hidden === 1 ? 'suggestion' : 'suggestions'} for this table</button>`;
+  } else if (expanded && sig.overflow.length) {
+    html += `<button class="act-more" onclick="toggleActMore(${t.id})">${ic('minus')} Show fewer</button>`;
+  }
+  // resolved actions collapse to a quiet confirmation so the screen keeps clearing
+  if (sig.done.length) {
+    html += `<div class="sec-head">${ic('check-check')} Done this service</div>`;
+    html += sig.done.map(s => renderDoneRow(t.id, s)).join('');
+  }
+  if (!attn.length && !opp.length && !sig.done.length) {
+    html += `<div class="act-clear"><span class="ac-ic">${ic('check')}</span><span>Experience looks healthy — nothing needs you right now.</span></div>`;
+  }
+  return html;
+}
+function toggleActMore(id) {
+  state.actExpanded[id] = !state.actExpanded[id];
+  openTableModal(id);
+}
+
+/* Compact context — the few facts that could change how you serve. */
+function renderContextStrip(sig) {
+  const c = sig.ctx; if (!c) return '';
+  const chips = [];
+  if (c.allergies.length) chips.push({ cls:'red', icon:'triangle-alert', html:`<strong>${c.allergies.join(', ')}</strong> allergy` });
+  if (c.occasion && c.pol.occasionInBanner) chips.push({ cls:'gold', icon:'gem', html:c.occasion.replace(/ tonight$/i,'') });
+  if (c.guest && (c.guest.spend || 0) >= 4) chips.push({ cls:'gold', icon:'crown', html:'High-value guest' });
+  if (c.dislikes.length) chips.push({ cls:'', icon:'circle-slash', html:`Avoid <strong>${c.dislikes.join(', ')}</strong>` });
+  if (c.guest && (c.guest.tasteTags || []).length) chips.push({ cls:'', icon:'flame', html:`Likes <strong>${c.guest.tasteTags.slice(0,2).join(', ')}</strong>` });
+  if (c.guest && c.guest.seatingPref) chips.push({ cls:'', icon:'armchair', html:c.guest.seatingPref });
+  // staff-taught notes, minus any category another chip above already covers
+  (c.remembered || []).filter(r => r.cat !== 'Seating' && r.cat !== 'Dietary')
+    .forEach(r => chips.push({ cls:'', icon:'bookmark', html:r.text }));
+  const seen = new Set();
+  const unique = chips.filter(ch => {
+    const k = ch.html.replace(/<[^>]+>/g,'').trim().toLowerCase();
+    if (seen.has(k)) return false; seen.add(k); return true;
+  });
+  if (!unique.length) return '';
+  return `<div class="ctx-strip">${unique.map(ch => `<div class="ctx-chip ${ch.cls}">${ic(ch.icon)} <span>${ch.html}</span></div>`).join('')}</div>`;
+}
+
+/* GUEST — folded by default. "Don't make the waiter read unless they want to." */
+function renderGuestSection(t, sig) {
+  const c = sig.ctx; if (!c) return '';
+  const g = c.guest;
+  const brief = buildServiceSummary(t, {
+    allAllergies:c.allergies, allDislikes:c.dislikes, tOccasion:c.occasion, tOccasionName:c.occasionName,
+    pacingNote:c.notes.find(n => /pacing/i.test(n)), churnGuest:c.churn, pax:c.pax, headerGuest:g, stage:c.stage,
+  });
+  const kv = [];
+  if (g) {
+    kv.push(['Visits here', g.visits > 0 ? `${g.visits}` : 'First visit']);
+    if (g.lastVisit && g.visits > 0) kv.push(['Last visit', g.lastVisit]);
+    if (g.networkVisits) kv.push(['Across the group', `${g.networkVisits} visits`]);
+    if (g.avgPerCover) kv.push(['Usual spend', `$${g.avgPerCover} a cover`]);
+    if (g.avgRating) kv.push(['Average rating', `${avgRating(g).toFixed(1)}★`]);
+    if ((g.favFood || []).length) kv.push(['Usual dishes', g.favFood.slice(0,3).join(', ')]);
+    if ((g.favDrinks || []).length) kv.push(['Usual drinks', g.favDrinks.slice(0,2).join(', ')]);
+    if (g.vipTier) kv.push(['Tier', g.vipTier]);
+  } else {
+    kv.push(['Profile', 'No profile yet']);
+    kv.push(['Party size', `${c.pax} ${c.pax === 1 ? 'guest' : 'guests'}`]);
+  }
+  return `<div class="sec-head">${ic('user-round')} Guest</div>
+    ${renderContextStrip(sig)}
+    <button class="disclose" id="disc-btn-${t.id}" onclick="toggleDisclose(${t.id})">
+      ${ic('chevron-down','')} <span>Guest details${g ? ` · ${g.name}` : ''}</span>
+      <i data-lucide="chevron-down" class="chev" style="margin-left:auto"></i>
+    </button>
+    <div class="disclose-body ${state.discOpen[t.id] ? 'open' : ''}" id="disc-body-${t.id}">
+      <div class="ai-sum-text" style="font-size:14.5px;margin-bottom:16px;">${brief.sentence}</div>
+      <div class="kv-grid">${kv.map(([k,v]) => `<div class="kv"><span class="kv-k">${k}</span><span class="kv-v">${v}</span></div>`).join('')}</div>
+      ${c.notes.length ? `<div style="margin-top:16px;font-size:13px;color:var(--text-dim);line-height:1.55;">${ic('sticky-note','xs')} ${c.notes.join(' · ')}</div>` : ''}
+      <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+        ${g ? `<button class="btn ghost" style="font-size:12px;padding:9px 14px;" onclick="openGuestBriefing('${g.id}')">${ic('id-card','sm')} Full guest profile</button>` : ''}
+        <button class="rem-btn" onclick="openRemember(${t.id})">${ic('bookmark-plus')} Remember something</button>
+      </div>
+    </div>`;
+}
+/* Demo: a guest's behaviour on their phone changes, and a signal arrives.
+   This is the digital-to-human handoff — behaviour we can see, staff who can act. */
+const SW_DEMOS = [
+  { sw:{ cat:'Wine', catMin:4, lastActivityMin:0 }, note:'browsing the wine list' },
+  { sw:{ repeatItem:'Wagyu Ribeye', repeatViews:4, lastActivityMin:1 }, note:'stuck on one dish' },
+  { sw:{ requestPending:true, requestText:'Could we order now?', requestMin:1, lastActivityMin:1 }, note:'asked for help' },
+  { sw:{ menuOpenMin:6, itemsViewed:0, lastActivityMin:6 }, note:'menu open, nothing viewed' },
+];
+function simulateSignal(id) {
+  const t = tables.find(x => x.id === id); if (!t) return;
+  t._swDemo = ((t._swDemo || 0)) % SW_DEMOS.length;
+  const d = SW_DEMOS[t._swDemo];
+  t._swDemo++;
+  t.sw = Object.assign({}, d.sw);
+  // a fresh signal is not one the waiter has already resolved
+  SIGNALS.filter(s => s.live).forEach(s => delete actionState[actKey(id, s.id)]);
+  toast(`Table ${id} — ${d.note}`, 'info');
+  openTableModal(id);
+  renderFloor();
+}
+
+/* ─── REMEMBER THIS ──────────────────────────────────────────────────────
+   Data systems tell Pulse what they know. Staff teach Pulse what they learn.
+   Two taps and a short line — anything longer and nobody uses it mid-service. */
+const REM_PROMPT = {
+  Preference:'What do they like?',
+  Dietary:'What should the kitchen know?',
+  Occasion:'What are they marking?',
+  Seating:'Where do they like to sit?',
+  Conversation:'What came up worth remembering?',
+  Other:'What should we remember?',
+};
+function openRemember(tableId) {
+  state.remTable = tableId; state.remCat = null;
+  const t = tables.find(x => x.id === tableId);
+  const g = t && t.party && t.party[0] ? guests[t.party[0]] : null;
+  document.getElementById('rem-sub').textContent = g
+    ? `Saved to ${g.name}’s profile for next time`
+    : 'Saved to this table for tonight';
+  document.querySelectorAll('#rem-cats .rem-cat').forEach(b => b.classList.remove('selected'));
+  document.getElementById('rem-input-wrap').style.display = 'none';
+  document.getElementById('rem-input').value = '';
+  showModal('remember-modal');
+  refreshIcons();
+}
+function pickRemCat(cat) {
+  state.remCat = cat;
+  document.querySelectorAll('#rem-cats .rem-cat').forEach(b => b.classList.toggle('selected', b.dataset.cat === cat));
+  document.getElementById('rem-input-label').textContent = REM_PROMPT[cat] || REM_PROMPT.Other;
+  document.getElementById('rem-input-wrap').style.display = 'block';
+  const inp = document.getElementById('rem-input');
+  inp.focus();
+}
+function saveRemember() {
+  const text = (document.getElementById('rem-input').value || '').trim();
+  if (!state.remCat) { toast('Pick what kind of thing it is', 'warn'); return; }
+  if (!text) { toast('Add a short note first', 'warn'); return; }
+  const t = tables.find(x => x.id === state.remTable); if (!t) return;
+  const entry = { cat:state.remCat, text };
+  // lands on the guest profile when we know who they are, otherwise on the table for tonight
+  const g = t.party && t.party[0] ? guests[t.party[0]] : null;
+  if (g) (g.remembered = g.remembered || []).push(entry);
+  else t.remembered = (t.remembered || []).concat([entry]);
+  if (state.remCat === 'Seating' && g) g.seatingPref = text;
+  if (state.remCat === 'Dietary' && g) g.dislikes = [...new Set([...(g.dislikes||[]), text])];
+  actionLog.push({ tableId:t.id, event:'remember', cat:state.remCat, text });
+  closeModal('remember-modal');
+  toast(g ? `Saved to ${g.name.split(' ')[0]}’s profile` : 'Saved for tonight', 'success');
+  openTableModal(t.id);
+}
+
+function toggleDisclose(id) {
+  state.discOpen[id] = !state.discOpen[id];
+  const b = document.getElementById('disc-body-' + id), btn = document.getElementById('disc-btn-' + id);
+  if (b) b.classList.toggle('open', !!state.discOpen[id]);
+  if (btn) btn.classList.toggle('open', !!state.discOpen[id]);
+}
 
 /* ════ AI SERVICE SUMMARY — the glanceable brief at the top ════
    Static logic for now (the AI team plugs in here later). Composed from
@@ -4298,7 +4986,6 @@ function curateAndReveal(tableId, who) {
   setTimeout(() => {
     ov.classList.remove('show');
     setTimeout(() => { ov.style.display = 'none'; }, 300);
-    if (coachActive) { toast(`Table ${tableId} open · ${isNew ? 'guest' : who} seated`, 'success'); return; }  // the tour drives what happens next
     // redirect: land the waiter on the table
     if (state.view !== 'floor') switchView('floor');
     state.assignedFlash = tableId;
@@ -4446,6 +5133,19 @@ function renderReservations() {
             <div class="res-detail">
               ${r.guestId && guests[r.guestId] ? `<span>${guests[r.guestId].visits>0 ? `<strong style="color: var(--text);">${guests[r.guestId].visits}</strong> visits · last ${guests[r.guestId].lastVisit}` : 'first visit here'}</span><span class="rating-display" style="letter-spacing: 1.5px;">${ratingStars(guests[r.guestId])}</span>` : '<span style="color:var(--text-faint)">new guest</span>'}
             </div>
+            ${(function(){
+              const rg = r.guestId ? guests[r.guestId] : null;
+              if (!rg) return '';
+              if (rg.prevIssue) return `<div class="act-card red historical" style="margin-top:12px;padding:13px 15px;">
+                <div class="act-title" style="font-size:11.5px;">${ic('heart-crack')} <span>Arriving with a previous issue</span></div>
+                <div class="act-why" style="margin-bottom:0;font-size:12.5px;">${rg.prevIssue.when === 'last visit' ? 'Last visit' : rg.prevIssue.when}: ${rg.prevIssue.note.toLowerCase()}. Give them your strongest table and server.</div>
+              </div>`;
+              if (rg.churnRisk) return `<div class="act-card amber historical" style="margin-top:12px;padding:13px 15px;">
+                <div class="act-title" style="font-size:11.5px;">${ic('trending-down')} <span>Ratings have been slipping</span></div>
+                <div class="act-why" style="margin-bottom:0;font-size:12.5px;">Last three visits averaged ${(rg.pastRatings.slice(-3).reduce((a,b)=>a+b,0)/3).toFixed(1)}★. Worth extra care tonight.</div>
+              </div>`;
+              return '';
+            })()}
             ${(r.allergies && r.allergies.length) || r.occasion || r.notes ? `<div class="res-tags">
               ${(r.allergies||[]).map(a => `<div class="res-tag allergy">${ic('triangle-alert','xs')} ${a}</div>`).join('')}
               ${r.occasion ? `<div class="res-tag occasion">${ic('gem','xs')} ${r.occasion}</div>` : ''}
@@ -4497,6 +5197,101 @@ function renderReservations() {
 }
 
 /* Live filter the reservation list (no re-render → input keeps focus) */
+/* ═══════════════════════════════════════════════════════════════════════
+   MANAGER VIEW
+   A manager is not another waiter. They cannot visit every table, so this
+   view answers one question — where should I spend my next 10 minutes? —
+   rather than "here is the floor".
+   ═══════════════════════════════════════════════════════════════════════ */
+function renderManager() {
+  const c = document.getElementById('manager-content');
+  const pol = phasePolicy(state.phase);
+
+  // every table that has something a manager should personally handle
+  const rows = [];
+  tables.filter(t => t.status !== 'empty').forEach(t => {
+    const sig = tableSignals(t, pol);
+    sig.manager.forEach(s => rows.push({ t, s, sig }));
+  });
+  const immediate = rows.filter(r => r.s.severity === 'red');
+  const priority  = rows.filter(r => r.s.severity !== 'red');
+
+  // tables a waiter has been asked to handle but hasn't yet — the manager's early warning
+  const waiting = tables.filter(t => t.status !== 'empty').map(t => {
+    const sig = tableSignals(t, pol);
+    const oldest = sig.attention.filter(s => s.severity === 'red' || s.severity === 'amber')[0];
+    return oldest ? { t, s:oldest, sig } : null;
+  }).filter(Boolean).filter(r => !immediate.some(i => i.t.id === r.t.id));
+
+  const covers = tables.filter(t => t.status !== 'empty').reduce((n,t) => n + paxOf(t), 0);
+  const doneCount = Object.keys(actionState).length;
+
+  const card = (r, tone) => {
+    const g = r.sig.ctx.guest;
+    const tags = [];
+    if (g && g.vipTier === 'VIP') tags.push(`<div class="res-tag occasion">${ic('crown','xs')} VIP</div>`);
+    if (g && (g.spend||0) >= 4) tags.push(`<div class="res-tag">${ic('banknote','xs')} avg $${g.avgPerCover}</div>`);
+    if (r.sig.ctx.occasion) tags.push(`<div class="res-tag occasion">${ic('gem','xs')} ${r.sig.ctx.occasion.replace(/ tonight$/i,'')}</div>`);
+    if (r.sig.ctx.allergies.length) tags.push(`<div class="res-tag allergy">${ic('triangle-alert','xs')} ${r.sig.ctx.allergies.join(', ')}</div>`);
+    return `<div class="mgr-card ${tone}">
+      <div class="mgr-t" onclick="openTableModal(${r.t.id})">
+        <span class="mt-num">${r.t.id}</span><span class="mt-lbl">${r.t.zone}</span>
+      </div>
+      <div class="mgr-body">
+        <div class="mgr-guest">${g ? g.name : (r.t.guestName || 'Walk-in')}</div>
+        <div class="mgr-why"><strong>${r.s.title}.</strong> ${r.s.why}</div>
+        ${tags.length ? `<div class="mgr-tags">${tags.join('')}</div>` : ''}
+      </div>
+      <div class="mgr-act">
+        <button class="act-do" onclick="event.stopPropagation(); markAction(${r.t.id}, '${r.s.id}', 'manager')">
+          <span class="act-do-lbl">${r.s.action}</span>
+          <span class="act-do-done">${ic('check')} Done</span>
+        </button>
+      </div>
+    </div>`;
+  };
+
+  c.innerHTML = `
+    <div class="floor-header">
+      <div>
+        <div class="floor-eyebrow"><i data-lucide="concierge-bell"></i> Bella Notte · Duty Manager</div>
+        <div class="floor-title serif">Your next ten minutes</div>
+        <div class="floor-subtitle">${rows.length ? `${rows.length} ${rows.length === 1 ? 'table needs' : 'tables need'} you personally` : 'Nothing needs you personally right now'} · ${covers} covers on the floor</div>
+      </div>
+      <div class="floor-stats">
+        <div class="stat"><div class="stat-num" style="${immediate.length ? 'color:var(--red)' : ''}">${immediate.length}</div><div class="stat-label">Immediate</div></div>
+        <div class="stat"><div class="stat-num">${priority.length}</div><div class="stat-label">Priority</div></div>
+        <div class="stat"><div class="stat-num">${doneCount}</div><div class="stat-label">Actioned</div></div>
+      </div>
+    </div>
+
+    <div class="mgr-group">
+      <div class="sec-head ${immediate.length ? 'urgent' : ''}">${ic('circle-alert')} Needs you now</div>
+      ${immediate.length ? immediate.map(r => card(r, 'red')).join('')
+        : `<div class="mgr-empty"><span class="me-ic">${ic('check')}</span><span>No table needs your personal intervention.</span></div>`}
+    </div>
+
+    <div class="mgr-group">
+      <div class="sec-head">${ic('crown')} Priority guests dining</div>
+      ${priority.length ? priority.map(r => card(r, 'neutral')).join('')
+        : `<div class="mgr-empty"><span class="me-ic">${ic('users')}</span><span>No priority guests on the floor tonight.</span></div>`}
+    </div>
+
+    ${waiting.length ? `<div class="mgr-group">
+      <div class="sec-head">${ic('eye')} Watch list · your team is on these</div>
+      ${waiting.map(r => `<div class="mgr-card ${r.s.severity === 'red' ? 'red' : 'amber'}">
+        <div class="mgr-t" onclick="openTableModal(${r.t.id})"><span class="mt-num">${r.t.id}</span><span class="mt-lbl">${r.t.zone}</span></div>
+        <div class="mgr-body">
+          <div class="mgr-guest">${r.sig.ctx.guest ? r.sig.ctx.guest.name : (r.t.guestName || 'Walk-in')}</div>
+          <div class="mgr-why"><strong>${r.s.title}.</strong> ${r.s.why} <span style="color:var(--text-faint)">· ${r.t.server || 'unassigned'} is on this table.</span></div>
+        </div>
+        <div class="mgr-act"><button class="btn ghost" onclick="openTableModal(${r.t.id})">${ic('arrow-right','sm')} Open table</button></div>
+      </div>`).join('')}
+    </div>` : ''}
+  `;
+  refreshIcons();
+}
+
 function filterReservations(q) {
   q = (q || '').trim().toLowerCase();
   const blocks = document.querySelectorAll('#res-list .res-time-block');
@@ -4565,9 +5360,11 @@ function switchView(v) {
   document.querySelectorAll('.nav-tab').forEach(el => el.classList.toggle('active', el.dataset.view === v));
   if (v === 'floor') { state.animFloor = true; renderFloor(); updateConciergeBar(); }
   if (v === 'reservations') { state.animRes = true; renderReservations(); }
+  if (v === 'manager') { renderManager(); }
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function closeAllModals(){ document.querySelectorAll('.modal-overlay.show').forEach(m => m.classList.remove('show')); }
 // open an overlay and make sure its sheet starts at the top (never mid-scroll)
 function showModal(id) {
   const o = document.getElementById(id);
@@ -4676,7 +5473,7 @@ function openSeatPicker() {
 function applyPhase() {
   const desc = {
     1: { name:'Phase 1 — The Briefing', desc:'QR data only · floor, briefing card, table recommendations · seat a guest · add guest info' },
-    2: { name:'Phase 2 — The Network', desc:'+ Reservations · editable floor map · AI search · predictive cues' },
+    2: { name:'Phase 2 — The Network', desc:'+ Reservations · live guest behaviour · service recovery · manager attention' },
   };
   const d = desc[state.phase];
   document.getElementById('phase-name').textContent = d.name;
@@ -4688,21 +5485,25 @@ function applyPhase() {
   // Lock Reservations until Phase 2 (keeps it clickable → shows locked view)
   document.querySelectorAll('.nav-tab').forEach(el => {
     if (el.dataset.view === 'reservations') el.classList.toggle('locked', !pol.showReservations);
+    if (el.dataset.view === 'manager') el.classList.toggle('locked', !pol.showManager);
   });
   // If on a now-hidden view, fall back to floor
   if (state.view === 'reservations' && !pol.showReservations) { switchView('floor'); return; }
+  if (state.view === 'manager' && !pol.showManager) { switchView('floor'); return; }
   updateConciergeBar();
   // Re-render current
   if (state.view === 'floor') { state.animFloor = true; renderFloor(); }
   if (state.view === 'reservations') { state.animRes = true; renderReservations(); }
+  if (state.view === 'manager') renderManager();
 }
 
+function setPhase(p) {
+  state.phase = p;
+  document.querySelectorAll('#phase-switch button').forEach(b => b.classList.toggle('active', b.dataset.phase == p));
+  applyPhase();
+}
 document.getElementById('phase-switch').addEventListener('click', e => {
-  if (e.target.dataset.phase) {
-    state.phase = +e.target.dataset.phase;
-    document.querySelectorAll('#phase-switch button').forEach(b => b.classList.toggle('active', b.dataset.phase == state.phase));
-    applyPhase();
-  }
+  if (e.target.dataset.phase) setPhase(+e.target.dataset.phase);
 });
 document.getElementById('nav-tabs').addEventListener('click', e => {
   const btn = e.target.closest('.nav-tab');
@@ -4746,434 +5547,6 @@ document.querySelectorAll('.modal-overlay').forEach(o => {
 function updateClock() { const now = new Date(); document.getElementById('clock').textContent = now.toTimeString().slice(0,5); }
 setInterval(updateClock, 30000); updateClock();
 
-/* ════════════════════════════════════════════════════════
-   GUIDED TOUR — a story of one guest's night
-   ════════════════════════════════════════════════════════ */
-let tutStep = 0;
-
-// small builders that reuse the real component classes
-function pop(html, i){ return `<div class="pop" style="animation-delay:${(i||0)*90}ms;">${html}</div>`; }
-function miniTile(num, status, name, sub, glyphs, dots, extra) {
-  return `<div class="table-tile ${status}" style="width:170px; pointer-events:none;">
-    <div class="tile-top"><div class="tile-num">${num}</div>${glyphs?`<div class="tile-glyphs">${glyphs}</div>`:''}</div>
-    <div class="tile-party">${name}</div>
-    <div class="tile-pax">${ic('users','xs')} ${sub}</div>
-    ${coursePips(dots||[0,0,0,0])}
-    <div class="tile-bottom ${extra&&extra.cls||''}">${extra&&extra.text?`<span>${extra.text}</span>`:'<span></span>'}<span class="tile-server">${extra&&extra.server||''}</span></div>
-  </div>`;
-}
-function gly(icon, color){ return `<div class="tile-glyph ${color}">${ic(icon)}</div>`; }
-function planCard(course, icon, items, note, lead) {
-  return `<div class="plan-card ${lead?'lead':''}" style="width:440px; max-width:100%;">
-    <div class="plan-course">${ic(icon)} ${course}</div>
-    <div class="plan-items">${items.map(it=>`<div class="plan-item">
-      <span class="plan-item-qty">${it.q}×</span><span class="plan-item-name">${it.n}</span>
-      <span class="plan-item-spread"></span>${it.tag?tagChip(it.tag):''}</div>`).join('')}</div>
-    <div class="plan-note">${note}</div>
-  </div>`;
-}
-function journeyMini(stage) {
-  const nodes=[['Seated','armchair'],['Starters','salad'],['Mains','utensils-crossed'],['Dessert','cake-slice'],['Check','receipt']];
-  const idx={seated:0,starters:1,mains:2,dessert:3,check:4}[stage];
-  let h='<div class="journey" style="width:480px; max-width:100%;">';
-  nodes.forEach((n,i)=>{ const cls=i<idx?'done':i===idx?'current':'';
-    h+=`<div class="journey-node ${cls}"><div class="journey-dot">${i<idx?ic('check','xs'):ic(n[1],'xs')}</div><div class="journey-label">${n[0]}</div></div>`;
-    if(i<nodes.length-1) h+=`<div class="journey-line ${i<idx?'done':''}"></div>`;
-  });
-  return h+'</div>';
-}
-
-const tutScenes = [
-  { // 0 — welcome
-    kicker:['sparkles','A 90-second tour'],
-    title:'How Pulse works',
-    narr:'Follow one guest, Anika, through her whole night — from the booking screen to the moment her bill is paid. You\'ll never read a screen. You\'ll only glance.',
-    stage:()=>pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-      <div class="tut-hero-dot"></div>
-      <div class="tut-logo">Pulse</div>
-      <div style="color:var(--text-faint);font-size:13px;">Guest intelligence, one glance at a time</div>
-      <button class="btn ghost" style="margin-top:14px;font-size:12px;padding:8px 14px;" onclick="endTutorial(); setTimeout(startFollow, 300);">${ic('mouse-pointer-click','sm')} Or follow along — click through it yourself</button>
-    </div>`)
-  },
-  { // 1 — reservations
-    kicker:['calendar','Start of shift'],
-    title:'Tonight\'s reservations',
-    narr:'Every shift opens here — bookings by time. A badge tells you who you\'re dealing with: <strong>Regular</strong> (dined here before, with their history) or <strong>New</strong> (first time).',
-    stage:()=>`
-      ${pop(`<div class="tut-resrow"><div class="tut-restime">19:00</div><div class="res-card known" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Anika Sharma <span class="res-badge known">Regular</span></div></div><div class="res-detail"><span><strong style="color:var(--text)">4</strong> visits</span><span class="rating-display" style="letter-spacing:1.5px">★★★★☆</span></div><div class="res-tags"><div class="res-tag allergy">${ic('triangle-alert','xs')} Nuts</div><div class="res-tag occasion">${ic('gem','xs')} Anniversary</div></div></div></div>`,0)}
-      ${pop(`<div class="tut-resrow"><div class="tut-restime">19:30</div><div class="res-card new" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Priya Rajan <span class="res-badge new">New</span></div></div><div class="res-detail"><span>first visit · loves the tasting menu</span></div></div></div>`,1)}
-      ${pop(`<div class="tut-resrow"><div class="tut-restime">20:00</div><div class="res-card new" style="pointer-events:none;"><div class="res-row-1"><div class="res-name">Linda Wu <span class="res-badge new">New</span></div></div><div class="res-detail"><span>walk-in confirmed</span></div></div></div>`,2)}
-    `
-  },
-  { // 2 — open table
-    kicker:['user-plus','Guest arrives'],
-    title:'Open the table',
-    narr:'Anika arrives. Tap her table and type her phone — Pulse <strong>recognises her instantly</strong> and pulls her profile from across the network, auto-filling her name. A brand-new guest? Just type a name and pax. No app, no login.',
-    stage:()=>`
-      ${pop(`<div class="tut-input" style="display:flex;align-items:center;gap:8px;color:var(--text);">${ic('phone' ,'sm')}<span>+65 9123 4567</span><span class="cursor">&nbsp;</span></div>`,0)}
-      ${pop(`<div class="tut-match">
-        <div class="seat-match-name">${ic('user-check','sm')} Anika Sharma <span class="briefing-tier vip" style="margin-left:6px;">VIP</span></div>
-        <div class="seat-match-meta" style="margin-top:6px;"><span>Returning · <strong>4</strong> visits</span><span>Last: <strong>12 days ago</strong></span><span class="rating-display" style="letter-spacing:1.5px;font-size:12px;">★★★★☆</span></div>
-        <div class="res-tags" style="margin-top:10px;"><div class="res-tag allergy">${ic('triangle-alert','xs')} Nuts</div><div class="res-tag occasion">${ic('gem','xs')} Anniversary</div></div>
-      </div>`,1)}
-      ${pop(`<div style="font-size:12px;color:var(--text-faint);">↑ recognised — name & preferences auto-filled</div>`,2)}
-    `
-  },
-  { // 3 — floor at a glance
-    kicker:['eye','The floor'],
-    title:'Read the room at a glance',
-    narr:'Once seated, every table shows its state by <strong>border colour</strong> and a symbol or two. Blue = just seated, green = ordered, amber = needs attention, red = running late.',
-    stage:()=>`<div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center;">
-      ${pop(miniTile(7,'seated','Party of 2','2 pax',null,[1,0,0,0],{text:'4m · just seated',server:'Aisha'}),0)}
-      ${pop(miniTile(5,'ordered','Anika +1','2 pax · ★ 4.3', gly('triangle-alert','red')+gly('gem','amber'),[2,1,0,0],{text:'12m · mains',server:'James'}),1)}
-      ${pop(miniTile(12,'overdue','Raj','4 pax', gly('circle-alert','amber'),[2,1,0,0],{text:'28m · mains',cls:'overdue',server:'Aisha'}),2)}
-    </div>`
-  },
-  { // 4 — state 1
-    kicker:['list-checks','Order flow · State 1'],
-    title:'Just seated → open strong',
-    narr:'The second they sit, Pulse suggests the opening move: a round of drinks and shared starters — <strong>scaled to the headcount</strong> and <strong>safe for their allergies</strong>. The highlighted card is what to do first.',
-    stage:()=>`
-      ${pop(journeyMini('seated'),0)}
-      ${pop(planCard('Drinks','martini',[{q:2,n:'Negroni',tag:'usual'},{q:2,n:'Aperol Spritz',tag:'try'}],'for 4 guests · none served yet',true),1)}
-      ${pop(planCard('Starters','salad',[{q:2,n:'Burrata',tag:'usual'},{q:1,n:'Heirloom Salad',tag:'try'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>3 plates to share`),2)}
-    `
-  },
-  { // 5 — state 2
-    kicker:['utensils-crossed','Order flow · State 2'],
-    title:'Starters in → line up the mains',
-    narr:'Their QR order lands and the plan <strong>updates itself</strong>. Starters down → Pulse lines up the mains they usually love, plus a wine to pair. <strong>Usual</strong> = they order it often. <strong>Try this</strong> = a fresh idea.',
-    stage:()=>`
-      ${pop(journeyMini('starters'),0)}
-      ${pop(planCard('Main Course','utensils-crossed',[{q:2,n:'Lamb Shank',tag:'usual'},{q:2,n:'Sea Bass',tag:'usual'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>for 4 guests · one each`,true),1)}
-      ${pop(planCard('Wine','wine',[{q:1,n:'Barolo 2018, bottle',tag:'usual'}],'the red they always order'),2)}
-    `
-  },
-  { // 6 — state 3
-    kicker:['rotate-ccw','Order flow · State 3'],
-    title:'Mains in → refill & ready dessert',
-    narr:'Mains are down. Glasses running low? Pulse nudges a <strong>refill</strong> of the same round, and quietly readies the dessert they always finish with — so you offer it at the perfect moment.',
-    stage:()=>`
-      ${pop(journeyMini('mains'),0)}
-      ${pop(planCard('Refill drinks','rotate-ccw',[{q:2,n:'Negroni',tag:'repeat'},{q:2,n:'Aperol Spritz',tag:'repeat'}],'round poured 26m ago · glasses running low',true),1)}
-      ${pop(planCard('Dessert','cake-slice',[{q:2,n:'Chocolate Plate',tag:'try'}],`<span class="tag safe">${ic('shield-check')}nuts-safe</span>have ready for after mains`),2)}
-    `
-  },
-  { // 7 — state 4
-    kicker:['check-check','Order flow · Last state'],
-    title:'Everything balanced',
-    narr:'When every course is covered for the table, Pulse goes quiet — the balance checks turn green and there\'s nothing left to bring. The meal is complete.',
-    stage:()=>`
-      ${pop(journeyMini('dessert'),0)}
-      ${pop(`<div class="tcol" style="width:440px;max-width:100%;"><div class="tcol-body" style="padding:14px 16px;">
-        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Starters balanced <span class="balance-count">3/3</span></div>
-        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Drinks balanced <span class="balance-count">5/4</span></div>
-        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Mains balanced <span class="balance-count">4/4</span></div>
-        <div class="balance-row ok"><span class="balance-icon">${ic('circle-check','sm')}</span> Dessert balanced <span class="balance-count">2/2</span></div>
-      </div></div>`,1)}
-    `
-  },
-  { // 8 — paid
-    kicker:['badge-check','After the meal'],
-    title:'Bill paid → ready to turn',
-    narr:'When the bill\'s settled, the table turns <strong>calm and green</strong> with a clear stamp. That\'s your signal it\'s done — clear it and turn it for the next guest.',
-    stage:()=>pop(`<div class="table-tile paid" style="width:200px;pointer-events:none;">
-      <div class="tile-top"><div class="tile-num">9</div></div>
-      <div class="paid-stamp">${ic('badge-check','xs')} Bill paid</div>
-      <div class="tile-party">Party of 4</div>
-      <div class="tile-pax">${ic('users','xs')} 4 pax</div>
-      <div class="paid-turn">Ready to clear & turn</div>
-    </div>`)
-  },
-  { // 9 — grid vs map
-    kicker:['layout-grid','Two views'],
-    title:'List grid, or your real floor',
-    narr:'See the floor as a tidy <strong>grid</strong>, or flip to <strong>map</strong> — your actual room, tables as shapes, so the layout matches what you\'re walking. Same info, whichever your room thinks in.',
-    stage:()=>`<div style="display:flex;gap:26px;align-items:center;flex-wrap:wrap;justify-content:center;">
-      ${pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="display:grid;grid-template-columns:repeat(3,30px);gap:6px;">${Array.from({length:9}).map(()=>'<div style="height:30px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface-2);"></div>').join('')}</div><div style="font-size:11px;color:var(--text-dim);">${ic('layout-grid','xs')} Grid</div></div>`,0)}
-      ${pop(`<div style="font-size:20px;color:var(--text-faint);">→</div>`,1)}
-      ${pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;"><div style="position:relative;width:160px;height:96px;border:1px solid var(--border);border-radius:10px;background:var(--surface);">
-        <div class="map-table round ordered" style="position:absolute;width:34px;height:34px;left:14px;top:16px;"><span class="map-table-num" style="font-size:13px;">5</span></div>
-        <div class="map-table square seated" style="position:absolute;width:38px;height:38px;left:64px;top:30px;"><span class="map-table-num" style="font-size:13px;">8</span></div>
-        <div class="map-table round paid" style="position:absolute;width:34px;height:34px;left:116px;top:14px;"><span class="map-table-num" style="font-size:13px;">9</span></div>
-      </div><div style="font-size:11px;color:var(--text-dim);">${ic('map','xs')} Map</div></div>`,2)}
-    </div>`
-  },
-  { // 10 — symbol cheat sheet
-    kicker:['book-open','Cheat-sheet'],
-    title:'Every symbol, once',
-    narr:'You\'ll recognise these everywhere in Pulse.',
-    stage:()=>`<div class="tut-legend">
-      ${[
-        ['triangle-alert','red','<strong>Allergy</strong> — confirm with kitchen'],
-        ['gem','amber','<strong>Occasion</strong> — birthday / anniversary'],
-        ['star','gold','<strong>VIP / regular</strong> — greet warmly'],
-        ['circle-alert','amber','<strong>Needs attention</strong>'],
-        ['timer-reset','amber','<strong>Keep courses moving</strong>'],
-        ['users','blue','<strong>Pax</strong> — guests at the table'],
-        ['heart','green','<strong>Usual</strong> — they order this often'],
-        ['sparkles','purple','<strong>Try this</strong> — fresh suggestion'],
-        ['rotate-ccw','gold','<strong>Refill</strong> — repeat the round'],
-        ['badge-check','green','<strong>Bill paid</strong> — ready to turn'],
-      ].map((r,i)=>`<div class="tut-leg pop" style="animation-delay:${i*45}ms;"><span class="tut-leg-ic ${r[1]}">${ic(r[0])}</span><span>${r[2]}</span></div>`).join('')}
-    </div>`
-  },
-  { // 11 — ready
-    kicker:['check-circle','You\'re ready'],
-    title:'Go make someone feel known',
-    narr:'That\'s the whole loop — recognise, suggest, serve, turn. Pulse stays invisible. The guest only ever sees grace.',
-    stage:()=>pop(`<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-      <div class="tut-leg-ic green" style="width:56px;height:56px;border-radius:16px;">${ic('check','xl')}</div>
-      <div style="color:var(--text-faint);font-size:13px;">You can replay this anytime from the ${ic('help-circle','xs')} button.</div>
-    </div>`)
-  },
-];
-
-function startTutorial(){ tutStep=0; document.getElementById('tut-overlay').classList.add('show'); renderTut(); }
-function endTutorial(){ document.getElementById('tut-overlay').classList.remove('show'); try{ localStorage.setItem('pulse_tut_seen','1'); }catch(e){} }
-function tutNext(){ if(tutStep>=tutScenes.length-1){ endTutorial(); return; } tutStep++; renderTut(); }
-function tutPrev(){ if(tutStep>0){ tutStep--; renderTut(); } }
-function renderTut(){
-  const s = tutScenes[tutStep];
-  // progress pips
-  document.getElementById('tut-progress').innerHTML = tutScenes.map((_,i)=>`<div class="pip ${i<tutStep?'done':i===tutStep?'active':''}"></div>`).join('');
-  const stage = document.getElementById('tut-stage');
-  stage.className = 'tut-stage-inner tut-anim';
-  stage.innerHTML = s.stage();
-  // restart entrance animation
-  void stage.offsetWidth; stage.classList.add('tut-anim');
-  document.getElementById('tut-kicker').innerHTML = `${ic(s.kicker[0])} ${s.kicker[1]}`;
-  document.getElementById('tut-title').textContent = s.title;
-  document.getElementById('tut-narr').innerHTML = s.narr;
-  document.getElementById('tut-count').textContent = `${tutStep+1} / ${tutScenes.length}`;
-  document.getElementById('tut-back').style.visibility = tutStep===0 ? 'hidden' : 'visible';
-  document.getElementById('tut-next').textContent = tutStep===tutScenes.length-1 ? 'Enter Pulse' : 'Next';
-  refreshIcons();
-}
-document.addEventListener('keydown', e=>{
-  if(!document.getElementById('tut-overlay').classList.contains('show')) return;
-  if(e.key==='ArrowRight'||e.key==='Enter') tutNext();
-  if(e.key==='ArrowLeft') tutPrev();
-  if(e.key==='Escape') endTutorial();
-});
-
-/* ════════════════════════════════════════════════════════
-   FOLLOW-ALONG — click-through coach marks over the real UI
-   ════════════════════════════════════════════════════════ */
-let coachStep = 0, coachActive = false, coachWait = null;
-
-function setPhase(p){ state.phase=p; document.querySelectorAll('#phase-switch button').forEach(b=>b.classList.toggle('active', b.dataset.phase==p)); applyPhase(); }
-
-/* ═══ Follow-along v2 — every step verifies its own outcome, so it can never desync.
-   Click steps also offer "Next": pressing it performs the action for you (post). ═══ */
-const coachSteps = [
-  { sel:'.table-tile[data-id="1"]', advance:'click',
-    pre:()=>{ closeAllModals(); setPhase(2); state.layout='grid'; state.zone='all'; switchView('floor'); },
-    post:()=>{ if(!document.getElementById('table-modal').classList.contains('show')) openTableModal(1); },
-    k:['layout-grid','Step 1'], title:'Every table, one glance', body:'Live cards for the whole room — status bar, course, party size. <strong>Tap Table 1.</strong>' },
-  { sel:'#table-modal .ai-summary', advance:'next', place:'bottom',
-    k:['sparkles','Step 2'], title:'Pulse AI briefs you', body:'Allergies, occasion, pace — one glanceable brief that <strong>rewrites itself live</strong> as the table orders.' },
-  { sel:'#table-modal .tcol.plan', advance:'next', place:'left',
-    k:['chef-hat','Step 3'], title:'What to bring next', body:'Named dishes, quantities scaled to the party, always allergy-safe. <strong>Shuffle</strong> re-rolls the picks.' },
-  { sel:'#table-modal .party-header', advance:'next', place:'bottom',
-    k:['users','Step 4'], title:'The guest section', body:'<strong>Tap anywhere on this strip</strong> to open the guest\'s full briefing — or add who else sat down.' },
-  { sel:'#seat-cta', advance:'click',
-    pre:()=>{ closeAllModals(); switchView('floor'); },
-    post:()=>{ if(!document.getElementById('seat-modal').classList.contains('show')) openSeatPicker(); },
-    k:['armchair','Step 5'], title:'Seat a guest', body:'A walk-in arrives. <strong>Tap “Seat a Guest”.</strong>' },
-  { sel:'#seat-modal .seat-match-card', advance:'next', place:'bottom',
-    pre:()=>{ const ph=document.getElementById('seat-phone'); if(ph){ ph.value='+65 9234 5678'; seatLookup('+65 9234 5678','phone'); } },
-    k:['user-check','Step 6'], title:'Recognised instantly', body:'A phone number pulls the profile — <strong>name, visits and allergies auto-fill</strong>. Reservations match too.' },
-  { sel:'#seat-modal .btn.primary', advance:'click',
-    post:()=>{ if(document.getElementById('seat-modal').classList.contains('show')) confirmSeat(); },
-    k:['check','Step 7'], title:'Open the table', body:'<strong>Tap “Open Table”</strong> — it goes live with the guest\'s profile attached.' },
-  { sel:'.nav-tab[data-view="reservations"]', advance:'click',
-    pre:()=>{ closeAllModals(); },
-    post:()=>{ if(state.view!=='reservations') switchView('reservations'); },
-    k:['calendar','Step 8'], title:'Tonight\'s book', body:'<strong>Tap Reservations</strong> — every booking with occasions, allergies and history.' },
-  { sel:'#view-reservations .search-bar', advance:'next', place:'bottom',
-    k:['search','Step 9'], title:'Find anyone', body:'Search by name, table, occasion or allergy — even guests who booked without a profile.' },
-  { sel:null, advance:'done',
-    k:['check-circle','Done'], title:'That\'s the loop', body:'Glance → recognise → serve → turn. Replay anytime from the <strong>?</strong> button.' },
-];
-
-function closeAllModals(){ document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show')); }
-
-function ensureCoachDom(){
-  if (document.getElementById('coach-tip')) return;
-  ['t','r','b','l'].forEach(p=>{ const d=document.createElement('div'); d.className='coach-panel'; d.id='coach-'+p; document.body.appendChild(d); });
-  const ring=document.createElement('div'); ring.className='coach-ring'; ring.id='coach-ring'; document.body.appendChild(ring);
-  const tip=document.createElement('div'); tip.className='coach-tip'; tip.id='coach-tip'; document.body.appendChild(tip);
-}
-function setCoachVisible(v){
-  ['coach-t','coach-r','coach-b','coach-l','coach-ring','coach-tip'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display = v?'block':'none'; });
-}
-function startFollow(){ const ov=document.getElementById('tut-overlay'); if(ov) ov.classList.remove('show'); ensureCoachDom(); coachStep=0; coachActive=true; setCoachVisible(true); runCoach(); }
-function endFollow(){ coachActive=false; if(coachWait){clearTimeout(coachWait); coachWait=null;} setCoachVisible(false); try{localStorage.setItem('pulse_tut_seen','1')}catch(e){} }
-function coachBack(){ if(coachStep>0){ coachStep--; runCoach(); } }
-// advance = run this step's post (so the demo state is guaranteed), then move on
-function coachAdvance(){
-  const s = coachSteps[coachStep];
-  if (s.post) { try { s.post(); } catch(e){} }
-  if (coachStep >= coachSteps.length-1){ endFollow(); return; }
-  coachStep++; runCoach();
-}
-// one document-level capture listener: only a real click INSIDE the target advances
-let coachAdvancing = false;   // debounce — a double-tap must not skip two steps
-document.addEventListener('click', (e)=>{
-  if (!coachActive || coachAdvancing) return;
-  const s = coachSteps[coachStep];
-  if (s.advance !== 'click' || !s.sel) return;
-  const t = document.querySelector(s.sel);
-  if (t && (t === e.target || t.contains(e.target))) { coachAdvancing = true; setTimeout(coachAdvance, 380); }
-}, true);
-document.addEventListener('keydown', (e)=>{ if(coachActive && e.key==='Escape') endFollow(); });
-
-/* Hard interaction shield — while the tour runs, ONLY two things are tappable:
-   the tip card itself, and (on click steps) the highlighted target.
-   Everything else is swallowed so stray taps can never derail the tour. */
-function coachGuard(e){
-  if (!coachActive) return;
-  if (e.target.closest && e.target.closest('#coach-tip')) return;        // tour controls
-  const s = coachSteps[coachStep];
-  if (s && s.advance === 'click' && s.sel){
-    const t = document.querySelector(s.sel);
-    if (t && (t === e.target || t.contains(e.target))) return;           // the one intended action
-  }
-  e.stopPropagation();
-  e.preventDefault();
-  // finale: a tap anywhere closes the tour (still swallowed so nothing underneath fires)
-  if (s && s.advance === 'done' && e.type === 'click') endFollow();
-}
-['click','dblclick','pointerdown','pointerup','mousedown','mouseup','touchstart'].forEach(ev =>
-  document.addEventListener(ev, coachGuard, { capture: true, passive: false }));
-
-function runCoach(){
-  if (coachWait){ clearTimeout(coachWait); coachWait=null; }
-  coachAdvancing = false;
-  // shield the whole screen while views/modals settle — stale cutouts must not leak clicks
-  const T = document.getElementById('coach-t');
-  if (T){
-    T.style.cssText = 'display:block;left:0;top:0;width:100vw;height:100vh;';
-    ['coach-r','coach-b','coach-l'].forEach(id=>{ const e=document.getElementById(id); if(e) e.style.display='none'; });
-  }
-  const s = coachSteps[coachStep];
-  if (s.pre) { try { s.pre(); } catch(e){} }
-  waitForCoachEl(s, 0);
-}
-// poll until the target exists AND is visible; fall back to a centered card (with Next) so you can never get stuck
-function waitForCoachEl(s, tries){
-  if (!coachActive || s !== coachSteps[coachStep]) return;
-  if (s.advance==='done' || !s.sel){ positionCenter(s); return; }
-  const el = document.querySelector(s.sel);
-  const r = el && el.getBoundingClientRect();
-  const visible = el && r && r.width > 2 && r.height > 2;
-  if (visible){
-    el.scrollIntoView({ block:'center', inline:'nearest' });
-    setTimeout(()=>{ if (coachActive && s === coachSteps[coachStep]) placeCoach(el, s); }, 200);
-  } else if (tries < 25){
-    coachWait = setTimeout(()=>waitForCoachEl(s, tries+1), 90);
-  } else {
-    positionCenter(s);   // target never appeared — show the card centered, Next still works
-  }
-}
-
-function placeCoach(el, s){
-  const r = el.getBoundingClientRect();
-  const pad = 6, vw = innerWidth, vh = innerHeight;
-  const T=document.getElementById('coach-t'), R=document.getElementById('coach-r'), B=document.getElementById('coach-b'), L=document.getElementById('coach-l');
-  T.style.cssText = `display:block;left:0;top:0;width:${vw}px;height:${Math.max(0,r.top-pad)}px`;
-  B.style.cssText = `display:block;left:0;top:${r.bottom+pad}px;width:${vw}px;height:${Math.max(0,vh-r.bottom-pad)}px`;
-  L.style.cssText = `display:block;left:0;top:${r.top-pad}px;width:${Math.max(0,r.left-pad)}px;height:${r.height+pad*2}px`;
-  R.style.cssText = `display:block;left:${r.right+pad}px;top:${r.top-pad}px;width:${Math.max(0,vw-r.right-pad)}px;height:${r.height+pad*2}px`;
-  const ring=document.getElementById('coach-ring');
-  ring.style.display='block'; ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
-  ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
-  ring.className = 'coach-ring' + (s.advance==='click'?' click':'');
-  positionTip(r, s);
-}
-
-function coachTipHtml(s){
-  const isClick = s.advance==='click', isDone = s.advance==='done';
-  const dots = coachSteps.map((_,i)=>`<span class="cdot ${i<coachStep?'past':''} ${i===coachStep?'on':''}"></span>`).join('');
-  if (isDone) return `<div class="coach-done-ic">${ic('badge-check')}</div>
-    <div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
-    <h4>${s.title}</h4><p>${s.body}</p>
-    <div class="coach-dots">${dots}</div>
-    <div class="coach-foot">
-      <button class="coach-next ghost" onclick="startFollow()">${ic('rotate-ccw','xs')} Replay</button>
-      <button class="coach-next" onclick="coachAdvance()">Finish</button>
-    </div>
-    <div class="coach-fin-hint">or tap anywhere to close</div>`;
-  return `<div class="coach-k">${ic(s.k[0])} ${s.k[1]}</div>
-    <h4>${s.title}</h4><p>${s.body}</p>
-    <div class="coach-dots">${dots}</div>
-    <div class="coach-foot">
-      <button class="coach-skip" onclick="endFollow()">Skip tour</button>
-      <div class="coach-foot-r">
-        ${coachStep>0 ? `<button class="coach-back" onclick="coachBack()" title="Back">${ic('chevron-left')}</button>` : ''}
-        ${isClick ? `<span class="coach-hint">${ic('mouse-pointer-click')} Tap it</span><button class="coach-next ghost" onclick="coachAdvance()">Do it for me</button>`
-                  : `<button class="coach-next" onclick="coachAdvance()">Next</button>`}
-      </div>
-    </div>`;
-}
-
-function positionTip(r, s){
-  const tip=document.getElementById('coach-tip');
-  tip.classList.toggle('finale', s.advance==='done');
-  tip.innerHTML = coachTipHtml(s);
-  tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
-  const tw=330, th=tip.offsetHeight||170, gap=16, vw=innerWidth, vh=innerHeight;
-  let left, top;
-  const place = s.place || 'auto';
-  if (place==='right' && r.right+gap+tw < vw){ left=r.right+gap; top=Math.min(Math.max(12,r.top), vh-th-12); }
-  else if (place==='left' && r.left-gap-tw > 0){ left=r.left-gap-tw; top=Math.min(Math.max(12,r.top), vh-th-12); }
-  else if (place==='bottom' && r.bottom+gap+th < vh){ left=Math.min(Math.max(12,r.left+r.width/2-tw/2), vw-tw-12); top=r.bottom+gap; }
-  else if (r.bottom+gap+th < vh){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.bottom+gap; }
-  else if (r.top-gap-th > 0){ left=Math.min(Math.max(12,r.left), vw-tw-12); top=r.top-gap-th; }
-  else if (r.right+gap+tw < vw){ left=r.right+gap; top=Math.min(Math.max(12,r.top), vh-th-12); }
-  else if (r.left-gap-tw > 0){ left=r.left-gap-tw; top=Math.min(Math.max(12,r.top), vh-th-12); }
-  else { left=(vw-tw)/2; top=vh-th-24; }
-  left = Math.min(Math.max(10, left), vw-tw-10);
-  top = Math.min(Math.max(10, top), vh-th-10);
-  tip.style.left=left+'px'; tip.style.top=top+'px';
-  refreshIcons();
-}
-
-function positionCenter(s){
-  setCoachVisible(true);
-  ['coach-t','coach-r','coach-b','coach-l'].forEach((id,i)=>{ const e=document.getElementById(id); if(i===0){e.style.cssText='display:block;left:0;top:0;width:100vw;height:100vh;';} else e.style.display='none'; });
-  const ring=document.getElementById('coach-ring'); ring.style.display='none';
-  const tip=document.getElementById('coach-tip');
-  tip.style.display='block';
-  tip.classList.toggle('finale', s.advance==='done');
-  tip.innerHTML = coachTipHtml(s);
-  tip.classList.remove('pop'); void tip.offsetWidth; tip.classList.add('pop');
-  const tw=330, th=tip.offsetHeight||170;
-  tip.style.left=(innerWidth-tw)/2+'px'; tip.style.top=(innerHeight-th)/2+'px';
-  refreshIcons();
-}
-// keep the spotlight glued to its target through resize and scroll
-function coachReposition(){
-  if (!coachActive) return;
-  const s = coachSteps[coachStep];
-  if (!s.sel) return;
-  const el = document.querySelector(s.sel);
-  if (el){ const r = el.getBoundingClientRect(); if (r.width>2){
-    const pad=6, vw=innerWidth, vh=innerHeight;
-    const T=document.getElementById('coach-t'), R=document.getElementById('coach-r'), B=document.getElementById('coach-b'), L=document.getElementById('coach-l');
-    T.style.cssText = `display:block;left:0;top:0;width:${vw}px;height:${Math.max(0,r.top-pad)}px`;
-    B.style.cssText = `display:block;left:0;top:${r.bottom+pad}px;width:${vw}px;height:${Math.max(0,vh-r.bottom-pad)}px`;
-    L.style.cssText = `display:block;left:0;top:${r.top-pad}px;width:${Math.max(0,r.left-pad)}px;height:${r.height+pad*2}px`;
-    R.style.cssText = `display:block;left:${r.right+pad}px;top:${r.top-pad}px;width:${Math.max(0,vw-r.right-pad)}px;height:${r.height+pad*2}px`;
-    const ring=document.getElementById('coach-ring');
-    ring.style.left=(r.left-pad)+'px'; ring.style.top=(r.top-pad)+'px';
-    ring.style.width=(r.width+pad*2)+'px'; ring.style.height=(r.height+pad*2)+'px';
-  }}
-}
-window.addEventListener('resize', coachReposition);
-document.addEventListener('scroll', coachReposition, true);
-
 // Cursor-tracking spotlight + 3D tilt — cards lean toward the cursor like place cards
 const FINE_POINTER = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const NO_MOTION = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -5212,8 +5585,6 @@ document.addEventListener('pointerdown', (e) => {
 
 // Init
 seedMapCoords(); renderFloor(); applyPhase();
-// Auto-open the tour on first visit
-try { if (!localStorage.getItem('pulse_tut_seen')) setTimeout(startTutorial, 400); } catch(e) {}
 </script>
 </body>
 </html>
