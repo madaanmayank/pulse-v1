@@ -3061,7 +3061,7 @@ const tables = [
     drinks:[{name:'Aperol Spritz',course:'aperitif',qty:2,served:true}] },
   { id:3, zone:'indoor', cap:2, status:'empty' },
   { id:4, zone:'indoor', cap:6, status:'attention', server:'Maria', seatedPax:4, party:['g4'], course:'dessert', progress:[true,true,false,false], drinkProgress:[true,true,false], seatedMin:52, glyphs:['attention','gluten'], glyphCat:['attention','allergy'],
-    items:[{name:'Heirloom Salad',course:'apps',served:true,qty:1}, {name:'Sea Bass',course:'mains',served:true,qty:2}, {name:'GF Risotto',course:'mains',served:true,qty:2}],
+    items:[{name:'Heirloom Salad',course:'apps',served:true,qty:1}, {name:'Truffle Arancini',course:'apps',served:false,qty:2}, {name:'Sea Bass',course:'mains',served:true,qty:2}, {name:'GF Risotto',course:'mains',served:true,qty:2}],
     drinks:[{name:'Sparkling Water',course:'aperitif',qty:4,served:true}, {name:'Sauvignon Blanc',course:'wine',qty:1,served:true,bottle:true}] },
   { id:5, zone:'patio', cap:4, status:'overdue', server:'James', party:['g1','g2'], course:'mains', progress:[true,false,false,false], drinkProgress:[true,true,false], seatedMin:22, glyphs:['nut','anniversary'], glyphCat:['allergy','occasion'],
     items:[{name:'Burrata',course:'apps',served:true,qty:1}, {name:'Beef Tartare',course:'apps',served:true,qty:1}, {name:'Mushroom Risotto',course:'mains',served:false,qty:1}, {name:'Lamb Shank',course:'mains',served:false,qty:1}],
@@ -3121,7 +3121,7 @@ const reservations = [
 ];
 
 const state = { phase:2, view:'floor', zone:'all', layout:'grid', editLayout:false, mergeSel:[], merges:[], cardDesign:'classic', theme:'solid', animFloor:true, animRes:true,
-  actExpanded:{}, discOpen:{}, remTable:null, remCat:null };
+  actExpanded:{}, discOpen:{}, remTable:null, remCat:null, openedTables:{} };
 
 function toggleTheme() {
   state.theme = state.theme === 'glass' ? 'solid' : 'glass';
@@ -3256,7 +3256,12 @@ function renderFloor() {
   // live counts — never let the header lie
   const occupied = tables.filter(t=>['seated','ordered','attention','overdue','paid'].includes(t.status));
   const free = tables.filter(t=>t.status==='empty').length;
-  const attention = tables.filter(t=>['attention','overdue'].includes(t.status)).length;
+  // "attention" now means what the engine says needs doing, not just a raw status —
+  // otherwise the header and the tiles tell the waiter two different stories
+  const attention = occupied.filter(t => {
+    const lvl = tableSignals(t, pol).health.level;
+    return lvl === 'red' || lvl === 'amber';
+  }).length;
   const covers = occupied.reduce((s,t)=>s+paxOf(t),0);
   // numbers roll to their new value instead of snapping — feels live
   const setNum=(id,v)=>{
@@ -3711,6 +3716,8 @@ function openTableModal(id) {
   const plan = buildServicePlan(t, pol);
   const headerGuest = guest ? guest : null;
   const pax = paxOf(t);
+  // opening a table counts as someone having looked at it
+  state.openedTables[t.id] = true;
   // what matters about this table right now, ranked and capped
   const sig = tableSignals(t, pol);
 
@@ -3840,6 +3847,8 @@ function allergyKeysFor(t) {
   return { names, keys: names.map(a=>a.toLowerCase()) };
 }
 function isSafe(item, keys) { return !item.tags.some(tag => keys.includes(tag)); }
+// every dish by name, so an order line can be checked against the table's restrictions
+const MENU_INDEX = Object.values(MENU).flat().reduce((m, i) => (m[i.name] = i, m), {});
 function courseQty(t, course) { return (t.items||[]).filter(i=>i.course===course).reduce((s,i)=>s+(i.qty||1),0); }
 function drinkQty(t) { return (t.drinks||[]).reduce((s,d)=>s+(d.qty||1),0); }
 function hasBottle(t) { return (t.drinks||[]).some(d=>d.bottle); }
@@ -3909,7 +3918,13 @@ function signalContext(t, pol) {
     drinks: t.drinks || [],
     sw: t.sw || {},
     allergies, dislikes, occasion, occasionName,
+    // plates already on the order that clash with a declared restriction
+    unsafe: (t.items || []).filter(i => MENU_INDEX[i.name] && !isSafe(MENU_INDEX[i.name], allergies.map(a => a.toLowerCase()))),
     prevIssue: profiles.map(p => p.prevIssue).find(Boolean) || null,
+    // how stretched this table's server is right now, measured from table status only
+    // (deliberately not from signals, which would recurse)
+    serverLoad: t.server ? tables.filter(x => x.server === t.server &&
+      (x.status === 'attention' || x.status === 'overdue' || (x.sw && x.sw.requestPending))).length : 0,
     churn: pol.predictiveCues ? profiles.find(p => p.churnRisk) : null,
     gap: guest ? daysSince(guest.lastVisit) : null,
     notes: profiles.map(p => p.notes).filter(Boolean),
@@ -3924,6 +3939,26 @@ function signalContext(t, pol) {
 const SIGNALS = [
 
   /* ══ ATTENTION · live, act now ══════════════════════════════════════ */
+  {
+    // The only genuine emergency on a restaurant floor. Measurable today:
+    // menu allergen tags cross-checked against the table's declared restrictions.
+    id:'unsafe-plate', tier:'attention', severity:'red', audience:'waiter', icon:'octagon-alert',
+    score:110,
+    when:c => c.unsafe.length > 0,
+    title:c => `${c.unsafe[0].name} conflicts with this table`,
+    why:c => `<strong>${c.unsafe.map(i => i.name).join(', ')}</strong> contains ${c.allergies.join(' or ').toLowerCase()}, and someone at this table is allergic.`,
+    action:'Stop the plate and check with the kitchen', done:'Plate checked with kitchen',
+  },
+  {
+    // Safety outranks everything. Briefing the kitchen is a real one-off task
+    // with a real done state — not just a label to read.
+    id:'allergy-confirm', tier:'attention', severity:'amber', audience:'waiter', icon:'triangle-alert',
+    score:105,
+    when:c => c.allergies.length > 0 && c.items.length > 0,
+    title:c => `${c.allergies.join(' & ')} allergy at this table`,
+    why:c => `Everything leaving the pass for this table has to be cleared against <strong>${c.allergies.join(' and ').toLowerCase()}</strong>.`,
+    action:'Brief the kitchen on this table', done:'Kitchen briefed',
+  },
   {
     id:'guest-request', tier:'attention', severity:'red', audience:'waiter', icon:'bell-ring',
     live:true, score:100,
@@ -4060,6 +4095,16 @@ const SIGNALS = [
     action:'Introduce the room properly', done:'Room introduced',
   },
   {
+    // an opportunity that expires — after the check lands, it is simply a miss
+    id:'occasion-closing', tier:'attention', severity:'amber', audience:'waiter', icon:'hourglass',
+    score:82,
+    when:c => c.occasion && c.pol.occasionInBanner && (c.stage === 'dessert' || c.stage === 'check')
+      && !isActioned(c.t.id, 'occasion') && !isActioned(c.t.id, 'occasion-closing'),
+    title:'Occasion still unmarked',
+    why:c => `${c.occasionName || 'This party'} is at ${c.stage === 'check' ? 'the check' : 'dessert'} and nobody has marked the occasion yet.`,
+    action:'Mark it before they leave', done:'Occasion marked',
+  },
+  {
     id:'upsell', tier:'opportunity', severity:'neutral', audience:'waiter', icon:'plus-circle',
     score:52,
     when:c => c.guest && c.guest.upsell && c.items.length > 0 && c.stage !== 'check',
@@ -4102,6 +4147,65 @@ const SIGNALS = [
     why:c => `${c.occasionName} is celebrating and is one of your best guests.`,
     action:'Send something to the table', done:'Sent to the table',
   },
+  {
+    // flagged, but nobody has even opened the table — the manager's early warning
+    id:'mgr-unseen', tier:'attention', severity:'red', audience:'manager', icon:'eye-off',
+    score:94,
+    when:c => c._attnRed > 0 && !state.openedTables[c.t.id]
+      && c.t.status !== 'paid' && c.mins >= 10,
+    title:'Flagged and nobody has looked',
+    why:c => `This table has been asking for attention and no one has opened it yet.`,
+    action:'Get someone to the table', done:'Table covered',
+  },
+  {
+    id:'mgr-no-server', tier:'attention', severity:'amber', audience:'manager', icon:'user-x',
+    score:90,
+    when:c => c.t.status !== 'empty' && c.t.status !== 'paid' && !c.t.server,
+    title:'Nobody is covering this table',
+    why:c => `Seated <strong>${c.mins} min</strong> with no server assigned.`,
+    action:'Assign a server', done:'Server assigned',
+  },
+  {
+    id:'mgr-section-load', tier:'attention', severity:'amber', audience:'manager', icon:'users',
+    score:86,
+    when:c => c.serverLoad >= 3,
+    title:'A section is underwater',
+    why:c => `<strong>${c.t.server}</strong> has ${c.serverLoad} tables needing attention at once.`,
+    action:`Rebalance the section`, done:'Section rebalanced',
+  },
+  {
+    id:'mgr-churn-dining', tier:'attention', severity:'amber', audience:'manager', icon:'trending-down',
+    score:84,
+    when:c => c.churn && !c.prevIssue,
+    title:'At-risk regular is here',
+    why:c => `${c.churn.name.split(' ')[0]} has been drifting — ${c.churn.visits} visits but the last few were rated down.`,
+    action:'Win them back tonight', done:'Manager visited',
+  },
+  {
+    // the last moment the restaurant can change how the night is remembered
+    id:'mgr-farewell', tier:'opportunity', severity:'neutral', audience:'manager', icon:'hand-heart',
+    score:80,
+    when:c => c.t.status === 'paid' && c.guest && ((c.guest.spend || 0) >= 4 || c.guest.vipTier === 'VIP'),
+    title:'Farewell window',
+    why:c => `${c.guest.name.split(' ')[0]} has settled — a personal goodbye is the last thing they will remember.`,
+    action:'See them out yourself', done:'Guest seen out',
+  },
+  {
+    id:'mgr-advocacy', tier:'opportunity', severity:'neutral', audience:'manager', icon:'share-2',
+    score:76,
+    when:c => c.guest && ((c.guest.advocacy || 0) >= 80 || /advocacy|brought/i.test(c.guest.notes || '')),
+    title:'They bring other guests',
+    why:c => `${c.guest.name.split(' ')[0]} introduces new guests to the restaurant. Worth a chef or manager hello.`,
+    action:'Introduce the chef', done:'Introduction made',
+  },
+  {
+    id:'mgr-big-party', tier:'opportunity', severity:'neutral', audience:'manager', icon:'users-round',
+    score:70,
+    when:c => c.pax >= 6 && c.stage !== 'check' && c.t.status !== 'paid',
+    title:'Large party on the floor',
+    why:c => `A table of <strong>${c.pax}</strong> — big parties go wrong quietly and all at once.`,
+    action:'Check it yourself once', done:'Checked',
+  },
 ];
 
 const STAGE_WORD = { seated:'being seated', starters:'starters', mains:'mains', dessert:'dessert', check:'the check' };
@@ -4125,6 +4229,7 @@ function tableSignals(t, pol) {
   // waiter signals first — the manager "several signals" rule needs their count
   const waiterAll = evaluate(SIGNALS.filter(s => s.audience === 'waiter'));
   c._attnCount = waiterAll.filter(s => s.tier === 'attention' && !s.actioned).length;
+  c._attnRed = waiterAll.filter(s => s.tier === 'attention' && s.severity === 'red' && !s.actioned).length;
   const managerAll = evaluate(SIGNALS.filter(s => s.audience === 'manager'));
 
   const open = waiterAll.filter(s => !s.actioned);
@@ -4141,7 +4246,7 @@ function tableSignals(t, pol) {
 
   return {
     attention, opportunity, done, primary, overflow,
-    manager: managerAll.filter(s => !s.actioned).sort(byScore),
+    manager: managerAll.filter(s => !s.actioned).sort(byScore).slice(0, MAX_PRIMARY),
     health: tableHealth(t, attention, c),
     ctx: c,
   };
