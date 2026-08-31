@@ -3832,6 +3832,21 @@ const MENU = {
     {name:'Wagyu Ribeye', tags:[]},
     {name:'Osso Buco', tags:[]},
   ],
+  // dishes that appear on live orders — tagged so the safety check can see them
+  extras: [
+    {name:'GF Risotto', tags:[]},
+    {name:'Insalata (GF)', tags:[]},
+    {name:'Pizza Diavola', tags:['gluten','dairy']},
+    {name:'Margherita', tags:['gluten','dairy']},
+    {name:'Carbonara', tags:['gluten','dairy']},
+    {name:'Vitello Tonnato', tags:[]},
+    {name:'Caesar Salad', tags:['dairy','gluten']},
+    {name:'Beef Carpaccio', tags:[]},
+    {name:'Crudo', tags:[]},
+    {name:'Tagliata', tags:[]},
+    {name:'Osso Buco', tags:[]},
+    {name:'Truffle Fries', tags:[]},
+  ],
   desserts: [
     {name:'Tiramisu', tags:['gluten','dairy']},
     {name:'Chocolate Plate', tags:[]},
@@ -3846,7 +3861,7 @@ function allergyKeysFor(t) {
   const names = [...new Set(t.party.map(g=>guests[g]).filter(Boolean).flatMap(p=>p.allergies||[]))];
   return { names, keys: names.map(a=>a.toLowerCase()) };
 }
-function isSafe(item, keys) { return !item.tags.some(tag => keys.includes(tag)); }
+function isSafe(item, keys) { return !(item.tags || []).some(tag => keys.includes(tag)); }
 // every dish by name, so an order line can be checked against the table's restrictions
 const MENU_INDEX = Object.values(MENU).flat().reduce((m, i) => (m[i.name] = i, m), {});
 function courseQty(t, course) { return (t.items||[]).filter(i=>i.course===course).reduce((s,i)=>s+(i.qty||1),0); }
@@ -4218,7 +4233,10 @@ function tableSignals(t, pol) {
   if (!t || t.status === 'empty') return { attention:[], opportunity:[], manager:[], done:[], primary:[], overflow:[], health:{ level:'none', reason:'' }, ctx:null };
   const c = signalContext(t, pol);
 
-  const evaluate = (list) => list.filter(s => { try { return !!s.when(c); } catch (e) { return false; } })
+  const evaluate = (list) => list.filter(s => {
+      try { return !!s.when(c); }
+      catch (e) { console.warn('[pulse] signal trigger threw:', s.id, e.message); return false; }
+    })
     .map(s => ({
       id:s.id, tier:s.tier, severity:s.severity, audience:s.audience, icon:s.icon,
       live:!!s.live, historical:!!s.historical, score:s.score,
@@ -4879,15 +4897,38 @@ function openMoveTable(fromId) {
   showModal('move-modal');
   refreshIcons();
 }
+/* Everything that belongs to a seating rather than to the furniture.
+   ONE list drives both the move and the reset, so the two can never drift —
+   an omission here used to silently drop a party's allergy on a table move. */
+const SERVICE_KEYS = ['status','party','items','drinks','course','progress','drinkProgress',
+  'seatedMin','server','seatedPax','note','walkInName','drinkAgeMin','glyphs','glyphCat',
+  'allergies','occasion','guestName','guestRef','remembered','sw','_swDemo'];
+const FRESH_TABLE = {
+  status:'empty', party:[], items:[], drinks:[], course:'none',
+  progress:[false,false,false,false], drinkProgress:[false,false,false],
+};
+function clearTableService(t) {
+  SERVICE_KEYS.forEach(k => { t[k] = undefined; });
+  Object.keys(FRESH_TABLE).forEach(k => {
+    const v = FRESH_TABLE[k];
+    t[k] = Array.isArray(v) ? v.slice() : v;
+  });
+  // resolved actions belong to the seating, not the table
+  Object.keys(actionState).forEach(k => { if (k.startsWith(t.id + ':')) delete actionState[k]; });
+}
 function doMoveTable(toId) {
   const from = tables.find(x=>x.id===state.moveFrom), to = tables.find(x=>x.id===toId);
   if (!from || !to) return;
-  // carry the whole service over
-  ['status','party','items','drinks','course','progress','drinkProgress','seatedMin','server','seatedPax','note','walkInName','drinkAgeMin','glyphs','glyphCat'].forEach(k=>{ to[k] = from[k]; });
-  // reset the source table to empty
-  from.status='empty'; from.party=[]; from.items=[]; from.drinks=[];
-  from.course='none'; from.progress=[false,false,false,false]; from.drinkProgress=[false,false,false];
-  from.seatedPax=undefined; from.note=undefined; from.walkInName=undefined; from.drinkAgeMin=undefined; from.glyphs=undefined; from.glyphCat=undefined;
+  // carry the whole seating over — including allergies, occasion and live behaviour
+  SERVICE_KEYS.forEach(k => { to[k] = from[k]; });
+  // anything the team already actioned for this party stays actioned
+  Object.keys(actionState).forEach(k => {
+    if (k.startsWith(from.id + ':')) {
+      actionState[to.id + ':' + k.slice(String(from.id).length + 1)] = actionState[k];
+    }
+  });
+  clearTableService(from);
+  state.openedTables[to.id] = true;
   closeModal('move-modal'); closeModal('table-modal');
   toast(`Moved party from T${from.id} to T${to.id}`, 'success');
   renderFloor();
