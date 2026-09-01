@@ -67,10 +67,13 @@
   /* ─────────── shell ─────────── */
   .app{display:flex;flex-direction:column;height:100vh;height:100dvh}
   .topbar{
-    flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;display:flex;align-items:center;gap:12px;
     padding:14px 18px;position:relative;
   }
+  .tb-side{flex:1 1 0;min-width:0;display:flex;align-items:center}
+  .tb-side.right{flex:0 0 auto;justify-content:flex-end}
   .seg{
+    flex:0 1 auto;min-width:0;overflow-x:auto;scrollbar-width:none;
     display:inline-flex;align-items:center;gap:2px;
     background:#151618;border:1px solid var(--line-soft);
     border-radius:999px;padding:5px;
@@ -79,12 +82,11 @@
     padding:9px 26px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink-2);
     transition:background .16s,color .16s;
   }
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{flex:0 0 auto;white-space:nowrap}
   .seg button.on{background:#efece3;color:#1a1a1a;font-weight:700}
-  .view-title{
-    position:absolute;left:22px;top:50%;transform:translateY(-50%);
-    font-size:17px;font-weight:800;display:none;
-  }
-  .top-actions{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;gap:10px}
+  .view-title{font-size:17px;font-weight:800;display:none;white-space:nowrap}
+  .top-actions{display:flex;gap:10px;flex:0 0 auto}
   .top-btn{
     width:44px;height:44px;border-radius:50%;
     background:#151618;border:1px solid var(--line-soft);
@@ -92,6 +94,31 @@
     transition:border-color .16s,background .16s;
   }
   .top-btn:hover{border-color:var(--line);background:#1b1c1f}
+  .phase-chip{
+    display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 15px;
+    border-radius:999px;background:#151618;border:1px solid var(--line-soft);
+    font-size:13px;font-weight:700;color:var(--ink-2);transition:all .16s;
+  }
+  .phase-chip:hover{border-color:var(--gold-line);color:var(--ink)}
+  .phase-chip .pc-dot{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+  .phase-chip.p3{border-color:var(--gold-line);color:var(--gold-soft);background:rgba(217,180,95,.1)}
+  .phase-chip.p3 .pc-dot{background:var(--gold);box-shadow:0 0 8px rgba(217,180,95,.6)}
+
+  /* ─────────── table legend ─────────── */
+  .legend{
+    display:none;max-width:1420px;margin:0 auto 16px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;
+  }
+  .legend.on{display:block}
+  .lg-h{font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:11px}
+  .lg-grid{display:flex;flex-wrap:wrap;gap:10px 22px}
+  .lg-item{display:flex;align-items:center;gap:9px;font-size:12.5px;color:#b4b2ac;font-weight:600}
+  .lg-sw{width:26px;height:20px;border-radius:5px;border:1.5px solid var(--line-soft);background:#131416;flex:0 0 auto}
+  .lg-sw.seated{border-color:#e6e2d6}
+  .lg-sw.fresh{border-color:var(--gold)}
+  .lg-sw.paid{border-color:var(--green-line);background:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(63,159,107,.14) 5px 10px),#14201a}
+  .lg-sw.blocked{border-color:#1e2023;background:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(255,255,255,.03) 5px 10px),#121316}
+  .lg-sw.bill{background:var(--bill-bg);border-color:transparent}
 
   .content{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 18px 22px}
 
@@ -156,10 +183,6 @@
   .tc-meta span{display:inline-flex;align-items:center;gap:5px}
   .tc-meta i[data-lucide]{color:var(--ink-2)}
   /* one indicator, one line — the card must still be readable in a glance */
-  .tc-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
-  .tc-dot.red{background:var(--red);box-shadow:0 0 8px rgba(216,72,63,.65)}
-  .tc-dot.amber{background:#d69a45;box-shadow:0 0 8px rgba(214,154,69,.5)}
-  .tc-dot.gold{background:var(--gold);box-shadow:0 0 8px rgba(217,180,95,.45)}
   .tc-act{
     display:flex;align-items:center;gap:5px;margin-top:8px;
     font-size:11.5px;font-weight:700;
@@ -168,7 +191,17 @@
   .tc-act i[data-lucide]{width:12px;height:12px}
   .tc-act.red{color:#e8a099}
   .tc-act.amber{color:#dcae6e}
-  .tc-act.gold{color:var(--gold-soft)}
+  .tc-act.gold{color:var(--ink-2)}
+
+  /* a guest calling is the one thing that must be unmistakable */
+  .tc-call{
+    display:flex;align-items:center;gap:6px;margin-top:8px;
+    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+    border-radius:8px;padding:6px 9px;font-size:11.5px;font-weight:800;
+    animation:callPulse 1.8s ease-in-out infinite;
+  }
+  .tc-call i[data-lucide]{width:13px;height:13px}
+  @keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.45)}50%{box-shadow:0 0 0 6px rgba(216,72,63,0)}}
   .seg button .cnt{
     display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;
     padding:0 5px;border-radius:10px;background:var(--red);color:#fff;
@@ -233,6 +266,14 @@
   .ph-body{font-size:13px;color:#b4b2ac;line-height:1.55}
   .ph-n{font-size:11.5px;font-weight:700;color:var(--ink-3)}
   .ph-card.on .ph-n{color:var(--gold-soft)}
+  .call-sim{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r-card);padding:15px}
+  .cs-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .cs-btns{display:flex;flex-wrap:wrap;gap:9px}
+  .cs-btns .pax{height:40px;width:auto;flex:0 0 auto}
+  .cs-live{
+    display:flex;align-items:center;gap:8px;margin-top:13px;font-size:12.5px;font-weight:700;
+    color:#f0b3ab;background:rgba(216,72,63,.13);border:1px solid #6b332c;border-radius:9px;padding:9px 12px;
+  }
   .bkt-list{display:flex;flex-direction:column;gap:9px}
   .bkt-row{
     display:flex;align-items:center;gap:12px;font-size:13px;color:#b4b2ac;
@@ -549,11 +590,25 @@
     .dm-cols{grid-template-columns:1fr 1fr}
     .dm-col.order{grid-column:1/-1;border-left:none;border-top:1px solid #202225}
   }
+  @media (max-width:1120px){
+    .seg button{padding:9px 17px}
+  }
+  /* only a phone loses the phase label — on a tablet it has to stay findable */
+  @media (max-width:700px){
+    .phase-chip span:not(.pc-dot){display:none}
+    .phase-chip{padding:0 14px}
+  }
+  @media (max-width:900px){
+    .seg button{padding:9px 13px;font-size:13px}
+  }
   @media (max-width:760px){
-    .topbar{padding:12px 14px;justify-content:flex-start}
-    .seg button{padding:8px 16px;font-size:13px}
-    .top-actions{right:14px}
+    .topbar{padding:12px 14px;gap:8px}
+    .tb-side{flex:0 0 auto}
+    .seg{overflow-x:auto;scrollbar-width:none}
+    .seg::-webkit-scrollbar{display:none}
+    .seg button{padding:8px 13px;font-size:12.5px;white-space:nowrap}
     .top-btn{width:40px;height:40px}
+    .phase-chip{height:40px}
     .content{padding:6px 14px 20px}
     .grid{grid-template-columns:1fr 1fr;gap:14px}
     .dm-veil{padding:12px 12px 12px 12px}
@@ -570,20 +625,25 @@
 
 <div class="app">
   <header class="topbar">
-    <div class="view-title" id="view-title"></div>
+    <div class="tb-side"><div class="view-title" id="view-title"></div></div>
     <div class="seg" id="seg">
       <button class="on" data-f="all">All</button>
       <button data-f="allocate">Allocate</button>
       <button data-f="vacant">Vacant</button>
       <button data-f="attention">Attention <span class="cnt" id="attn-cnt">0</span></button>
     </div>
-    <div class="top-actions">
+    <div class="tb-side right"><div class="top-actions">
+      <button class="phase-chip" id="btn-phase" title="Switch intelligence phase">
+        <span class="pc-dot"></span><span id="pc-lbl">Phase 2</span>
+      </button>
+      <button class="top-btn" id="btn-legend" title="Table legend"><i data-lucide="info" class="lg"></i></button>
       <button class="top-btn" id="btn-search" title="Search"><i data-lucide="search" class="lg"></i></button>
       <button class="top-btn" id="btn-history" title="History"><i data-lucide="history" class="lg"></i></button>
-    </div>
+    </div></div>
   </header>
 
   <div class="content" id="content">
+    <div class="legend" id="legend"></div>
     <div class="searchwrap" id="searchwrap">
       <div class="searchbar">
         <i data-lucide="search"></i>
@@ -684,6 +744,15 @@ const guests = {
     summary:'' },
 };
 
+/* What a guest can tap on the QR. Each maps to one unambiguous action. */
+const CALL_TYPES = {
+  waiter:  { label:'Called the waiter',   act:'Go to the table',        icon:'bell-ring', done:'Attended' },
+  order:   { label:'Needs help ordering', act:'Help them order',        icon:'book-open', done:'Order taken' },
+  water:   { label:'Asked for water',     act:'Take water over',        icon:'glass-water', done:'Water taken' },
+  bill:    { label:'Requested the bill',  act:'Bring the bill',         icon:'receipt',   done:'Bill brought' },
+  assist:  { label:'Asked for help',      act:'Respond to the table',   icon:'hand',      done:'Responded' },
+};
+
 const RECOS = [
   { name:'Savory Grilled Chicken with Garlic Herb Sauce', price:12.50, reorder:4, best:true, icon:'drumstick' },
   { name:'Salad with crisp ice and a touch of citrus',    price:8.00,  reorder:2, icon:'salad' },
@@ -709,7 +778,7 @@ let tables = [
   { id:'15', status:'blocked' },
   { id:'16', status:'vacant' },
   { id:'17', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
-    sw:{ requestPending:true, requestText:'Could we see the wine list?', requestMin:2 } },
+    call:{ type:'assist', note:'Could we see the wine list?', min:2 } },
   { id:'18', status:'vacant' },
   { id:'19', status:'vacant' },
   { id:'20', status:'vacant' },
@@ -819,11 +888,11 @@ const SIGNALS = [
     done:'Table cleared' },
 
   /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
-  { id:'request', phase:3, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
-    on:c => c.sw.requestPending,
-    act:'Respond to the table',
-    why:c => `They asked from the table${c.sw.requestMin?` ${c.sw.requestMin} min ago`:''}${c.sw.requestText?`: “${c.sw.requestText}”`:'.'}`,
-    done:'Responded' },
+  { id:'call', phase:3, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
+    on:c => !!c.call,
+    act:c => CALL_TYPES[c.call.type].act,
+    why:c => `${CALL_TYPES[c.call.type].label}${c.call.min ? ` ${c.call.min} min ago` : ' just now'}${c.call.note ? ` — “${c.call.note}”` : '.'}`,
+    done:c => CALL_TYPES[c.call.type].done },
 
   { id:'browsing', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:90,
     on:c => c.sw.cat && c.sw.catMin >= 3,
@@ -863,29 +932,50 @@ const val = (v,c) => typeof v === 'function' ? v(c) : v;
 function signalsFor(t) {
   if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], done:[], top:null, lvl:null, all:[] };
   const g = t.guest ? guests[t.guest] : null;
-  const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null };
+  const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null, call: t.call || null };
   const all = SIGNALS.filter(s => s.phase <= state.phase)
     .filter(s => { try { return !!s.on(c); } catch(e){ return false; } })
     .map(s => ({ id:s.id, lvl:s.lvl, who:s.who, icon:s.icon, score:s.score, phase:s.phase,
-                 why:val(s.why,c), act:val(s.act,c), done:s.done,
+                 why:val(s.why,c), act:val(s.act,c), done:val(s.done,c),
                  isDone: !!doneActions[aKey(t.id,s.id)] }));
   const rank = { red:0, amber:1, gold:2 };
   const open = all.filter(x => !x.isDone).sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
   return { open, done:all.filter(x => x.isDone), top:open[0] || null, lvl:open[0] ? open[0].lvl : null, all };
 }
 function markDone(tid, sid) {
+  const t = T(tid);
+  if (sid === 'call' && t && t.call) {
+    // answering the call resolves it outright rather than leaving a tick behind
+    const label = CALL_TYPES[t.call.type].done;
+    t.call = null;
+    renderDetail(); renderGrid();
+    toast(label, 'check-circle');
+    return;
+  }
   doneActions[aKey(tid,sid)] = true;
   renderDetail(); renderGrid();
   const s = SIGNALS.find(x => x.id === sid);
-  toast(s ? s.done : 'Done', 'check-circle');
+  toast(s ? val(s.done, { t, g:t && t.guest ? guests[t.guest] : null, sw:(t&&t.sw)||{}, call:t&&t.call }) : 'Done', 'check-circle');
 }
+
+/* A guest raising a request from the QR. In the real product this arrives
+   over the wire; here it can be triggered so the handoff is demonstrable. */
+function raiseCall(tableId, type, note) {
+  const t = T(tableId); if (!t) return;
+  t.call = { type, note: note || '', min: 0 };
+  if (state.phase < 3) { state.phase = 3; syncPhaseChip(); }
+  renderGrid();
+  if (state.detailId === tableId) renderDetail();
+  toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, 'bell-ring');
+}
+function anyCalls() { return tables.filter(t => t.call).length; }
 function attentionCount() {
   return tables.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; }).length;
 }
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2 };
+                phase:2, legendOpen:false };
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
@@ -918,7 +1008,8 @@ function visibleTables() {
   if (state.filter === 'attention') {
     const rank = { red:0, amber:1 };
     list = list.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; })
-               .sort((a,b) => rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]);
+               .sort((a,b) => (b.call?1:0) - (a.call?1:0)
+                           || rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]);
   }
   const q = state.q.trim().toLowerCase();
   if (q) list = list.filter(t =>
@@ -941,18 +1032,17 @@ function cardHtml(t) {
   return `<div class="tcard ${cls}" data-id="${t.id}">
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
-      <span style="display:inline-flex;align-items:center;gap:8px">
-        ${sig.lvl ? `<span class="tc-dot ${sig.lvl}"></span>` : ''}
-        <span class="tc-doc">${ic('receipt-text','sm')}</span>
-      </span>
+      <span class="tc-doc">${ic('receipt-text','sm')}</span>
     </div>
     <div class="tc-name">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
-      ${bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
+      ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
-    ${sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.act}</div>` : ''}
+    ${t.call && state.phase >= 3
+        ? `<div class="tc-call">${ic(CALL_TYPES[t.call.type].icon,'xs')} ${CALL_TYPES[t.call.type].label}${t.call.min?` · ${t.call.min}m`:''}</div>`
+        : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.act}</div>` : '')}
     ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
   </div>`;
 }
@@ -1290,14 +1380,17 @@ const STUBS = {
 };
 function settingsHtml() {
   const counts = p => SIGNALS.filter(s => s.phase === p).length;
-  const cell = (p, title, body) => `<button class="ph-card ${state.phase===p?'on':''}" data-phase="${p}">
+  const cell = (p, title, body) => {
+    const live = state.phase >= p;
+    return `<button class="ph-card ${live?'on':''}" data-phase="${p}">
       <span class="ph-top">
         <b>${title}</b>
-        <span class="bkt ${state.phase===p?'gold':''}">${state.phase===p?'Live':'Off'}</span>
+        <span class="bkt ${live?'gold':''}">${live?'Live':'Off'}</span>
       </span>
       <span class="ph-body">${body}</span>
-      <span class="ph-n">${counts(p)} actions</span>
+      <span class="ph-n">${p===2?'':'+ '}${counts(p)} actions${p===3&&live?` · ${SIGNALS.length} total`:''}</span>
     </button>`;
+  };
   return `<div class="setwrap">
     <div class="set-h">Service intelligence</div>
     <div class="set-sub">Which layer of intelligence Pulse is running tonight. Each phase only adds actions we can genuinely ground in data.</div>
@@ -1305,8 +1398,23 @@ function settingsHtml() {
       ${cell(2,'Phase 2 · Action layer',
         'Turns what we already know — visit history, spend, occasions, previous issues, order state — into a checklist of things to do.')}
       ${cell(3,'Phase 3 · Live behaviour',
-        'Adds what the guest is doing on the QR right now: browsing a section, re-opening a dish, hesitating, or asking for help.')}
+        'Runs on top of Phase 2 and adds what the guest is doing on the QR right now: calling a waiter, browsing a section, re-opening a dish, or hesitating. Table state labels arrive here too.')}
     </div>
+    ${state.phase >= 3 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
+    <div class="set-sub">Requests arrive from the guest's QR. Trigger one to see the handoff from a guest's phone to the floor.</div>
+    <div class="call-sim">
+      <div class="cs-row">
+        <span class="fld-lbl" style="margin:0">Table</span>
+        <select class="inp" id="cs-table" style="height:42px;max-width:150px">
+          ${tables.filter(t => t.status === 'seated' || t.status === 'paid').map(t => `<option value="${t.id}">Table ${t.id}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cs-btns">
+        ${Object.keys(CALL_TYPES).map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
+      </div>
+      ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
+    </div>` : ''}
+
     <div class="set-h" style="margin-top:26px">Guest buckets</div>
     <div class="set-sub">Every guest resolves to one bucket. It is derived from history, never typed, so it cannot go stale.</div>
     <div class="bkt-list">
@@ -1317,6 +1425,19 @@ function settingsHtml() {
     </div>
   </div>`;
 }
+function legendHtml() {
+  const item = (cls,label) => `<span class="lg-item"><span class="lg-sw ${cls}"></span>${label}</span>`;
+  return `<div class="lg-h">Table states</div>
+    <div class="lg-grid">
+      ${item('', 'Vacant — tap to allocate')}
+      ${item('seated','Occupied')}
+      ${item('fresh','Just allocated')}
+      ${item('paid','Bill paid — ready to turn')}
+      ${item('blocked','Not in service')}
+      ${item('bill','Running bill')}
+    </div>`;
+}
+
 function renderView() {
   const onTable = state.view === 'table';
   document.getElementById('seg').style.display = onTable ? '' : 'none';
@@ -1327,12 +1448,16 @@ function renderView() {
   vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings'})[state.view] || '';
   const c = document.getElementById('content');
   if (state.view === 'table') {
-    c.innerHTML = `<div class="searchwrap ${state.searchOpen?'on':''}" id="searchwrap">
+    c.innerHTML = `<div class="legend ${state.legendOpen?'on':''}" id="legend"></div>
+      <div class="searchwrap ${state.searchOpen?'on':''}" id="searchwrap">
         <div class="searchbar">${ic('search')}
           <input id="q" placeholder="Search table number or guest name" value="${state.q}" />
           <button class="x-btn" id="q-clear">${ic('x','sm')}</button>
         </div>
       </div><div class="grid" id="grid"></div>`;
+    const lg = document.getElementById('legend');
+    lg.innerHTML = legendHtml();
+    lg.classList.toggle('on', state.legendOpen);
     renderGrid();
     if (state.searchOpen) document.getElementById('q').focus();
   } else if (state.view === 'settings') {
@@ -1367,8 +1492,27 @@ document.addEventListener('click', e => {
     renderView(); return;
   }
 
+  const cb = e.target.closest('[data-call]');
+  if (cb) {
+    const tid = document.getElementById('cs-table').value;
+    raiseCall(tid, cb.dataset.call);
+    renderView();
+    return;
+  }
   const ph = e.target.closest('[data-phase]');
-  if (ph) { state.phase = +ph.dataset.phase; renderView(); toast(`Phase ${state.phase} active`, 'zap'); return; }
+  if (ph) {
+    state.phase = +ph.dataset.phase;
+    syncPhaseChip(); renderView();
+    toast(state.phase === 3 ? 'Phase 3 — live QR behaviour on' : 'Phase 2 — action layer only', 'zap');
+    return;
+  }
+  if (e.target.closest('#btn-phase')) {
+    state.phase = state.phase === 2 ? 3 : 2;
+    syncPhaseChip(); renderView();
+    toast(state.phase === 3 ? 'Phase 3 — live QR behaviour on' : 'Phase 2 — action layer only', 'zap');
+    return;
+  }
+  if (e.target.closest('#btn-legend')) { state.legendOpen = !state.legendOpen; renderView(); return; }
   if (e.target.closest('#btn-search'))  { state.searchOpen = !state.searchOpen; renderView(); return; }
   if (e.target.closest('#btn-history')) { toast('Order history — coming from POS', 'history'); return; }
   if (e.target.closest('#fab-edit'))    { toast('Edit floor layout', 'pencil'); return; }
@@ -1441,8 +1585,14 @@ document.addEventListener('keydown', e => {
   });
 });
 
+function syncPhaseChip() {
+  const b = document.getElementById('btn-phase');
+  b.classList.toggle('p3', state.phase >= 3);
+  document.getElementById('pc-lbl').textContent = 'Phase ' + state.phase;
+}
+
 /* init */
-renderGrid(); icons();
+syncPhaseChip(); renderGrid(); icons();
 </script>
 </body>
 </html>
