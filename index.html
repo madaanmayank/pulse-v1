@@ -80,6 +80,10 @@
     transition:background .16s,color .16s;
   }
   .seg button.on{background:#efece3;color:#1a1a1a;font-weight:700}
+  .view-title{
+    position:absolute;left:22px;top:50%;transform:translateY(-50%);
+    font-size:17px;font-weight:800;display:none;
+  }
   .top-actions{position:absolute;right:18px;top:50%;transform:translateY(-50%);display:flex;gap:10px}
   .top-btn{
     width:44px;height:44px;border-radius:50%;
@@ -211,6 +215,31 @@
   }
   .stub i[data-lucide]{width:34px;height:34px}
   .stub b{color:var(--ink-2);font-size:15px;font-weight:700}
+
+  /* ─────────── settings ─────────── */
+  .setwrap{max-width:820px;margin:0 auto;padding:10px 0 30px}
+  .set-h{font-size:17px;font-weight:800;margin-bottom:5px}
+  .set-sub{font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:14px;max-width:620px}
+  .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ph-card{
+    display:flex;flex-direction:column;gap:8px;text-align:left;
+    background:var(--card);border:1.5px solid var(--line-soft);border-radius:var(--r-card);
+    padding:16px;transition:border-color .16s,background .16s;
+  }
+  .ph-card:hover{border-color:#3a3d42}
+  .ph-card.on{border-color:var(--gold);background:#1b1913}
+  .ph-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .ph-top b{font-size:15px;font-weight:800}
+  .ph-body{font-size:13px;color:#b4b2ac;line-height:1.55}
+  .ph-n{font-size:11.5px;font-weight:700;color:var(--ink-3)}
+  .ph-card.on .ph-n{color:var(--gold-soft)}
+  .bkt-list{display:flex;flex-direction:column;gap:9px}
+  .bkt-row{
+    display:flex;align-items:center;gap:12px;font-size:13px;color:#b4b2ac;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:10px;padding:11px 13px;
+  }
+  .bkt-row .bkt{flex:0 0 92px;justify-content:center}
+  @media (max-width:760px){ .ph-grid{grid-template-columns:1fr} }
 
   /* ─────────── sheets & modals ─────────── */
   .veil{
@@ -346,36 +375,71 @@
     border-radius:8px;padding:8px 11px;font-size:12px;font-weight:700;margin-top:9px;
   }
 
-  /* action cards — the same card language, with the action as the one button */
-  .act{
-    background:#1a1b1e;border:1px solid #26282c;border-left:3px solid #3a3d42;
-    border-radius:11px;padding:12px 13px;margin-bottom:9px;
+  /* ── WHAT TO DO — a checklist, not a wall of cards ── */
+  .todo{background:#1a1b1e;border:1px solid #26282c;border-radius:12px;overflow:hidden;margin-bottom:12px}
+  .todo-h{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:11px 13px;border-bottom:1px solid #232528;
   }
-  .act.red  {border-left-color:var(--red);background:#1e1615}
-  .act.amber{border-left-color:#c98a3a;background:#1d1a15}
-  .act.gold {border-left-color:var(--gold);background:#1c1a14}
-  .act-t{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;margin-bottom:5px}
-  .act-t i[data-lucide]{width:14px;height:14px}
-  .act.red .act-t{color:#e8a099}
-  .act.amber .act-t{color:#dcae6e}
-  .act.gold .act-t{color:var(--gold-soft)}
-  .act-w{font-size:12.5px;color:#bab8b2;line-height:1.5;margin-bottom:10px}
-  .act-btn{
-    width:100%;height:40px;border-radius:9px;background:var(--gold-grad);
-    color:var(--gold-ink);font-size:13.5px;font-weight:800;
-    display:flex;align-items:center;justify-content:center;gap:7px;transition:filter .14s;
+  .todo-h b{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#cfcdc6}
+  .todo-prog{font-size:11.5px;font-weight:700;color:var(--ink-3)}
+  .todo-row{
+    width:100%;display:flex;align-items:flex-start;gap:11px;text-align:left;
+    padding:12px 13px;border-bottom:1px solid #202225;position:relative;
+    transition:background .14s;
   }
-  .act-btn:hover{filter:brightness(1.05)}
-  .act-ok{
-    display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#84d6a8;
-    background:#15231b;border:1px solid #234232;border-radius:9px;padding:9px 12px;margin-bottom:9px;
+  .todo-row:last-child{border-bottom:none}
+  .todo-row:hover{background:#1e2023}
+  .todo-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+  .todo-row.red::before  {background:var(--red)}
+  .todo-row.amber::before{background:#c98a3a}
+  .todo-row.gold::before {background:var(--gold)}
+  .tick{
+    width:20px;height:20px;border-radius:50%;flex:0 0 auto;margin-top:1px;
+    border:2px solid #43464c;display:inline-flex;align-items:center;justify-content:center;
+    color:transparent;transition:all .16s;
   }
-  .act-ok i[data-lucide]{width:14px;height:14px}
-  .act-more{
-    width:100%;font-size:12px;font-weight:700;color:var(--ink-2);
-    border:1px dashed #313438;border-radius:9px;padding:9px;margin-bottom:9px;
+  .todo-row.red .tick{border-color:#8a4a44}
+  .todo-row.amber .tick{border-color:#7d5c2c}
+  .todo-row.gold .tick{border-color:var(--gold-line)}
+  .todo-row:hover .tick{border-color:var(--gold);color:rgba(217,180,95,.4)}
+  .tick i[data-lucide]{width:12px;height:12px}
+  .todo-b{flex:1;min-width:0}
+  .todo-a{display:block;font-size:14px;font-weight:800;color:#f2efe7;line-height:1.3}
+  .todo-w{display:block;font-size:12px;color:#9c9a95;line-height:1.45;margin-top:3px}
+  .todo-who{
+    flex:0 0 auto;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--gold-soft);background:rgba(217,180,95,.13);border:1px solid var(--gold-line);
+    border-radius:5px;padding:3px 6px;margin-top:1px;
   }
-  .act-more:hover{color:var(--gold);border-color:var(--gold-line)}
+  /* done — stays visible briefly as proof, then reads as history */
+  .todo-row.is-done{background:#15231b}
+  .todo-row.is-done::before{background:#2f7a51}
+  .todo-row.is-done .tick{background:#3f9f6b;border-color:#3f9f6b;color:#0d1a12}
+  .todo-row.is-done .todo-a{color:#84d6a8;font-weight:700}
+  .todo-row.is-done .todo-w{display:none}
+  .todo-more{
+    width:100%;font-size:11.5px;font-weight:700;color:var(--ink-2);
+    padding:10px;border-top:1px solid #202225;
+  }
+  .todo-more:hover{color:var(--gold)}
+  .todo-clear{
+    display:flex;align-items:center;gap:9px;padding:13px;
+    font-size:12.5px;color:var(--ink-2);font-weight:600;
+  }
+  .todo-clear i[data-lucide]{width:15px;height:15px;color:#5fae82}
+
+  /* guest bucket badge */
+  .bkt{
+    display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+    font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    border-radius:6px;padding:3px 7px;
+    background:#232529;border:1px solid #2f3237;color:var(--ink-2);
+  }
+  .bkt.gold {background:rgba(217,180,95,.13);border-color:var(--gold-line);color:var(--gold-soft)}
+  .bkt.amber{background:rgba(201,138,58,.14);border-color:#6d4f24;color:#dcae6e}
+  .bkt.red  {background:rgba(216,72,63,.13);border-color:#6b332c;color:#e8a099}
+  .bkt-hint{font-size:12px;color:#9c9a95;line-height:1.45;margin-top:7px}
 
   /* reco column */
   .reco{
@@ -394,7 +458,6 @@
   .reco-b{flex:1;min-width:0}
   .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
   .bdg{font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:6px;color:#fff}
-  .bdg.match{background:var(--teal)}
   .bdg.reorder{background:var(--purple)}
   .reco-nm{font-size:13.5px;font-weight:700;line-height:1.35;margin-bottom:5px}
   .reco-pr{font-size:13px;font-weight:800;color:#dcd9d2}
@@ -507,6 +570,7 @@
 
 <div class="app">
   <header class="topbar">
+    <div class="view-title" id="view-title"></div>
     <div class="seg" id="seg">
       <button class="on" data-f="all">All</button>
       <button data-f="allocate">Allocate</button>
@@ -621,9 +685,9 @@ const guests = {
 };
 
 const RECOS = [
-  { name:'Savory Grilled Chicken with Garlic Herb Sauce', price:12.50, match:98, reorder:4, best:true, icon:'drumstick' },
-  { name:'Salad with crisp ice and a touch of citrus',    price:8.00,  match:85, reorder:2, icon:'salad' },
-  { name:'Chocolate lava cake',                            price:8.00,  match:80, reorder:0, icon:'cake-slice' },
+  { name:'Savory Grilled Chicken with Garlic Herb Sauce', price:12.50, reorder:4, best:true, icon:'drumstick' },
+  { name:'Salad with crisp ice and a touch of citrus',    price:8.00,  reorder:2, icon:'salad' },
+  { name:'Chocolate lava cake',                            price:8.00,  reorder:0, icon:'cake-slice' },
 ];
 
 /* status: vacant | seated | paid | blocked   ·   fresh = just allocated */
@@ -654,58 +718,142 @@ let tables = [
 ];
 
 /* ══════════════════════════════════════════════════════════════
+   GUEST BUCKETS
+   One label per guest that tells staff how to treat them. Derived —
+   never typed by hand — so it cannot go stale.
+   ══════════════════════════════════════════════════════════════ */
+function daysSince(lastVisit) {
+  if (!lastVisit) return null;
+  const m = String(lastVisit).match(/(\d+)\s*(day|week|month)/i);
+  if (!m) return null;
+  const n = +m[1], u = m[2].toLowerCase();
+  return u === 'day' ? n : u === 'week' ? n*7 : n*30;
+}
+const BUCKETS = {
+  new:       { label:'New guest',  tone:'plain', hint:'First time here — make the first impression count.' },
+  returning: { label:'Returning',  tone:'plain', hint:'Has been here before. Recognise them.' },
+  regular:   { label:'Regular',    tone:'gold',  hint:'Comes often. Greet by name and lead with their usual.' },
+  vip:       { label:'High value', tone:'gold',  hint:'Spends well above average. Worth a manager hello.' },
+  lapsed:    { label:'Lapsed',     tone:'amber', hint:'Has not been in for a while. Make them feel remembered.' },
+  risk:      { label:'At risk',    tone:'red',   hint:'Last experience fell short. Recover it tonight.' },
+};
+function bucketOf(g) {
+  if (!g || !g.visits) return 'new';
+  if (g.prevIssue) return 'risk';
+  const gap = daysSince(g.lastVisit);
+  if (gap !== null && gap >= 60) return 'lapsed';
+  if ((g.avgSpend || 0) >= 65) return 'vip';
+  if (g.visits >= 5) return 'regular';
+  return 'returning';
+}
+function bucketOfTable(t) {
+  const g = t && t.guest ? guests[t.guest] : null;
+  return g ? bucketOf(g) : null;
+}
+
+/* ══════════════════════════════════════════════════════════════
    SIGNALS — why this matters → what to do → done
    Deliberately small. A signal earns a place only if it changes
    what a staff member does next.
    ══════════════════════════════════════════════════════════════ */
 const SIGNALS = [
-  { id:'request', lvl:'red', icon:'bell-ring', score:100,
-    on:c => c.sw.requestPending,
-    title:'Guest asked for help',
-    why:c => `From the table${c.sw.requestMin?` ${c.sw.requestMin} min ago`:''}${c.sw.requestText?`: “${c.sw.requestText}”`:'.'}`,
-    act:'Respond to the table', done:'Responded' },
-
-  { id:'recovery', lvl:'red', icon:'heart-crack', score:96,
+  /* ───────── PHASE 2 · grounded in the guest profile + POS we already have ───────── */
+  { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-crack', score:96,
     on:c => c.g && c.g.prevIssue,
-    title:'Last visit went wrong',
-    why:c => `${c.g.prevIssue}. Give them your strongest service tonight.`,
-    act:'Prioritise this table', done:'Prioritised' },
+    act:'Prioritise this table',
+    why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
+    done:'Table prioritised' },
 
-  { id:'browsing', lvl:'amber', icon:'wine', score:88,
-    on:c => c.sw.cat && c.sw.catMin >= 3,
-    title:c => `Browsing ${c.sw.cat} for ${c.sw.catMin} min`,
-    why:'They are on the menu but have not ordered yet.',
-    act:c => `Offer help choosing ${c.sw.cat === 'wine' ? 'a wine' : 'a dish'}`, done:'Assistance offered' },
+  { id:'mgr-recovery', phase:2, lvl:'red', who:'manager', icon:'user-check', score:94,
+    on:c => c.g && c.g.prevIssue && (c.bucket === 'risk') && (c.g.avgSpend||0) >= 60,
+    act:'Manager touchpoint',
+    why:c => `High-value guest whose last visit fell short. Worth you personally.`,
+    done:'Manager visited' },
 
-  { id:'no-order', lvl:'amber', icon:'clock', score:80,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 10 && !c.sw.cat && !c.sw.requestPending,
-    title:'No order yet',
-    why:c => `Seated ${dur(c.mins)} with nothing ordered.`,
-    act:'Check in with the table', done:'Checked in' },
+  { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 10,
+    act:'Check in with the table',
+    why:c => `Seated ${dur(c.mins)} with nothing ordered yet.`,
+    done:'Checked in' },
 
-  { id:'long-stay', lvl:'amber', icon:'hourglass', score:66,
+  { id:'long-stay', phase:2, lvl:'amber', who:'waiter', icon:'hourglass', score:64,
     on:c => c.t.status === 'seated' && c.mins >= 180,
-    title:'Running long',
-    why:c => `On the table ${dur(c.mins)}. Worth reading whether they want the check.`,
-    act:'Offer the check', done:'Check offered' },
+    act:'Offer the check',
+    why:c => `On the table ${dur(c.mins)} — read whether they are ready to settle.`,
+    done:'Check offered' },
 
-  { id:'occasion', lvl:'gold', icon:'party-popper', score:84,
+  { id:'occasion', phase:2, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
     on:c => c.g && c.g.occasion,
-    title:c => c.g.occasion,
-    why:c => `${c.g.name.split(' ')[0]} is celebrating with you tonight.`,
-    act:'Acknowledge the occasion', done:'Acknowledged' },
+    act:'Acknowledge the occasion',
+    why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
+    done:'Occasion acknowledged' },
 
-  { id:'regular', lvl:'gold', icon:'star', score:72,
-    on:c => c.g && c.g.visits >= 3,
-    title:c => `Returning · ${c.g.visits} visits`,
-    why:c => `${c.g.name.split(' ')[0]} has dined here ${c.g.visits} times, last ${c.g.lastVisit}.`,
-    act:'Welcome them back by name', done:'Welcomed back' },
+  { id:'vip-welcome', phase:2, lvl:'gold', who:'manager', icon:'crown', score:78,
+    on:c => c.bucket === 'vip',
+    act:'Personally welcome them',
+    why:c => `${c.g.name.split(' ')[0]} averages ${money(c.g.avgSpend)} a visit.`,
+    done:'Guest welcomed' },
 
-  { id:'turn', lvl:'gold', icon:'badge-check', score:58,
+  { id:'lapsed', phase:2, lvl:'gold', who:'waiter', icon:'calendar-clock', score:74,
+    on:c => c.bucket === 'lapsed',
+    act:'Make them feel remembered',
+    why:c => `${c.g.name.split(' ')[0]} last dined here ${c.g.lastVisit}.`,
+    done:'Guest welcomed back' },
+
+  { id:'regular', phase:2, lvl:'gold', who:'waiter', icon:'star', score:72,
+    on:c => c.g && c.g.visits >= 3 && c.bucket !== 'lapsed' && c.bucket !== 'risk',
+    act:'Welcome them back by name',
+    why:c => `${c.g.visits} visits, last ${c.g.lastVisit}.`,
+    done:'Welcomed back' },
+
+  { id:'usual', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:68,
+    on:c => c.g && c.g.summary && !c.t.dishes && c.g.visits >= 2,
+    act:'Lead with their usual',
+    why:c => c.g.summary,
+    done:'Usual suggested' },
+
+  { id:'turn', phase:2, lvl:'gold', who:'waiter', icon:'badge-check', score:56,
     on:c => c.t.status === 'paid',
-    title:'Bill paid',
-    why:'The party has settled and the table can be reset.',
-    act:'Clear and turn the table', done:'Table cleared' },
+    act:'Clear and turn the table',
+    why:'The party has settled.',
+    done:'Table cleared' },
+
+  /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
+  { id:'request', phase:3, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
+    on:c => c.sw.requestPending,
+    act:'Respond to the table',
+    why:c => `They asked from the table${c.sw.requestMin?` ${c.sw.requestMin} min ago`:''}${c.sw.requestText?`: “${c.sw.requestText}”`:'.'}`,
+    done:'Responded' },
+
+  { id:'browsing', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:90,
+    on:c => c.sw.cat && c.sw.catMin >= 3,
+    act:c => `Offer help choosing ${c.sw.cat === 'wine' ? 'a wine' : 'a dish'}`,
+    why:c => `Browsing ${c.sw.cat} for ${c.sw.catMin} minutes without ordering.`,
+    done:'Assistance offered' },
+
+  { id:'repeat-item', phase:3, lvl:'amber', who:'waiter', icon:'eye', score:80,
+    on:c => c.sw.repeatItem && c.sw.repeatViews >= 3,
+    act:c => `Talk them through the ${c.sw.repeatItem}`,
+    why:c => `Opened ${c.sw.repeatItem} ${c.sw.repeatViews} times without adding it.`,
+    done:'Dish explained' },
+
+  { id:'menu-idle', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:78,
+    on:c => c.sw.menuOpenMin >= 4 && c.sw.itemsViewed === 0,
+    act:'Walk them through the menu',
+    why:c => `Menu open ${c.sw.menuOpenMin} minutes with nothing opened.`,
+    done:'Menu explained' },
+
+  { id:'hesitation', phase:3, lvl:'amber', who:'waiter', icon:'help-circle', score:70,
+    on:c => c.sw.hesitationMin >= 6,
+    act:'Offer ordering assistance',
+    why:c => `Taking ${c.sw.hesitationMin} minutes to decide — longer than usual.`,
+    done:'Assistance offered' },
+
+  { id:'abandoned', phase:3, lvl:'amber', who:'waiter', icon:'undo-2', score:66,
+    on:c => c.sw.abandoned,
+    act:'Check if they need help deciding',
+    why:c => `Added ${c.sw.abandoned} then removed it before ordering.`,
+    done:'Checked in' },
 ];
 
 const doneActions = {};                                   // "<table>:<signal>" -> true
@@ -713,15 +861,17 @@ const aKey = (tid,sid) => tid + ':' + sid;
 const val = (v,c) => typeof v === 'function' ? v(c) : v;
 
 function signalsFor(t) {
-  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], done:[], top:null, lvl:null };
-  const c = { t, g: t.guest ? guests[t.guest] : null, sw: t.sw || {}, mins: t.mins || 0 };
-  const all = SIGNALS.filter(s => { try { return !!s.on(c); } catch(e){ return false; } })
-    .map(s => ({ id:s.id, lvl:s.lvl, icon:s.icon, score:s.score,
-                 title:val(s.title,c), why:val(s.why,c), act:val(s.act,c), done:s.done,
+  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], done:[], top:null, lvl:null, all:[] };
+  const g = t.guest ? guests[t.guest] : null;
+  const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null };
+  const all = SIGNALS.filter(s => s.phase <= state.phase)
+    .filter(s => { try { return !!s.on(c); } catch(e){ return false; } })
+    .map(s => ({ id:s.id, lvl:s.lvl, who:s.who, icon:s.icon, score:s.score, phase:s.phase,
+                 why:val(s.why,c), act:val(s.act,c), done:s.done,
                  isDone: !!doneActions[aKey(t.id,s.id)] }));
   const rank = { red:0, amber:1, gold:2 };
   const open = all.filter(x => !x.isDone).sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
-  return { open, done:all.filter(x => x.isDone), top:open[0] || null, lvl:open[0] ? open[0].lvl : null };
+  return { open, done:all.filter(x => x.isDone), top:open[0] || null, lvl:open[0] ? open[0].lvl : null, all };
 }
 function markDone(tid, sid) {
   doneActions[aKey(tid,sid)] = true;
@@ -734,7 +884,8 @@ function attentionCount() {
 }
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
-                allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false };
+                allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
+                phase:2 };
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
@@ -786,6 +937,7 @@ function cardHtml(t) {
 
   const cls = t.status === 'paid' ? 'paid' : (t.fresh ? 'fresh' : 'seated');
   const sig = signalsFor(t);
+  const bkt = bucketOfTable(t);
   return `<div class="tcard ${cls}" data-id="${t.id}">
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
@@ -798,8 +950,9 @@ function cardHtml(t) {
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
+      ${bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
-    ${sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.title}</div>` : ''}
+    ${sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.act}</div>` : ''}
     ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
   </div>`;
 }
@@ -897,12 +1050,11 @@ function orderItems(t) {
   return pool.slice(0, Math.min(t.dishes, pool.length));
 }
 
-function recoHtml(r, known) {
+function recoHtml(r) {
   return `<div class="reco">
     <div class="reco-img">${ic(r.icon,'lg')}${r.best ? `<div class="best-ribbon">#1 All Time<br>Best-Seller</div>` : ''}</div>
     <div class="reco-b">
       <div class="badges">
-        ${known && r.match ? `<span class="bdg match">${r.match}% Match</span>` : ''}
         ${r.reorder ? `<span class="bdg reorder">${r.reorder}x Reorder</span>` : ''}
       </div>
       <div class="reco-nm">${r.name}</div>
@@ -911,21 +1063,37 @@ function recoHtml(r, known) {
   </div>`;
 }
 
-/* At most two actions at a time. More than that and the screen stops
-   being glanceable, which is the whole point. */
+/* The checklist. Three rows at most before it folds — beyond that the
+   waiter is reading rather than acting. */
 function actionsHtml(t) {
   const sig = signalsFor(t);
-  if (!sig.open.length && !sig.done.length) return '';
-  const show = state.allActions ? sig.open : sig.open.slice(0,2);
+  if (!sig.all.length) {
+    return `<div class="todo"><div class="todo-clear">${ic('check-circle')}<span>Nothing needs doing — this table is running fine.</span></div></div>`;
+  }
+  const CAP = 3;
+  const show = state.allActions ? sig.open : sig.open.slice(0, CAP);
   const hidden = sig.open.length - show.length;
-  return show.map(a => `<div class="act ${a.lvl}">
-      <div class="act-t">${ic(a.icon)} ${a.title}</div>
-      <div class="act-w">${a.why}</div>
-      <button class="act-btn" data-do="${a.id}">${a.act}</button>
-    </div>`).join('')
-  + (hidden ? `<button class="act-more" id="act-more">+ ${hidden} more for this table</button>` : '')
-  + (state.allActions && sig.open.length > 2 ? `<button class="act-more" id="act-more">Show fewer</button>` : '')
-  + sig.done.map(a => `<div class="act-ok">${ic('check')} ${a.done}</div>`).join('');
+  const total = sig.all.length, doneN = sig.done.length;
+
+  const row = a => `<button class="todo-row ${a.lvl}" data-do="${a.id}">
+      <span class="tick">${ic('check')}</span>
+      <span class="todo-b">
+        <span class="todo-a">${a.act}</span>
+        <span class="todo-w">${a.why}</span>
+      </span>
+      ${a.who === 'manager' ? `<span class="todo-who">Manager</span>` : ''}
+    </button>`;
+
+  return `<div class="todo">
+    <div class="todo-h"><b>What to do</b><span class="todo-prog">${doneN} of ${total} done</span></div>
+    ${show.map(row).join('')}
+    ${sig.done.map(a => `<div class="todo-row is-done">
+        <span class="tick">${ic('check')}</span>
+        <span class="todo-b"><span class="todo-a">${a.done}</span></span>
+      </div>`).join('')}
+    ${hidden ? `<button class="todo-more" id="act-more">+ ${hidden} more</button>` : ''}
+    ${state.allActions && sig.open.length > CAP ? `<button class="todo-more" id="act-more">Show fewer</button>` : ''}
+  </div>`;
 }
 
 function openDetail(id) {
@@ -987,8 +1155,10 @@ function renderDetail() {
           <div class="gcard">
             <div class="gc-top">
               <span class="gc-av">${g.initials}</span>
-              <span><span class="gc-nm">${g.name}</span><br><span class="gc-ph">${g.phone}</span></span>
+              <span style="min-width:0"><span class="gc-nm">${g.name}</span><br><span class="gc-ph">${g.phone}</span></span>
+              <span class="bkt ${BUCKETS[bucketOf(g)].tone}" style="margin-left:auto">${BUCKETS[bucketOf(g)].label}</span>
             </div>
+            <div class="bkt-hint" style="margin:-4px 0 10px">${BUCKETS[bucketOf(g)].hint}</div>
             <div class="info-card" style="margin:0">
               <div class="ic-h">${ic('sparkles')} Guest Summary</div>
               <div class="ic-b ${g.summary ? '' : 'muted'}">${
@@ -1006,7 +1176,7 @@ function renderDetail() {
       <div class="dm-col">
         <div class="dm-h tab">${ic('sparkles','sm')} Dish Recommendation</div>
         <div class="dm-scroll">
-          ${RECOS.map(r => recoHtml(r, known)).join('')}
+          ${RECOS.map(r => recoHtml(r)).join('')}
         </div>
       </div>
 
@@ -1115,11 +1285,46 @@ function saveRemember() {
    VIEWS
    ══════════════════════════════════════════════════════════════ */
 const STUBS = {
-  order:   ['shopping-bag','Orders','Live order tickets across the floor.'],
-  menu:    ['utensils-crossed','Menu','Categories, dishes and availability.'],
-  settings:['settings','Settings','Printers, tax, service charge and staff.'],
+  order: ['shopping-bag','Orders','Live order tickets across the floor.'],
+  menu:  ['utensils-crossed','Menu','Categories, dishes and availability.'],
 };
+function settingsHtml() {
+  const counts = p => SIGNALS.filter(s => s.phase === p).length;
+  const cell = (p, title, body) => `<button class="ph-card ${state.phase===p?'on':''}" data-phase="${p}">
+      <span class="ph-top">
+        <b>${title}</b>
+        <span class="bkt ${state.phase===p?'gold':''}">${state.phase===p?'Live':'Off'}</span>
+      </span>
+      <span class="ph-body">${body}</span>
+      <span class="ph-n">${counts(p)} actions</span>
+    </button>`;
+  return `<div class="setwrap">
+    <div class="set-h">Service intelligence</div>
+    <div class="set-sub">Which layer of intelligence Pulse is running tonight. Each phase only adds actions we can genuinely ground in data.</div>
+    <div class="ph-grid">
+      ${cell(2,'Phase 2 · Action layer',
+        'Turns what we already know — visit history, spend, occasions, previous issues, order state — into a checklist of things to do.')}
+      ${cell(3,'Phase 3 · Live behaviour',
+        'Adds what the guest is doing on the QR right now: browsing a section, re-opening a dish, hesitating, or asking for help.')}
+    </div>
+    <div class="set-h" style="margin-top:26px">Guest buckets</div>
+    <div class="set-sub">Every guest resolves to one bucket. It is derived from history, never typed, so it cannot go stale.</div>
+    <div class="bkt-list">
+      ${Object.keys(BUCKETS).map(k => `<div class="bkt-row">
+          <span class="bkt ${BUCKETS[k].tone}">${BUCKETS[k].label}</span>
+          <span>${BUCKETS[k].hint}</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
 function renderView() {
+  const onTable = state.view === 'table';
+  document.getElementById('seg').style.display = onTable ? '' : 'none';
+  document.querySelector('.top-actions').style.display = onTable ? '' : 'none';
+  document.getElementById('fab-edit').style.display = onTable ? '' : 'none';
+  const vt = document.getElementById('view-title');
+  vt.style.display = onTable ? 'none' : 'block';
+  vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings'})[state.view] || '';
   const c = document.getElementById('content');
   if (state.view === 'table') {
     c.innerHTML = `<div class="searchwrap ${state.searchOpen?'on':''}" id="searchwrap">
@@ -1130,6 +1335,8 @@ function renderView() {
       </div><div class="grid" id="grid"></div>`;
     renderGrid();
     if (state.searchOpen) document.getElementById('q').focus();
+  } else if (state.view === 'settings') {
+    c.innerHTML = settingsHtml();
   } else {
     const [i,t,s] = STUBS[state.view];
     c.innerHTML = `<div class="stub">${ic(i)}<b>${t}</b><span>${s}</span></div>`;
@@ -1160,6 +1367,8 @@ document.addEventListener('click', e => {
     renderView(); return;
   }
 
+  const ph = e.target.closest('[data-phase]');
+  if (ph) { state.phase = +ph.dataset.phase; renderView(); toast(`Phase ${state.phase} active`, 'zap'); return; }
   if (e.target.closest('#btn-search'))  { state.searchOpen = !state.searchOpen; renderView(); return; }
   if (e.target.closest('#btn-history')) { toast('Order history — coming from POS', 'history'); return; }
   if (e.target.closest('#fab-edit'))    { toast('Edit floor layout', 'pencil'); return; }
