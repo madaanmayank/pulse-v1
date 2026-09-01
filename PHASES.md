@@ -33,12 +33,14 @@ Four phases. The difference is not how much data we hold — it is what Pulse do
 
 **Action layer.** The same information becomes a checklist. Scoring, bucketing, service recovery, call waiter and a table sitting without ordering each turn into one thing to do.
 
-*13 features · 10 live in the prototype*
+*15 features · 12 live in the prototype*
 
 | | Feature | Where it appears in the UI | Owner | Support | Notes |
 |---|---|---|---|---|---|
 | ✅ | Action framework — signal, why it matters, what to do, done | WHAT TO DO checklist at the top of the table view | Pulse | — | — |
-| ✅ | Call waiter | Floor alert bar, red strip on the card, top row of the checklist | SW | Pulse | — |
+| ✅ | Call waiter | Request queue above the floor, red strip on the card, top row of the checklist, and a waiting-elsewhere bar inside any open table | SW | Pulse | — |
+| ✅ | Manager view — one worklist of the tables that need a manager | Manager tab: requests from the floor, tables needing you, approvals, and a roster of the quiet tables | Pulse | Data | One card per table — a table never appears twice |
+| ✅ | Comp and voucher approvals | Gold approve buttons on the manager card | Pulse | CRM | Reversible for five seconds after tapping |
 | ✅ | Customer scoring and guest bucketing | Score chip, bucket label on the guest card and on the floor card | Data | Pulse | — |
 | ✅ | Service recovery from past feedback **·Hero** | Red checklist row: prioritise this table | Data | Pulse | — |
 | ✅ | Table taking no action — seated without ordering | Amber checklist row at 20 minutes | Data | Pulse | Timing computed in Pulse |

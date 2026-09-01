@@ -56,10 +56,14 @@
   }
   button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
   input,select{font-family:inherit}
-  i[data-lucide]{width:16px;height:16px;display:inline-flex;flex-shrink:0}
-  i.xs[data-lucide]{width:13px;height:13px}
-  i.sm[data-lucide]{width:14px;height:14px}
-  i.lg[data-lucide]{width:20px;height:20px}
+  /* Lucide replaces <i data-lucide> with <svg class="lucide … xs">, so every
+     size rule has to target the svg — targeting the <i> silently does nothing
+     and leaves every icon at Lucide's 24px default. */
+  i[data-lucide],svg.lucide{width:16px;height:16px;display:inline-flex;flex-shrink:0;vertical-align:middle}
+  i.xs[data-lucide],svg.lucide.xs{width:13px;height:13px}
+  i.sm[data-lucide],svg.lucide.sm{width:14px;height:14px}
+  i.lg[data-lucide],svg.lucide.lg{width:20px;height:20px}
+  i.xl[data-lucide],svg.lucide.xl{width:24px;height:24px}
   ::-webkit-scrollbar{width:8px;height:8px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:#2e3034;border-radius:4px}
@@ -79,7 +83,8 @@
     border-radius:999px;padding:5px;
   }
   .seg button{
-    padding:9px 26px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink-2);
+    padding:0 24px;min-height:40px;display:inline-flex;align-items:center;gap:7px;
+    border-radius:999px;font-size:14px;font-weight:600;color:var(--ink-2);
     transition:background .16s,color .16s;
   }
   .seg::-webkit-scrollbar{display:none}
@@ -144,12 +149,51 @@
 
   /* the floor-level call bar — a request is never left to be scrolled to */
   .callbar{
-    flex:0 0 auto;display:none;gap:10px;align-items:center;
-    margin:0 18px 10px;padding:11px 14px;border-radius:12px;
-    background:rgba(216,72,63,.14);border:1px solid #6b332c;
+    flex:0 0 auto;display:none;
+    margin:0 18px 10px;border-radius:13px;overflow:hidden;
+    background:rgba(216,72,63,.12);border:1px solid #6b332c;
     animation:barIn .28s cubic-bezier(.2,.7,.2,1) both;
   }
-  .callbar.on{display:flex}
+  .callbar.on{display:block}
+  .callbar.hot{border-color:#8e3a31;background:rgba(216,72,63,.2)}
+  .cb-head{
+    width:100%;display:flex;gap:12px;align-items:center;padding:11px 14px;text-align:left;
+  }
+  .cb-chev{color:#c9a29c;display:inline-flex;flex:0 0 auto}
+  .cq{display:none;padding:0 10px 10px}
+  .callbar.open .cq{display:block}
+  .cq-row{
+    display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;
+    background:rgba(0,0,0,.22);margin-top:8px;
+  }
+  .cq-row.warm{box-shadow:inset 0 0 0 1px rgba(216,72,63,.4)}
+  .cq-row.hot{box-shadow:inset 0 0 0 1.5px var(--red);animation:callPulse 1.8s ease-in-out infinite}
+  .cq-row.ack{opacity:.72}
+  .cq-t{
+    flex:0 0 auto;width:38px;height:38px;border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:rgba(240,179,171,.16);color:#f0b3ab;font-size:14px;font-weight:800;
+  }
+  .cq-b{flex:1;min-width:0}
+  .cq-n{display:block;font-size:13px;font-weight:700;color:#f4ded9;line-height:1.3}
+  .cq-m{display:block;font-size:11.5px;color:#c9a29c;margin-top:2px}
+  .cq-ack,.cq-done,.cq-open{
+    flex:0 0 auto;min-height:40px;border-radius:9px;font-size:12.5px;font-weight:800;
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 13px;
+  }
+  .cq-ack{background:rgba(240,179,171,.16);color:#f0b3ab;border:1px solid #6b332c}
+  .cq-ack:hover{background:rgba(240,179,171,.26)}
+  .cq-done{background:#f0b3ab;color:#3a1512}
+  .cq-done:hover{background:#f6c9c3}
+  .cq-open{width:40px;padding:0;background:rgba(255,255,255,.06);color:#f0b3ab}
+  body.light .cq-row{background:rgba(184,54,46,.07)}
+  body.light .cq-n{color:#7a241e}
+  body.light .cq-m{color:#a1665f}
+  body.light .cq-t{background:rgba(184,54,46,.14);color:#b8362e}
+  body.light .cq-ack{background:rgba(184,54,46,.1);color:#9c3a2f;border-color:#e0b3ae}
+  body.light .cq-done{background:#b8362e;color:#fff}
+  body.light .cq-open{background:rgba(0,0,0,.05);color:#9c3a2f}
+  body.light .cb-chev{color:#a1665f}
   @keyframes barIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
   .callbar .cb-ic{
     width:32px;height:32px;border-radius:50%;flex:0 0 auto;
@@ -217,9 +261,10 @@
       #14201a;
   }
 
-  .tc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+  .tc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
   .tc-id{font-size:13px;font-weight:600;color:var(--ink-2)}
   .tc-doc{color:var(--gold);opacity:.9;display:inline-flex}
+  .tc-doc svg{width:19px;height:19px}
   .tcard.paid .tc-doc{color:var(--green)}
   .tc-name{
     font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.1;
@@ -228,16 +273,39 @@
   }
   .tcard.fresh .tc-name{color:var(--gold-soft)}
   .tc-name .others{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0}
-  .tc-meta{display:flex;align-items:center;gap:14px;margin-top:8px;font-size:13px;color:#cfcdc6;font-weight:500}
+  .tc-meta{display:flex;align-items:center;gap:14px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500}
+  .tc-meta svg{width:15px;height:15px}
   .tc-meta span{display:inline-flex;align-items:center;gap:5px}
-  .tc-meta i[data-lucide]{color:var(--ink-2)}
+  .tc-meta svg{color:var(--ink-2)}
   /* one indicator, one line — the card must still be readable in a glance */
-  .tc-act{
-    display:flex;align-items:center;gap:5px;margin-top:8px;
-    font-size:11.5px;font-weight:700;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  .tc-right{display:inline-flex;align-items:center;gap:7px}
+  .tc-count{
+    min-width:20px;height:20px;padding:0 6px;border-radius:999px;
+    display:inline-flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;
+    background:var(--gold);color:var(--gold-ink);
   }
-  .tc-act i[data-lucide]{width:12px;height:12px}
+  .tc-count.red{background:var(--red);color:#fff}
+  .tc-count.amber{background:#d69a45;color:#241d0c}
+  .tc-mgr{
+    width:20px;height:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
+    background:rgba(217,180,95,.16);border:1px solid var(--gold-line);color:var(--gold);
+  }
+  .tc-act{
+    display:flex;align-items:flex-start;gap:6px;margin-top:9px;
+    font-size:11.5px;font-weight:700;min-width:0;
+  }
+  .tc-act > svg{margin-top:2px}
+  .tc-act > span:not(.tc-plus){
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;line-height:1.32;
+  }
+  .tc-plus{
+    flex:0 0 auto;font-size:10.5px;font-weight:800;color:var(--ink-2);
+    background:rgba(255,255,255,.06);border-radius:5px;padding:1px 5px;
+  }
+  body.light .tc-plus{background:rgba(0,0,0,.06)}
+  .tc-act svg{width:13px;height:13px}
   .tc-act.red{color:#e8a099}
   .tc-act.amber{color:#dcae6e}
   .tc-act.gold{color:var(--ink-2)}
@@ -249,7 +317,7 @@
     border-radius:8px;padding:6px 9px;font-size:11.5px;font-weight:800;
     animation:callPulse 1.8s ease-in-out infinite;
   }
-  .tc-call i[data-lucide]{width:13px;height:13px}
+  .tc-call svg{width:13px;height:13px}
   @keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.45)}50%{box-shadow:0 0 0 6px rgba(216,72,63,0)}}
   .seg button .cnt{
     display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;
@@ -260,7 +328,7 @@
 
   .tc-bill{
     margin-top:auto;background:var(--bill-bg);color:var(--bill-ink);
-    border-radius:9px;padding:10px 13px;font-size:13.5px;font-weight:700;
+    border-radius:9px;padding:10px 13px;font-size:14px;font-weight:700;
   }
   .tcard.paid .tc-bill{background:var(--green-pill);color:var(--green-ink)}
   .tc-bill.solo{justify-content:center}
@@ -283,8 +351,15 @@
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
     color:var(--ink-3);font-size:12px;font-weight:600;position:relative;
   }
-  .bnav button i[data-lucide]{width:21px;height:21px}
+  .bnav button svg{width:21px;height:21px}
   .bnav button.on{color:var(--gold)}
+  .nav-dot{
+    position:absolute;top:12px;left:50%;margin-left:11px;
+    min-width:17px;height:17px;padding:0 5px;border-radius:999px;
+    background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
+    display:none;align-items:center;justify-content:center;
+  }
+  .nav-dot.on{display:inline-flex}
   .bnav button.on::before{
     content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
     width:52px;height:2px;background:var(--gold);border-radius:0 0 2px 2px;
@@ -295,8 +370,112 @@
     height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:12px;color:var(--ink-3);padding:60px 20px;text-align:center;
   }
-  .stub i[data-lucide]{width:34px;height:34px}
+  .stub svg{width:34px;height:34px}
   .stub b{color:var(--ink-2);font-size:15px;font-weight:700}
+
+  /* ─────────── manager ─────────── */
+  .mg-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+  .mg-h1{font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .mg-sub{font-size:13px;color:var(--ink-2);margin-top:3px}
+  .mg-stats{display:flex;gap:10px}
+  .mg-stat{
+    min-width:88px;background:var(--card);border:1px solid var(--line-soft);border-radius:12px;
+    padding:10px 14px;text-align:center;
+  }
+  .mg-stat b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+  .mg-stat span{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+  .mg-stat.red b{color:var(--red)}
+  .dm-elsewhere{
+    display:none;position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;
+    align-items:center;gap:9px;padding:7px 9px 7px 14px;border-radius:999px;
+    background:rgba(58,20,17,.94);border:1px solid #7a352d;backdrop-filter:blur(8px);
+    box-shadow:0 8px 26px rgba(0,0,0,.45);max-width:min(92vw,560px);overflow-x:auto;
+  }
+  .dm-elsewhere.on{display:flex}
+  .dm-el-l{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;
+    color:#f0b3ab;white-space:nowrap}
+  .dm-el-b{flex:0 0 auto;min-height:40px;padding:0 13px;border-radius:99px;font-size:12px;font-weight:800;
+    background:#f0b3ab;color:#3a1512;font-variant-numeric:tabular-nums}
+  .dm-el-b.warm{background:#f6c9c3}
+  .dm-el-b.hot{background:#fff;animation:callPulse 1.4s ease-in-out infinite}
+  .dm-el-b:hover{filter:brightness(1.07)}
+  body.light .dm-elsewhere{background:rgba(255,247,246,.97);border-color:#e0b3ae}
+  body.light .dm-el-l{color:#9c3a2f}
+  body.light .dm-el-b{background:#b8362e;color:#fff}
+
+  .mg-grid{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:22px;align-items:start}
+  .mg-side{position:sticky;top:0;min-width:0}
+  .mg-sec-b{min-width:0}
+  .mg-sh{
+    display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 10px;
+  }
+  .mg-sh:first-child{margin-top:0}
+  .mg-sh.urgent{color:var(--red)}
+  .mg-sh b{margin-left:auto;font-size:10.5px;color:var(--ink-2);background:var(--line-soft);
+    border-radius:99px;padding:2px 8px;font-weight:800;letter-spacing:0}
+  .mg-quiet{display:flex;flex-direction:column;gap:7px}
+  .mg-q{display:flex;align-items:center;gap:9px;min-height:42px;padding:0 12px 0 8px;text-align:left;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:11px;color:var(--ink-2);
+    font-size:12.5px;transition:border-color .16s,color .16s}
+  .mg-q>span{flex:0 0 auto;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;
+    background:var(--line-soft);color:var(--ink);font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}
+  .mg-q>em{flex:1;min-width:0;font-style:normal;font-weight:700;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mg-q>i{flex:0 0 auto;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .mg-q:hover{border-color:var(--gold-line);color:var(--ink)}
+  .mg-card{
+    display:flex;align-items:stretch;margin-bottom:9px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;
+  }
+  .mg-card.red{border-color:#6b332c;background:linear-gradient(180deg,rgba(216,72,63,.07),transparent 60%),var(--card)}
+  .mg-card.amber{border-color:#6d4f24}
+  .mg-t{
+    flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    background:rgba(255,255,255,.03);border-right:1px solid var(--line-soft);
+  }
+  .mg-num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+  .mg-sec{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+  .mg-card.red .mg-num{color:#f0b3ab}
+  .mg-b{flex:1;min-width:0;padding:12px 14px}
+  .mg-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+  .mg-name{font-size:15px;font-weight:800}
+  .mg-why{font-size:12.5px;color:#b4b2ac;line-height:1.5;display:flex;gap:7px;align-items:flex-start}
+  .mg-why svg{color:var(--ink-3);margin-top:2px}
+  .mg-why.more{margin-top:5px;color:var(--ink-3)}
+  .mg-when{margin-left:auto;font-size:11px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+  /* actions wrap rather than squeeze the reasons — a table can carry three
+     of them once a call, a manager signal and a gesture stack up. */
+  .mg-act{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;justify-content:center;
+    gap:7px;padding:12px 14px 12px 4px;flex-basis:236px;max-width:236px}
+  /* a comp authorisation reads as a sentence — let it wrap rather than
+     truncate the amount off the end of the button */
+  .mg-btn{
+    min-height:40px;padding:9px 14px;border-radius:10px;background:var(--gold-grad);color:var(--gold-ink);
+    font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;
+    gap:7px;text-align:center;line-height:1.3;
+  }
+  .mg-btn svg{flex:0 0 auto}
+  .mg-btn:hover{filter:brightness(1.06)}
+  .mg-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .mg-btn.ghost:hover{background:rgba(255,255,255,.05)}
+  .mg-empty{
+    display:flex;align-items:center;gap:9px;padding:15px;font-size:12.5px;color:var(--ink-3);
+    background:var(--card);border:1px dashed var(--line-soft);border-radius:12px;
+  }
+  .mg-empty svg{color:#5fae82}
+  body.light .mg-card,body.light .mg-stat,body.light .mg-empty,body.light .mg-q{background:#fff}
+  body.light .mg-t{background:rgba(0,0,0,.02)}
+  body.light .mg-why{color:#4f4b44}
+  body.light .mg-btn.ghost:hover{background:rgba(0,0,0,.04)}
+  @media (max-width:1000px){ .mg-grid{grid-template-columns:1fr} .mg-side{position:static}
+    .mg-quiet{flex-direction:row;flex-wrap:wrap} .mg-q{flex:0 1 auto} }
+  @media (max-width:620px){
+    .mg-card{flex-wrap:wrap}
+    .mg-t{width:100%;flex-direction:row;gap:8px;padding:9px;border-right:none;border-bottom:1px solid var(--line-soft)}
+    .mg-act{width:100%;max-width:none;flex-direction:row;flex-wrap:wrap;padding:0 14px 12px}
+    .mg-btn{flex:1;justify-content:center}
+  }
 
   /* ─────────── settings ─────────── */
   .setwrap{max-width:820px;margin:0 auto;padding:10px 0 30px}
@@ -329,9 +508,9 @@
   body.light .theme-opt.on{background:#fdf6e6}
   .rm-tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
   .rm-tab{
-    display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;
+    display:inline-flex;align-items:center;gap:7px;min-height:40px;font-size:12.5px;font-weight:700;
     background:var(--card);border:1px solid var(--line-soft);border-radius:999px;
-    padding:8px 14px;color:var(--ink-2);transition:all .14s;
+    padding:0 15px;color:var(--ink-2);transition:all .14s;
   }
   .rm-tab:hover{color:var(--ink);border-color:#3a3d42}
   .rm-tab.on{background:#efece3;color:#1a1a1a;border-color:#efece3}
@@ -352,9 +531,9 @@
   .rm-n2{display:block;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.35}
   .rm-note{display:block;font-size:11.5px;color:var(--ink-3);margin-top:3px;font-style:italic}
   .rm-ui{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--gold-soft);margin-top:4px;line-height:1.4}
-  .rm-ui i[data-lucide]{margin-top:2px;flex:0 0 auto}
+  .rm-ui svg{margin-top:2px;flex:0 0 auto}
   .rm-pill{
-    font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
     border-radius:4px;padding:2px 5px;vertical-align:middle;margin-left:4px;
     background:#2a2c30;color:var(--ink-2);
   }
@@ -405,7 +584,7 @@
   .grabber{width:40px;height:4px;border-radius:3px;background:#3a3c41;margin:12px auto 4px}
   .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 4px}
   .sheet-title{font-size:19px;font-weight:800;color:var(--gold)}
-  .x-btn{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
+  .x-btn{width:40px;height:40px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--ink-2)}
   .x-btn:hover{background:#222427;color:var(--ink)}
   .sheet-body{padding:12px 20px 20px}
 
@@ -465,7 +644,7 @@
     align-self:flex-start;color:var(--gold);padding-bottom:9px;
     border-bottom:2px solid var(--gold);
   }
-  .dm-h.tab i[data-lucide]{color:var(--gold)}
+  .dm-h.tab svg{color:var(--gold)}
   .dm-scroll{flex:1 1 auto;min-height:0;overflow-y:auto;padding-right:4px}
 
   /* guest column */
@@ -476,7 +655,7 @@
     background:#1c1e21;border:1px solid #262a2e;border-radius:8px;padding:5px 8px;
     white-space:nowrap;flex:0 0 auto;
   }
-  .gstat i[data-lucide]{width:12px;height:12px;color:var(--ink-3)}
+  .gstat svg{width:12px;height:12px;color:var(--ink-3)}
   .occ-chip{
     display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
     background:#1f1c15;border:1px solid #3a3223;color:var(--gold-soft);
@@ -502,7 +681,7 @@
     border-top:1px solid #26282c;font-style:italic;
   }
   .promo-row{display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:#c9c7c1;padding:3px 0;line-height:1.45}
-  .promo-row i[data-lucide]{width:12px;height:12px;color:var(--gold);margin-top:3px;flex:0 0 auto}
+  .promo-row svg{width:12px;height:12px;color:var(--gold);margin-top:3px;flex:0 0 auto}
   .promo-note{font-size:11px;color:var(--ink-3);margin-top:8px;font-style:italic}
   .info-card{
     background:#1c1a14;border:1px solid #322c1e;border-radius:11px;
@@ -514,12 +693,17 @@
     color:var(--gold-soft);margin-bottom:6px;
   }
   .info-card.plain .ic-h{color:var(--ink-2)}
-  .ic-h i[data-lucide]{width:14px;height:14px}
+  .ic-h svg{width:14px;height:14px}
   .ic-b{font-size:13px;line-height:1.55;color:#c9c7c1}
   .ic-b.muted{color:var(--ink-3);font-style:italic}
   .row-h{display:flex;align-items:center;justify-content:space-between;margin:14px 0 10px}
   .row-h b{font-size:15px;font-weight:800}
-  .add-lnk{font-size:13px;font-weight:700;color:var(--gold);display:inline-flex;align-items:center;gap:4px}
+  .add-lnk{
+    font-size:13px;font-weight:700;color:var(--gold);
+    display:inline-flex;align-items:center;justify-content:center;gap:5px;
+    min-height:40px;min-width:40px;padding:0 11px;margin:-9px -11px;border-radius:8px;
+  }
+  .add-lnk:hover{background:rgba(217,180,95,.1)}
   .avatars{display:flex;gap:9px;margin-bottom:12px;flex-wrap:wrap}
   .av{
     width:40px;height:40px;border-radius:50%;background:#232529;border:1.5px solid #2e3136;
@@ -571,12 +755,12 @@
   .todo-row.amber .tick{border-color:#7d5c2c}
   .todo-row.gold .tick{border-color:var(--gold-line)}
   .todo-row:hover .tick{border-color:var(--gold);color:rgba(217,180,95,.4)}
-  .tick i[data-lucide]{width:12px;height:12px}
+  .tick svg{width:12px;height:12px}
   .todo-b{flex:1;min-width:0}
   .todo-a{display:block;font-size:14px;font-weight:800;color:#f2efe7;line-height:1.3}
   .todo-w{display:block;font-size:12px;color:#9c9a95;line-height:1.45;margin-top:3px}
   .todo-who{
-    flex:0 0 auto;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
     color:var(--gold-soft);background:rgba(217,180,95,.13);border:1px solid var(--gold-line);
     border-radius:5px;padding:3px 6px;margin-top:1px;
   }
@@ -587,7 +771,7 @@
   .todo-row.is-done .todo-a{color:#84d6a8;font-weight:700}
   .todo-row.is-done .todo-w{display:none}
   .todo-more{
-    width:100%;font-size:11.5px;font-weight:700;color:var(--ink-2);
+    width:100%;min-height:42px;font-size:12px;font-weight:700;color:var(--ink-2);
     padding:10px;border-top:1px solid #202225;
   }
   .todo-more:hover{color:var(--gold)}
@@ -595,7 +779,7 @@
     display:flex;align-items:center;gap:9px;padding:13px;
     font-size:12.5px;color:var(--ink-2);font-weight:600;
   }
-  .todo-clear i[data-lucide]{width:15px;height:15px;color:#5fae82}
+  .todo-clear svg{width:15px;height:15px;color:#5fae82}
 
   /* guest bucket badge */
   .bkt{
@@ -615,12 +799,12 @@
     display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;
     letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;
   }
-  .rs-h i[data-lucide]{color:var(--gold)}
+  .rs-h svg{color:var(--gold)}
   .rs-row{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
   .rs-row::-webkit-scrollbar{display:none}
   .rs-card{
-    flex:0 0 auto;width:170px;display:flex;gap:9px;align-items:center;
-    background:#1a1b1e;border:1px solid #26282c;border-radius:10px;padding:9px;
+    flex:0 0 auto;width:212px;display:flex;gap:10px;align-items:center;
+    background:#1a1b1e;border:1px solid #26282c;border-radius:10px;padding:10px;
   }
   .rs-img{
     width:38px;height:38px;border-radius:8px;flex:0 0 auto;position:relative;
@@ -629,10 +813,13 @@
   }
   .rs-best{
     position:absolute;left:-2px;bottom:-2px;background:var(--red);color:#fff;
-    font-size:8px;font-weight:800;border-radius:4px;padding:1px 3px;
+    font-size:10px;font-weight:800;border-radius:4px;padding:1px 4px;
   }
   .rs-b{min-width:0}
-  .rs-n{font-size:12px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rs-n{
+    font-size:12px;font-weight:700;line-height:1.32;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
   .rs-m{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px}
   body.light .rs-card{background:#faf8f3;border-color:var(--line-soft)}
   body.light .rs-img{background:linear-gradient(135deg,#eae6dd,#f4f1ea);color:#a9a49a}
@@ -650,7 +837,7 @@
   }
   .best-ribbon{
     position:absolute;left:0;bottom:0;right:0;background:var(--red);color:#fff;
-    font-size:8px;font-weight:800;text-align:center;padding:3px 2px;line-height:1.15;
+    font-size:10px;font-weight:800;text-align:center;padding:3px 2px;line-height:1.15;
   }
   .reco-b{flex:1;min-width:0}
   .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
@@ -667,7 +854,7 @@
   .ord-meta{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:#c9c7c1;font-weight:600;
     padding:12px 0 14px;border-bottom:1px solid #202225;margin-bottom:14px}
   .ord-meta span{display:inline-flex;align-items:center;gap:6px}
-  .ord-meta i[data-lucide]{color:var(--ink-3)}
+  .ord-meta svg{color:var(--ink-3)}
   .oi-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #1e2023;font-size:13.5px}
   .oi-nm{flex:1;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
   .oi-q{color:var(--ink-2);font-weight:700}
@@ -676,11 +863,11 @@
     flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:14px;color:var(--ink-3);font-size:13px;text-align:center;padding:30px 10px;
   }
-  .ord-empty i[data-lucide]{width:52px;height:52px;color:#3a3d42}
+  .ord-empty svg{width:52px;height:52px;color:#3a3d42}
   .ord-btns{display:flex;gap:9px;justify-content:flex-end;padding-top:14px}
   .btn-ghost{
-    height:42px;padding:0 15px;border-radius:10px;background:#1e2023;border:1px solid #2c2f33;
-    font-size:13px;font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:7px;
+    min-height:42px;padding:0 15px;border-radius:10px;background:#1e2023;border:1px solid #2c2f33;
+    font-size:13px;font-weight:700;color:var(--ink);display:inline-flex;align-items:center;gap:8px;
     transition:all .14s;
   }
   .btn-ghost:hover{background:#25282c;border-color:#3a3d42}
@@ -730,7 +917,14 @@
     display:flex;align-items:center;gap:9px;box-shadow:0 14px 34px -12px rgba(0,0,0,.7);
   }
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
-  .toast i[data-lucide]{color:var(--gold)}
+  .toast svg{color:var(--gold)}
+  .toast-undo{
+    margin-left:5px;min-height:34px;padding:0 12px;border-radius:8px;
+    background:rgba(217,180,95,.16);border:1px solid var(--gold-line);color:var(--gold-soft);
+    font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;gap:5px;
+  }
+  .toast-undo:hover{background:rgba(217,180,95,.26)}
+  body.light .toast{background:#26241f;border-color:#3a372f;color:#f4f2ee}
 
   /* search bar */
   .searchwrap{max-width:1420px;margin:0 auto 14px;display:none}
@@ -738,7 +932,7 @@
   .searchbar{display:flex;align-items:center;gap:10px;background:#151618;border:1px solid var(--line-soft);
     border-radius:12px;padding:0 14px;height:48px}
   .searchbar input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-size:14.5px}
-  .searchbar i[data-lucide]{color:var(--ink-3)}
+  .searchbar svg{color:var(--ink-3)}
 
 
   /* ═══════════════════════════════════════════════════════════
@@ -852,7 +1046,7 @@
   body.light .bkt.red{background:#fbeceb;border-color:#e0b3ae;color:#9c3a2f}
   body.light .btn-pay.close{background:#fbeceb;color:#9c3a2f;border-color:#e0b3ae}
   body.light .toast{background:#2a2620;border-color:#3a352c;color:#faf8f4}
-  body.light .toast i[data-lucide]{color:#d9b45f}
+  body.light .toast svg{color:#d9b45f}
   body.light .act-ok,
   body.light .todo-clear{color:#2c7d52}
   body.light ::-webkit-scrollbar-thumb{background:#d5cfc2}
@@ -865,8 +1059,14 @@
     .dm-cols{grid-template-columns:1fr}
     .dm-col + .dm-col{border-left:none;border-top:1px solid #202225}
   }
+  /* landscape tablet — the device this actually runs on */
+  @media (min-width:1024px) and (orientation:landscape){
+    .grid{grid-template-columns:repeat(auto-fill,minmax(206px,1fr));gap:20px}
+    .content{padding:6px 22px 26px}
+    .callbar{margin:0 22px 12px}
+  }
   @media (max-width:1120px){
-    .seg button{padding:9px 17px}
+    .seg button{padding:0 17px}
   }
   /* only a phone loses the phase label — on a tablet it has to stay findable */
   @media (max-width:700px){
@@ -874,7 +1074,7 @@
     .phase-chip{padding:0 14px}
   }
   @media (max-width:900px){
-    .seg button{padding:9px 13px;font-size:13px}
+    .seg button{padding:0 13px;font-size:13px}
   }
   @media (max-width:760px){
     .topbar{padding:12px 14px;gap:8px}
@@ -936,6 +1136,7 @@
 
   <nav class="bnav" id="bnav">
     <button class="on" data-v="table"><i data-lucide="lamp-desk"></i><span>Table</span></button>
+    <button data-v="manager"><i data-lucide="crown"></i><span>Manager</span><span class="nav-dot" id="nav-mgr-dot"></span></button>
     <button data-v="order"><i data-lucide="shopping-bag"></i><span>Order</span></button>
     <button data-v="menu"><i data-lucide="utensils-crossed"></i><span>Menu</span></button>
     <button data-v="settings"><i data-lucide="settings"></i><span>Settings</span></button>
@@ -974,6 +1175,7 @@
 <!-- Table detail -->
 <div class="dm-veil" id="veil-detail">
   <button class="dm-close" id="dm-close"><i data-lucide="x" class="lg"></i></button>
+  <div class="dm-elsewhere" id="dm-elsewhere"></div>
   <div class="dm" id="dm"></div>
 </div>
 
@@ -1130,7 +1332,11 @@ const FEATURES = [
   { n:'Action framework — signal, why it matters, what to do, done', p:2, own:'Pulse', built:1,
     ui:'WHAT TO DO checklist at the top of the table view' },
   { n:'Call waiter', p:2, own:'SW', sup:'Pulse', built:1,
-    ui:'Floor alert bar, red strip on the card, top row of the checklist' },
+    ui:'Request queue above the floor, red strip on the card, top row of the checklist, and a waiting-elsewhere bar inside any open table' },
+  { n:'Manager view — one worklist of the tables that need a manager', p:2, own:'Pulse', sup:'Data', built:1,
+    ui:'Manager tab: requests from the floor, tables needing you, approvals, and a roster of the quiet tables' },
+  { n:'Comp and voucher approvals', p:2, own:'Pulse', sup:'CRM', built:1,
+    ui:'Gold approve buttons on the manager card, reversible for five seconds' },
   { n:'Customer scoring and guest bucketing', p:2, own:'Data', sup:'Pulse', built:1,
     ui:'Score chip, bucket label on the guest card and on the floor card' },
   { n:'Service recovery from past feedback', p:2, own:'Data', sup:'Pulse', built:1, hero:1,
@@ -1318,7 +1524,7 @@ const SIGNALS = [
     done:'Promotion mentioned' },
 
   /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
-  { id:'call', phase:3, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
+  { id:'call', phase:2, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
     on:c => !!c.call,
     act:c => CALL_TYPES[c.call.type].act,
     why:c => `${CALL_TYPES[c.call.type].label}${c.call.min ? ` ${c.call.min} min ago` : ' just now'}${c.call.note ? ` — “${c.call.note}”` : '.'}`,
@@ -1379,33 +1585,85 @@ function markDone(tid, sid) {
     const label = CALL_TYPES[t.call.type].done;
     t.call = null;
     renderDetail(); renderGrid();
+    if (state.view === 'manager') renderManager();
     toast(label, 'check-circle');
     return;
   }
   doneActions[aKey(tid,sid)] = true;
   renderDetail(); renderGrid();
+  if (state.view === 'manager') renderManager();
   const s = SIGNALS.find(x => x.id === sid);
-  toast(s ? val(s.done, { t, g:t && t.guest ? guests[t.guest] : null, sw:(t&&t.sw)||{}, call:t&&t.call }) : 'Done', 'check-circle');
+  toast(s ? val(s.done, { t, g:t && t.guest ? guests[t.guest] : null, sw:(t&&t.sw)||{}, call:t&&t.call }) : 'Done',
+    'check-circle',
+    () => { delete doneActions[aKey(tid,sid)];
+            renderDetail(); renderGrid(); if (state.view === 'manager') renderManager(); });
 }
 
 /* A guest raising a request from the QR. In the real product this arrives
    over the wire; here it can be triggered so the handoff is demonstrable. */
+/* Reset a table completely. Everything keyed to a table — its ticked-off
+   actions, its approved gestures, its open request — has to go with the
+   party, or the next guests inherit a service already performed. */
+function turnTable(id) {
+  const t = T(id); if (!t) return;
+  Object.assign(t, { status:'vacant', guest:null, others:false, pax:0, mins:0,
+    bill:0, ticket:0, dishes:0, fresh:false, walkInName:null, call:null, sw:null });
+  const pre = id + ':';
+  Object.keys(doneActions).forEach(k => { if (k.startsWith(pre)) delete doneActions[k]; });
+  Object.keys(gestureDone).forEach(k => { if (k.startsWith(pre)) delete gestureDone[k]; });
+}
+
 function raiseCall(tableId, type, note) {
-  const t = T(tableId); if (!t) return;
-  t.call = { type, note: note || '', min: 0 };
-  if (state.phase < 3) { state.phase = 3; syncPhaseChip(); }
+  const t = T(tableId);
+  if (!t || !CALL_TYPES[type] || t.status === 'vacant' || t.status === 'blocked') return;
+  t.call = { type, note: note || '', min: 0, ack: false, seq: ++callSeq };
   renderGrid();
-  if (state.detailId === tableId) renderDetail();
+  if (state.view === 'manager') renderManager();
+  if (state.detailId === tableId) renderDetail(); else renderElsewhere();
   toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, 'bell-ring');
 }
-function anyCalls() { return tables.filter(t => t.call).length; }
+let callSeq = 0;
+/* oldest first — a guest who has waited longest is served first */
+function openCalls() {
+  return tables.filter(t => t.call).sort((a,b) => (b.call.min - a.call.min) || (a.call.seq - b.call.seq));
+}
+function anyCalls() { return openCalls().length; }
+/* how urgent a wait has become — the one place the escalation rule lives */
+function callHeat(c) { return c.min >= 5 ? 'hot' : c.min >= 3 ? 'warm' : ''; }
+function ackCall(tableId) {
+  const t = T(tableId); if (!t || !t.call) return;
+  t.call.ack = true;
+  renderGrid(); if (state.view === 'manager') renderManager();
+  if (state.detailId === tableId) renderDetail(); else renderElsewhere();
+  toast(`On your way to Table ${t.id}`, 'footprints');
+}
+function resolveCall(tableId) {
+  const t = T(tableId); if (!t || !t.call) return;
+  const label = CALL_TYPES[t.call.type].done;
+  t.call = null;
+  renderGrid(); if (state.view === 'manager') renderManager();
+  if (state.detailId === tableId) renderDetail(); else renderElsewhere();
+  toast(`Table ${tableId} — ${label.toLowerCase()}`, 'check-circle');
+}
+/* requests age while the floor runs, so the queue reorders itself */
+setInterval(() => {
+  // the floor keeps running: a party's time at the table and a guest's wait
+  // both advance, so "seated 38m" and "waiting 4m" stay honest together
+  tables.forEach(t => {
+    if (t.status === 'seated' || t.status === 'paid') t.mins += 1;
+    if (t.call) t.call.min += 1;
+  });
+  renderGrid();
+  if (state.view === 'manager') renderManager();
+  if (state.detailId) renderDetail();   // also refreshes the "elsewhere" strip
+}, 60000);
 function attentionCount() {
   return tables.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; }).length;
 }
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false,
+                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, callsOpen:true,
                 theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
@@ -1416,15 +1674,23 @@ const icons = () => { if (window.lucide) window.lucide.createIcons(); };
 const money = n => 'SGD' + Number(n).toFixed(2);
 const T = id => tables.find(t => t.id === id);
 const dur = m => { const h = Math.floor(m/60), mm = m%60; return h ? `${h}h ${mm}m` : `${mm}m`; };
-const nameOf = t => t.guest ? guests[t.guest].name : 'Guest';
+const nameOf = t => t.guest ? guests[t.guest].name : (t.walkInName || 'Walk-in');
+const firstName = t => nameOf(t).split(' ')[0];
 
 let toastTimer;
-function toast(msg, icon) {
+let undoFn = null;
+function toast(msg, icon, undo) {
   const el = document.getElementById('toast');
-  el.innerHTML = `${ic(icon || 'check-circle')}<span>${msg}</span>`;
+  undoFn = undo || null;
+  el.innerHTML = `${ic(icon || 'check-circle')}<span>${msg}</span>` +
+    (undo ? `<button class="toast-undo" id="toast-undo">${ic('undo-2','xs')} Undo</button>` : '');
   icons(); el.classList.add('on');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('on'), 2400);
+  toastTimer = setTimeout(() => { el.classList.remove('on'); undoFn = null; }, undo ? 5000 : 2400);
+}
+function hideToast() {
+  document.getElementById('toast').classList.remove('on');
+  clearTimeout(toastTimer); undoFn = null;
 }
 const open = id => document.getElementById(id).classList.add('on');
 const shut = id => document.getElementById(id).classList.remove('on');
@@ -1461,10 +1727,15 @@ function cardHtml(t) {
   const cls = t.status === 'paid' ? 'paid' : (t.fresh ? 'fresh' : 'seated');
   const sig = signalsFor(t);
   const bkt = bucketOfTable(t);
+  const mgrNeeded = sig.open.some(a => a.who === 'manager');
   return `<div class="tcard ${cls}" data-id="${t.id}">
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
-      <span class="tc-doc">${ic('receipt-text','sm')}</span>
+      <span class="tc-right">
+        ${sig.open.length ? `<span class="tc-count ${sig.open[0].lvl}">${sig.open.length}</span>` : ''}
+        ${mgrNeeded ? `<span class="tc-mgr" title="Needs a manager">${ic('crown','xs')}</span>` : ''}
+        <span class="tc-doc">${ic('receipt-text','sm')}</span>
+      </span>
     </div>
     <div class="tc-name">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
     <div class="tc-meta">
@@ -1472,16 +1743,17 @@ function cardHtml(t) {
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
-    ${t.call && state.phase >= 3
+    ${t.call && state.phase >= 2
         ? `<div class="tc-call">${ic(CALL_TYPES[t.call.type].icon,'xs')} ${CALL_TYPES[t.call.type].label}${t.call.min?` · ${t.call.min}m`:''}</div>`
-        : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.act}</div>` : '')}
-    ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
+        : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${sig.open.length>1?`<span class="tc-plus">+${sig.open.length-1}</span>`:''}</div>` : '')}
+    ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
   </div>`;
 }
 
 const SECTIONS = () => [...new Set(tables.map(t => t.sec))];
 function renderSecMenu() {
   const m = document.getElementById('sec-menu');
+  if (!m) return;
   const row = (v,label) => `<button class="sec-item ${state.section===v?'on':''}" data-sec="${v}">
       <span>${label}</span><span class="n">${v==='all'?tables.length:tables.filter(t=>t.sec===v).length}</span>
     </button>`;
@@ -1492,29 +1764,49 @@ function renderSecMenu() {
   document.getElementById('sec-lbl').textContent = state.section === 'all' ? 'All sections' : state.section;
 }
 
+function callRow(t) {
+  const c = t.call, ct = CALL_TYPES[c.type];
+  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''}">
+    <span class="cq-t">${t.id}</span>
+    <span class="cq-b">
+      <span class="cq-n">${ct.label}${c.note?` — “${c.note}”`:''}</span>
+      <span class="cq-m">${c.ack ? 'On the way' : ct.act} · waiting ${c.min}m${t.sec?` · ${t.sec}`:''}</span>
+    </span>
+    ${c.ack ? '' : `<button class="cq-ack" data-ack="${t.id}">On my way</button>`}
+    <button class="cq-done" data-resolve="${t.id}">${ic('check','xs')} Done</button>
+    <button class="cq-open" data-goto="${t.id}">${ic('arrow-right','xs')}</button>
+  </div>`;
+}
+
 function renderCallBar() {
   const bar = document.getElementById('callbar');
-  const calling = state.phase >= 2 ? tables.filter(t => t.call) : [];
-  if (!calling.length) { bar.classList.remove('on'); bar.innerHTML = ''; return; }
-  const first = calling[0];
-  const more = calling.length - 1;
-  bar.innerHTML = `<span class="cb-ic">${ic('bell-ring','sm')}</span>
-    <span class="cb-b">
-      <span class="cb-t">Table ${first.id} — ${CALL_TYPES[first.call.type].label.toLowerCase()}${more?` · +${more} more waiting`:''}</span>
-      <span class="cb-s">${CALL_TYPES[first.call.type].act}${first.call.note?` · “${first.call.note}”`:''}</span>
-    </span>
-    <button class="cb-go" data-goto="${first.id}">Open Table ${first.id}</button>`;
-  bar.classList.add('on');
+  if (!bar) return;
+  const calling = state.phase >= 2 ? openCalls() : [];
+  if (!calling.length) { bar.classList.remove('on','open'); bar.innerHTML = ''; return; }
+  const waiting = calling.filter(t => !t.call.ack).length;
+  const hottest = calling[0];
+  bar.className = 'callbar on' + (state.callsOpen ? ' open' : '') + (callHeat(hottest.call) ? ' ' + callHeat(hottest.call) : '');
+  bar.innerHTML = `
+    <button class="cb-head" id="cb-toggle">
+      <span class="cb-ic">${ic('bell-ring','sm')}</span>
+      <span class="cb-b">
+        <span class="cb-t">${calling.length} ${calling.length===1?'table is':'tables are'} calling${waiting?` · ${waiting} unanswered`:' · all acknowledged'}</span>
+        <span class="cb-s">Longest wait ${hottest.call.min}m — Table ${hottest.id}</span>
+      </span>
+      <span class="cb-chev">${ic(state.callsOpen?'chevron-up':'chevron-down','sm')}</span>
+    </button>
+    <div class="cq">${calling.map(callRow).join('')}</div>`;
   icons();
 }
 
 function renderGrid() {
   renderCallBar();
+  const g = document.getElementById('grid');
+  if (!g) return;                       // not on the floor — nothing to draw
   const cnt = attentionCount();
   const badge = document.getElementById('attn-cnt');
   if (badge) { badge.textContent = cnt; badge.style.display = cnt ? '' : 'none'; }
   const list = visibleTables();
-  const g = document.getElementById('grid');
   g.innerHTML = list.length
     ? list.map(cardHtml).join('')
     : (state.filter === 'attention'
@@ -1537,7 +1829,8 @@ function openAllocate(id) {
   icons();
 }
 function renderPax() {
-  document.getElementById('pax-grid').innerHTML =
+  const pg = document.getElementById('pax-grid'); if (!pg) return;
+  pg.innerHTML =
     [1,2,3,4,5,6,7,8].map(n => `<button class="pax ${state.allocPax===n?'on':''}" data-pax="${n}">${n}</button>`).join('') +
     `<button class="pax wide" data-pax="custom">Custom pax</button>`;
 }
@@ -1658,8 +1951,22 @@ function openDetail(id) {
   open('veil-detail');
 }
 
+/* Other tables waiting while you are inside this one. */
+function renderElsewhere() {
+  const el = document.getElementById('dm-elsewhere'); if (!el) return;
+  const others = openCalls().filter(x => x.id !== state.detailId);
+  el.classList.toggle('on', others.length > 0);
+  if (!others.length) { el.innerHTML = ''; return; }
+  el.innerHTML = `<span class="dm-el-l">${ic('bell-ring','xs')} ${others.length === 1
+      ? `Table ${others[0].id} is waiting` : `${others.length} tables are waiting`}</span>
+    ${others.slice(0,3).map(x => `<button class="dm-el-b ${callHeat(x.call)}" data-goto="${x.id}">
+      ${x.id} · ${x.call.min}m</button>`).join('')}`;
+  icons();
+}
+
 function renderDetail() {
   const t = T(state.detailId); if (!t) return;
+  renderElsewhere();
   const party = partyOf(t);
   const g = guests[state.activeGuest] || guests[party[0]];
   const known = !!(g && g.visits > 0);
@@ -1737,7 +2044,7 @@ function renderDetail() {
             </div>
             ${g.winback ? `<div class="tag-purple">${ic('message-square','xs')} ${g.winback}</div>` : ''}
             ${(g.notes||[]).map(nt => `<div class="act-ok" style="margin:9px 0 0">${ic('bookmark')} ${nt}</div>`).join('')}
-            <button class="act-more" style="margin:9px 0 0" id="remember">${ic('bookmark-plus','xs')} Remember something</button>
+            <button class="btn-ghost" style="margin:11px 0 0;width:100%;justify-content:center" id="remember">${ic('bookmark-plus','sm')} Remember something</button>
           </div>
         </div>
       </div>
@@ -1830,6 +2137,163 @@ function openPay() {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   MANAGER
+   A manager cannot walk every table. This view answers one question —
+   where is my presence worth more than a waiter's?
+   ══════════════════════════════════════════════════════════════ */
+const gestureDone = {};
+/* A gesture is something only a manager can authorise. Each is tied to a
+   reason, so nothing is comped without one. */
+function gesturesFor(t) {
+  const g = t.guest ? guests[t.guest] : null;
+  if (!g) return [];
+  const out = [];
+  if (g.prevIssue) out.push({ id:'comp-recovery', icon:'wine',
+    label:'Comp a round of drinks', why:`Last visit went wrong — ${g.prevIssue.toLowerCase()}.` });
+  if (g.voucher) out.push({ id:'comp-voucher', icon:'ticket',
+    label:`Authorise ${g.voucher.label}`, why:g.voucher.why + '.' });
+  if (g.occasion && state.phase >= 3) out.push({ id:'comp-occasion', icon:'cake',
+    label:'Send a complimentary dessert', why:`${g.name.split(' ')[0]} is here for a ${g.occasion.toLowerCase()}.` });
+  return out.filter(x => !gestureDone[t.id + ':' + x.id]);
+}
+function doGesture(tid, gid, label) {
+  gestureDone[tid + ':' + gid] = true;
+  renderManager(); renderGrid();
+  toast(`${label} — sent to Table ${tid}`, 'check-circle',
+    () => { delete gestureDone[tid + ':' + gid]; renderManager(); renderGrid(); });
+}
+
+/* One card per table. A manager scanning this screen should never see the
+   same table twice — every reason it needs them, and every action they can
+   take, collapses onto a single row. */
+function mgrCard(t, o) {
+  const g = t.guest ? guests[t.guest] : null;
+  const bkt = bucketOfTable(t);
+  return `<div class="mg-card ${o.tone||''}">
+    <button class="mg-t" data-goto="${t.id}">
+      <span class="mg-num">${t.id}</span><span class="mg-sec">${t.sec||''}</span>
+    </button>
+    <div class="mg-b">
+      <div class="mg-top">
+        <span class="mg-name">${nameOf(t)}</span>
+        ${bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}">${BUCKETS[bkt].label}</span>` : ''}
+        ${g && g.score ? `<span class="bkt gold">${g.score.label}</span>` : ''}
+        <span class="mg-when">${o.meta||''}</span>
+      </div>
+      ${o.whys.map((w,i) => `<div class="mg-why${i?' more':''}">${ic(w.icon,'xs')}<span>${w.text}</span></div>`).join('')}
+    </div>
+    <div class="mg-act">${o.actions.join('')}</div>
+  </div>`;
+}
+
+/* Collect every manager-relevant reason for a table into one entry, then
+   file that entry under the single most urgent heading it qualifies for. */
+function managerQueue() {
+  const occupied = tables.filter(t => t.status === 'seated' || t.status === 'paid');
+  const rows = [];
+  let nCalls = 0, nVisit = 0, nRisk = 0, nGest = 0;
+
+  occupied.forEach(t => {
+    const whys = [], actions = [];
+    let rank = 99, tone = '', meta = `${t.pax} pax · ${dur(t.mins)} in`;
+
+    if (t.call) {
+      nCalls++; rank = 0; tone = 'red';
+      whys.push({ icon:CALL_TYPES[t.call.type].icon,
+        text:`${CALL_TYPES[t.call.type].label}${t.call.note?` — “${t.call.note}”`:''}` });
+      meta = `waiting ${t.call.min}m · ${t.call.ack ? 'a waiter is on the way' : 'not acknowledged'}`;
+      if (!t.call.ack) actions.push(`<button class="mg-btn ghost" data-ack="${t.id}">On my way</button>`);
+      actions.push(`<button class="mg-btn" data-resolve="${t.id}">Resolve</button>`);
+    }
+
+    const mgrSig = signalsFor(t).open.filter(a => a.who === 'manager');
+    if (mgrSig.length) {
+      nVisit++; rank = Math.min(rank, 1); if (mgrSig.some(a => a.lvl === 'red')) tone = tone || 'red';
+      mgrSig.forEach(a => {
+        whys.push({ icon:a.icon, text:a.why });
+        actions.push(`<button class="mg-btn" data-do-mgr="${t.id}|${a.id}">${a.act}</button>`);
+      });
+    }
+
+    const b = bucketOfTable(t), g = guests[t.guest];
+    if (g && (b === 'risk' || b === 'lapsed')) {
+      nRisk++; rank = Math.min(rank, 1); tone = tone || (b === 'risk' ? 'red' : 'amber');
+      const line = b === 'risk' ? `Last visit went wrong — ${g.prevIssue.toLowerCase()}.`
+                                : `Has not dined here since ${g.lastVisit}.`;
+      if (!whys.some(w => w.text === line)) whys.push({ icon:'heart-crack', text:line });
+    }
+
+    gesturesFor(t).forEach(x => {
+      nGest++; rank = Math.min(rank, 2);
+      if (!whys.some(w => w.text === x.why)) whys.push({ icon:'gift', text:x.why });
+      actions.push(`<button class="mg-btn" data-gesture="${t.id}|${x.id}|${x.label}">${ic(x.icon,'xs')} ${x.label}</button>`);
+    });
+
+    if (rank === 99) return;
+    if (!actions.length) actions.push(`<button class="mg-btn ghost" data-goto="${t.id}">Open table</button>`);
+    rows.push({ t, rank, tone, whys, actions, meta });
+  });
+
+  rows.sort((a,b) => a.rank - b.rank || (b.t.call?.min||0) - (a.t.call?.min||0));
+  return { rows, occupied, counts:{ calls:nCalls, visit:nVisit, risk:nRisk, gest:nGest } };
+}
+
+const MG_SECTIONS = [
+  { rank:0, icon:'bell-ring', title:'Requests from the floor',  empty:'No open requests.', urgent:true },
+  { rank:1, icon:'crown',     title:'Needs you at the table',   empty:'No table needs you personally.' },
+  { rank:2, icon:'gift',      title:'Waiting on your approval', empty:'Nothing to authorise.' },
+];
+
+function renderManager() {
+  const c = document.getElementById('manager-content');
+  if (!c) return;
+  const { rows, occupied, counts } = managerQueue();
+  const covers = occupied.reduce((a,t) => a + (t.pax||0), 0);
+  const quiet = occupied.filter(t => !rows.some(r => r.t.id === t.id));
+
+  /* A gesture on a table that is already listed higher up is not "nothing to
+     authorise" — say where it went instead of claiming there is no work. */
+  const elsewhereGestures = rows.filter(r => r.rank < 2 && r.actions.some(a => a.includes('data-gesture'))).length;
+
+  const sec = s => {
+    const mine = rows.filter(r => r.rank === s.rank);
+    let empty = s.empty;
+    if (s.rank === 2 && !mine.length && elsewhereGestures)
+      empty = `${elsewhereGestures} ${elsewhereGestures === 1 ? 'approval sits' : 'approvals sit'} on the ${elsewhereGestures === 1 ? 'table' : 'tables'} above.`;
+    return `<div class="mg-sh ${s.urgent && mine.length ? 'urgent':''}">${ic(s.icon,'xs')} ${s.title}
+        ${mine.length ? `<b>${mine.length}</b>` : ''}</div>
+      ${mine.length ? mine.map(r => mgrCard(r.t, r)).join('')
+                    : `<div class="mg-empty">${ic('check-circle','sm')} ${empty}</div>`}`;
+  };
+
+  c.innerHTML = `
+    <div class="mg-head">
+      <div>
+        <div class="mg-h1">Where you are needed</div>
+        <div class="mg-sub">${occupied.length} tables · ${covers} covers on the floor</div>
+      </div>
+      <div class="mg-stats">
+        <div class="mg-stat ${counts.calls?'red':''}"><b>${counts.calls}</b><span>Requests</span></div>
+        <div class="mg-stat"><b>${counts.visit}</b><span>Your tables</span></div>
+        <div class="mg-stat"><b>${counts.risk}</b><span>At risk</span></div>
+        <div class="mg-stat"><b>${counts.gest}</b><span>To approve</span></div>
+      </div>
+    </div>
+    <div class="mg-grid">
+      <section class="mg-sec-b">${MG_SECTIONS.map(sec).join('')}</section>
+      <aside class="mg-side">
+        <div class="mg-sh">${ic('users','xs')} Rest of the floor
+          ${quiet.length ? `<b>${quiet.length}</b>` : ''}</div>
+        ${quiet.length
+          ? `<div class="mg-quiet">${quiet.map(t => `<button class="mg-q" data-goto="${t.id}">
+               <span>${t.id}</span><em>${firstName(t)}</em><i>${dur(t.mins)}</i></button>`).join('')}</div>`
+          : `<div class="mg-empty">${ic('check-circle','sm')} Every table needs something.</div>`}
+      </aside>
+    </div>`;
+  icons();
+}
+
+/* ══════════════════════════════════════════════════════════════
    REMEMBER THIS
    ══════════════════════════════════════════════════════════════ */
 const REM_CATS = ['Preference','Dietary','Occasion','Seating','Conversation','Other'];
@@ -1842,7 +2306,8 @@ function openRemember() {
   open('veil-rem'); icons();
 }
 function renderRemCats() {
-  document.getElementById('rem-cats').innerHTML =
+  const rc = document.getElementById('rem-cats'); if (!rc) return;
+  rc.innerHTML =
     REM_CATS.map(c => `<button class="pax ${state.remCat===c?'on':''}" data-rem="${c}" style="font-size:13px">${c}</button>`).join('');
 }
 function saveRemember() {
@@ -1881,7 +2346,7 @@ function settingsHtml() {
     <div class="ph-grid">
       ${[1,2,3,4].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
-    ${state.phase >= 3 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
+    ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
     <div class="set-sub">Requests arrive from the guest's QR. Trigger one to see the handoff from a guest's phone to the floor.</div>
     <div class="call-sim">
       <div class="cs-row">
@@ -1956,7 +2421,12 @@ function renderView() {
   document.getElementById('fab-edit').style.display = onTable ? '' : 'none';
   const vt = document.getElementById('view-title');
   vt.style.display = onTable ? 'none' : 'block';
-  vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings'})[state.view] || '';
+  vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings', manager:'Manager'})[state.view] || '';
+  const dot = document.getElementById('nav-mgr-dot');
+  if (dot) {
+    const need = openCalls().length + tables.filter(t => (t.status==='seated'||t.status==='paid') && signalsFor(t).open.some(a=>a.who==='manager')).length;
+    dot.textContent = need; dot.classList.toggle('on', need > 0);
+  }
   const c = document.getElementById('content');
   if (state.view === 'table') {
     c.innerHTML = `<div class="legend ${state.legendOpen?'on':''}" id="legend"></div>
@@ -1971,6 +2441,9 @@ function renderView() {
     lg.classList.toggle('on', state.legendOpen);
     renderGrid();
     if (state.searchOpen) document.getElementById('q').focus();
+  } else if (state.view === 'manager') {
+    c.innerHTML = `<div id="manager-content"></div>`;
+    renderManager();
   } else if (state.view === 'settings') {
     c.innerHTML = settingsHtml();
   } else {
@@ -1996,6 +2469,10 @@ document.addEventListener('click', e => {
   }
 
   // bottom nav
+  const dg = e.target.closest('[data-gesture]');
+  if (dg) { const [tid,gid,lbl] = dg.dataset.gesture.split('|'); doGesture(tid,gid,lbl); return; }
+  const dm = e.target.closest('[data-do-mgr]');
+  if (dm) { const [tid,sid] = dm.dataset.doMgr.split('|'); markDone(tid,sid); return; }
   const nav = e.target.closest('#bnav button');
   if (nav) {
     state.view = nav.dataset.v;
@@ -2043,6 +2520,12 @@ document.addEventListener('click', e => {
   if (e.target.closest('#q-clear'))     { state.q = ''; state.searchOpen = false; renderView(); return; }
 
   // table card
+  if (e.target.closest('#cb-toggle')) { state.callsOpen = !state.callsOpen; renderCallBar(); return; }
+  const ackB = e.target.closest('[data-ack]');
+  if (ackB) { ackCall(ackB.dataset.ack); return; }
+  const resB = e.target.closest('[data-resolve]');
+  if (resB) { resolveCall(resB.dataset.resolve); return; }
+  if (e.target.closest('#toast-undo')) { const f = undoFn; hideToast(); if (f) f(); return; }
   const goto = e.target.closest('[data-goto]');
   if (goto) { openDetail(goto.dataset.goto); return; }
   const card = e.target.closest('.tcard');
@@ -2084,8 +2567,10 @@ document.addEventListener('click', e => {
   if (e.target.closest('#refresh-order')) { toast('Order refreshed from POS', 'refresh-cw'); return; }
   if (e.target.closest('#btn-closetable')) {
     const t = T(state.detailId);
-    Object.assign(t, { status:'vacant', guest:null, others:false, pax:0, mins:0, bill:0, ticket:0, dishes:0, fresh:false, walkInName:null });
-    shut('veil-detail'); renderGrid(); toast(`Table ${t.id} closed`, 'check-circle'); return;
+    turnTable(t.id);
+    shut('veil-detail'); renderGrid();
+    if (state.view === 'manager') renderManager();
+    toast(`Table ${t.id} closed`, 'check-circle'); return;
   }
   if (e.target.closest('#pay-confirm')) {
     const t = T(state.detailId);
