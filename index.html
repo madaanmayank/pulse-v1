@@ -1295,7 +1295,7 @@ let tables = [
   { id:'15', sec:'Outdoor', status:'blocked' },
   { id:'16', sec:'Outdoor', status:'vacant' },
   { id:'17', sec:'Outdoor', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
-    call:{ type:'assist', note:'Could we see the wine list?', min:2 } },
+    call:{ type:'assist', note:'Could we see the wine list?', min:2, ack:false, seq:0 } },
   { id:'18', sec:'Bar', status:'vacant' },
   { id:'19', sec:'Bar', status:'vacant' },
   { id:'20', sec:'Bar', status:'vacant' },
@@ -1625,7 +1625,8 @@ function raiseCall(tableId, type, note) {
 let callSeq = 0;
 /* oldest first — a guest who has waited longest is served first */
 function openCalls() {
-  return tables.filter(t => t.call).sort((a,b) => (b.call.min - a.call.min) || (a.call.seq - b.call.seq));
+  return tables.filter(t => t.call)
+    .sort((a,b) => (b.call.min - a.call.min) || ((a.call.seq||0) - (b.call.seq||0)));
 }
 function anyCalls() { return openCalls().length; }
 /* how urgent a wait has become — the one place the escalation rule lives */
