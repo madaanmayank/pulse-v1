@@ -151,6 +151,27 @@
   .tc-meta{display:flex;align-items:center;gap:14px;margin-top:8px;font-size:13px;color:#cfcdc6;font-weight:500}
   .tc-meta span{display:inline-flex;align-items:center;gap:5px}
   .tc-meta i[data-lucide]{color:var(--ink-2)}
+  /* one indicator, one line — the card must still be readable in a glance */
+  .tc-dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+  .tc-dot.red{background:var(--red);box-shadow:0 0 8px rgba(216,72,63,.65)}
+  .tc-dot.amber{background:#d69a45;box-shadow:0 0 8px rgba(214,154,69,.5)}
+  .tc-dot.gold{background:var(--gold);box-shadow:0 0 8px rgba(217,180,95,.45)}
+  .tc-act{
+    display:flex;align-items:center;gap:5px;margin-top:8px;
+    font-size:11.5px;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .tc-act i[data-lucide]{width:12px;height:12px}
+  .tc-act.red{color:#e8a099}
+  .tc-act.amber{color:#dcae6e}
+  .tc-act.gold{color:var(--gold-soft)}
+  .seg button .cnt{
+    display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;
+    padding:0 5px;border-radius:10px;background:var(--red);color:#fff;
+    font-size:10.5px;font-weight:800;margin-left:7px;vertical-align:middle;
+  }
+  .seg button.on .cnt{background:#1f1f1f;color:#efece3}
+
   .tc-bill{
     margin-top:auto;background:var(--bill-bg);color:var(--bill-ink);
     border-radius:9px;padding:10px 13px;font-size:13.5px;font-weight:700;
@@ -325,6 +346,37 @@
     border-radius:8px;padding:8px 11px;font-size:12px;font-weight:700;margin-top:9px;
   }
 
+  /* action cards — the same card language, with the action as the one button */
+  .act{
+    background:#1a1b1e;border:1px solid #26282c;border-left:3px solid #3a3d42;
+    border-radius:11px;padding:12px 13px;margin-bottom:9px;
+  }
+  .act.red  {border-left-color:var(--red);background:#1e1615}
+  .act.amber{border-left-color:#c98a3a;background:#1d1a15}
+  .act.gold {border-left-color:var(--gold);background:#1c1a14}
+  .act-t{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;margin-bottom:5px}
+  .act-t i[data-lucide]{width:14px;height:14px}
+  .act.red .act-t{color:#e8a099}
+  .act.amber .act-t{color:#dcae6e}
+  .act.gold .act-t{color:var(--gold-soft)}
+  .act-w{font-size:12.5px;color:#bab8b2;line-height:1.5;margin-bottom:10px}
+  .act-btn{
+    width:100%;height:40px;border-radius:9px;background:var(--gold-grad);
+    color:var(--gold-ink);font-size:13.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;gap:7px;transition:filter .14s;
+  }
+  .act-btn:hover{filter:brightness(1.05)}
+  .act-ok{
+    display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:#84d6a8;
+    background:#15231b;border:1px solid #234232;border-radius:9px;padding:9px 12px;margin-bottom:9px;
+  }
+  .act-ok i[data-lucide]{width:14px;height:14px}
+  .act-more{
+    width:100%;font-size:12px;font-weight:700;color:var(--ink-2);
+    border:1px dashed #313438;border-radius:9px;padding:9px;margin-bottom:9px;
+  }
+  .act-more:hover{color:var(--gold);border-color:var(--gold-line)}
+
   /* reco column */
   .reco{
     display:flex;gap:12px;background:#1a1b1e;border:1px solid #26282c;
@@ -459,6 +511,7 @@
       <button class="on" data-f="all">All</button>
       <button data-f="allocate">Allocate</button>
       <button data-f="vacant">Vacant</button>
+      <button data-f="attention">Attention <span class="cnt" id="attn-cnt">0</span></button>
     </div>
     <div class="top-actions">
       <button class="top-btn" id="btn-search" title="Search"><i data-lucide="search" class="lg"></i></button>
@@ -520,6 +573,22 @@
   <div class="dm" id="dm"></div>
 </div>
 
+<!-- Remember this — staff teach the system what it did not know -->
+<div class="veil" id="veil-rem" style="z-index:80">
+  <div class="sheet" style="max-width:380px">
+    <div class="sheet-head" style="padding-top:18px">
+      <div class="sheet-title" id="rem-title">Remember this</div>
+      <button class="x-btn" data-close="veil-rem"><i data-lucide="x" class="lg"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="fld-lbl" id="rem-sub">Saved to the guest for next time</div>
+      <div class="pax-grid" id="rem-cats" style="grid-template-columns:repeat(2,1fr);margin:12px 0 14px"></div>
+      <input class="inp" id="rem-text" placeholder="Keep it to one line" />
+    </div>
+    <div class="sheet-foot"><button class="btn-gold" id="rem-save">Save</button></div>
+  </div>
+</div>
+
 <!-- Payment summary — sits above the table detail -->
 <div class="veil" id="veil-pay" style="z-index:80">
   <div class="pay-card" id="pay-card"></div>
@@ -544,7 +613,9 @@ const guests = {
   jes: { id:'jes', name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
     summary:'Always finishes with dessert. Sits alone, likes it quiet.' },
   jho: { id:'jho', name:'Jhonson', phone:'+65 9450 XXXX', initials:'J', rating:4.1, lastVisit:'9 days ago', visits:5, avgSpend:71,
-    summary:'Comes with colleagues. Orders for the table.' },
+    summary:'Comes with colleagues. Orders for the table.',
+    // something specific went wrong last time — recovery is never inferred
+    prevIssue:'Waited 25 minutes between starters and mains' },
   irf: { id:'irf', name:'Muhammad Irfan Anwar', phone:'+65 9077 XXXX', initials:'M', rating:0, lastVisit:'', visits:0, avgSpend:0,
     summary:'' },
 };
@@ -573,14 +644,97 @@ let tables = [
   { id:'14', status:'blocked' },
   { id:'15', status:'blocked' },
   { id:'16', status:'vacant' },
-  { id:'17', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9 },
+  { id:'17', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
+    sw:{ requestPending:true, requestText:'Could we see the wine list?', requestMin:2 } },
   { id:'18', status:'vacant' },
   { id:'19', status:'vacant' },
   { id:'20', status:'vacant' },
+  { id:'21', status:'seated', guest:null, others:true, pax:2, mins:11, bill:0, server:'Aisha', ticket:0, dishes:0,
+    sw:{ cat:'wine', catMin:4 } },
 ];
 
+/* ══════════════════════════════════════════════════════════════
+   SIGNALS — why this matters → what to do → done
+   Deliberately small. A signal earns a place only if it changes
+   what a staff member does next.
+   ══════════════════════════════════════════════════════════════ */
+const SIGNALS = [
+  { id:'request', lvl:'red', icon:'bell-ring', score:100,
+    on:c => c.sw.requestPending,
+    title:'Guest asked for help',
+    why:c => `From the table${c.sw.requestMin?` ${c.sw.requestMin} min ago`:''}${c.sw.requestText?`: “${c.sw.requestText}”`:'.'}`,
+    act:'Respond to the table', done:'Responded' },
+
+  { id:'recovery', lvl:'red', icon:'heart-crack', score:96,
+    on:c => c.g && c.g.prevIssue,
+    title:'Last visit went wrong',
+    why:c => `${c.g.prevIssue}. Give them your strongest service tonight.`,
+    act:'Prioritise this table', done:'Prioritised' },
+
+  { id:'browsing', lvl:'amber', icon:'wine', score:88,
+    on:c => c.sw.cat && c.sw.catMin >= 3,
+    title:c => `Browsing ${c.sw.cat} for ${c.sw.catMin} min`,
+    why:'They are on the menu but have not ordered yet.',
+    act:c => `Offer help choosing ${c.sw.cat === 'wine' ? 'a wine' : 'a dish'}`, done:'Assistance offered' },
+
+  { id:'no-order', lvl:'amber', icon:'clock', score:80,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 10 && !c.sw.cat && !c.sw.requestPending,
+    title:'No order yet',
+    why:c => `Seated ${dur(c.mins)} with nothing ordered.`,
+    act:'Check in with the table', done:'Checked in' },
+
+  { id:'long-stay', lvl:'amber', icon:'hourglass', score:66,
+    on:c => c.t.status === 'seated' && c.mins >= 180,
+    title:'Running long',
+    why:c => `On the table ${dur(c.mins)}. Worth reading whether they want the check.`,
+    act:'Offer the check', done:'Check offered' },
+
+  { id:'occasion', lvl:'gold', icon:'party-popper', score:84,
+    on:c => c.g && c.g.occasion,
+    title:c => c.g.occasion,
+    why:c => `${c.g.name.split(' ')[0]} is celebrating with you tonight.`,
+    act:'Acknowledge the occasion', done:'Acknowledged' },
+
+  { id:'regular', lvl:'gold', icon:'star', score:72,
+    on:c => c.g && c.g.visits >= 3,
+    title:c => `Returning · ${c.g.visits} visits`,
+    why:c => `${c.g.name.split(' ')[0]} has dined here ${c.g.visits} times, last ${c.g.lastVisit}.`,
+    act:'Welcome them back by name', done:'Welcomed back' },
+
+  { id:'turn', lvl:'gold', icon:'badge-check', score:58,
+    on:c => c.t.status === 'paid',
+    title:'Bill paid',
+    why:'The party has settled and the table can be reset.',
+    act:'Clear and turn the table', done:'Table cleared' },
+];
+
+const doneActions = {};                                   // "<table>:<signal>" -> true
+const aKey = (tid,sid) => tid + ':' + sid;
+const val = (v,c) => typeof v === 'function' ? v(c) : v;
+
+function signalsFor(t) {
+  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], done:[], top:null, lvl:null };
+  const c = { t, g: t.guest ? guests[t.guest] : null, sw: t.sw || {}, mins: t.mins || 0 };
+  const all = SIGNALS.filter(s => { try { return !!s.on(c); } catch(e){ return false; } })
+    .map(s => ({ id:s.id, lvl:s.lvl, icon:s.icon, score:s.score,
+                 title:val(s.title,c), why:val(s.why,c), act:val(s.act,c), done:s.done,
+                 isDone: !!doneActions[aKey(t.id,s.id)] }));
+  const rank = { red:0, amber:1, gold:2 };
+  const open = all.filter(x => !x.isDone).sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
+  return { open, done:all.filter(x => x.isDone), top:open[0] || null, lvl:open[0] ? open[0].lvl : null };
+}
+function markDone(tid, sid) {
+  doneActions[aKey(tid,sid)] = true;
+  renderDetail(); renderGrid();
+  const s = SIGNALS.find(x => x.id === sid);
+  toast(s ? s.done : 'Done', 'check-circle');
+}
+function attentionCount() {
+  return tables.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; }).length;
+}
+
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
-                allocId:null, allocPax:4, detailId:null, activeGuest:null };
+                allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false };
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
@@ -610,6 +764,11 @@ function visibleTables() {
   let list = tables.slice();
   if (state.filter === 'vacant')   list = list.filter(t => t.status === 'vacant');
   if (state.filter === 'allocate') list = list.filter(t => t.status === 'seated' || t.status === 'paid');
+  if (state.filter === 'attention') {
+    const rank = { red:0, amber:1 };
+    list = list.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; })
+               .sort((a,b) => rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]);
+  }
   const q = state.q.trim().toLowerCase();
   if (q) list = list.filter(t =>
     ('table ' + t.id).includes(q) || t.id.replace(/^0/,'').includes(q) ||
@@ -626,26 +785,36 @@ function cardHtml(t) {
     return `<div class="tcard blocked" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
 
   const cls = t.status === 'paid' ? 'paid' : (t.fresh ? 'fresh' : 'seated');
+  const sig = signalsFor(t);
   return `<div class="tcard ${cls}" data-id="${t.id}">
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
-      <span class="tc-doc">${ic('receipt-text','sm')}</span>
+      <span style="display:inline-flex;align-items:center;gap:8px">
+        ${sig.lvl ? `<span class="tc-dot ${sig.lvl}"></span>` : ''}
+        <span class="tc-doc">${ic('receipt-text','sm')}</span>
+      </span>
     </div>
     <div class="tc-name">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
     </div>
+    ${sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.title}</div>` : ''}
     ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
   </div>`;
 }
 
 function renderGrid() {
+  const cnt = attentionCount();
+  const badge = document.getElementById('attn-cnt');
+  if (badge) { badge.textContent = cnt; badge.style.display = cnt ? '' : 'none'; }
   const list = visibleTables();
   const g = document.getElementById('grid');
   g.innerHTML = list.length
     ? list.map(cardHtml).join('')
-    : `<div class="stub" style="grid-column:1/-1">${ic('search-x')}<b>No tables match</b><span>Try a different table number or name.</span></div>`;
+    : (state.filter === 'attention'
+        ? `<div class="stub" style="grid-column:1/-1">${ic('check-circle')}<b>Nothing needs you</b><span>Every table on the floor is running fine.</span></div>`
+        : `<div class="stub" style="grid-column:1/-1">${ic('search-x')}<b>No tables match</b><span>Try a different table number or name.</span></div>`);
   icons();
 }
 
@@ -742,9 +911,27 @@ function recoHtml(r, known) {
   </div>`;
 }
 
+/* At most two actions at a time. More than that and the screen stops
+   being glanceable, which is the whole point. */
+function actionsHtml(t) {
+  const sig = signalsFor(t);
+  if (!sig.open.length && !sig.done.length) return '';
+  const show = state.allActions ? sig.open : sig.open.slice(0,2);
+  const hidden = sig.open.length - show.length;
+  return show.map(a => `<div class="act ${a.lvl}">
+      <div class="act-t">${ic(a.icon)} ${a.title}</div>
+      <div class="act-w">${a.why}</div>
+      <button class="act-btn" data-do="${a.id}">${a.act}</button>
+    </div>`).join('')
+  + (hidden ? `<button class="act-more" id="act-more">+ ${hidden} more for this table</button>` : '')
+  + (state.allActions && sig.open.length > 2 ? `<button class="act-more" id="act-more">Show fewer</button>` : '')
+  + sig.done.map(a => `<div class="act-ok">${ic('check')} ${a.done}</div>`).join('');
+}
+
 function openDetail(id) {
   const t = T(id); if (!t || t.status === 'vacant' || t.status === 'blocked') return;
   state.detailId = id;
+  state.allActions = false;
   const party = partyOf(t);
   if (!state.activeGuest || !party.includes(state.activeGuest)) state.activeGuest = party[0];
   renderDetail();
@@ -774,6 +961,7 @@ function renderDetail() {
       <div class="dm-col">
         <div class="dm-h">Guest list</div>
         <div class="dm-scroll">
+          ${actionsHtml(t)}
           ${stats.length ? `<div class="gstats">${stats.join('')}</div>` : ''}
           ${g.occasion ? `<div class="occ-chip">${ic('party-popper','sm')} ${g.occasion} occasions</div>` : ''}
 
@@ -808,6 +996,8 @@ function renderDetail() {
               }</div>
             </div>
             ${g.winback ? `<div class="tag-purple">${ic('message-square','xs')} ${g.winback}</div>` : ''}
+            ${(g.notes||[]).map(nt => `<div class="act-ok" style="margin:9px 0 0">${ic('bookmark')} ${nt}</div>`).join('')}
+            <button class="act-more" style="margin:9px 0 0" id="remember">${ic('bookmark-plus','xs')} Remember something</button>
           </div>
         </div>
       </div>
@@ -896,6 +1086,32 @@ function openPay() {
 }
 
 /* ══════════════════════════════════════════════════════════════
+   REMEMBER THIS
+   ══════════════════════════════════════════════════════════════ */
+const REM_CATS = ['Preference','Dietary','Occasion','Seating','Conversation','Other'];
+function openRemember() {
+  state.remCat = null;
+  const g = guests[state.activeGuest];
+  document.getElementById('rem-sub').textContent = g ? `Saved to ${g.name} for next time` : 'Saved to this table';
+  document.getElementById('rem-text').value = '';
+  renderRemCats();
+  open('veil-rem'); icons();
+}
+function renderRemCats() {
+  document.getElementById('rem-cats').innerHTML =
+    REM_CATS.map(c => `<button class="pax ${state.remCat===c?'on':''}" data-rem="${c}" style="font-size:13px">${c}</button>`).join('');
+}
+function saveRemember() {
+  const txt = document.getElementById('rem-text').value.trim();
+  if (!state.remCat) { toast('Pick what kind of thing it is', 'alert-circle'); return; }
+  if (!txt) { toast('Add a short note first', 'alert-circle'); return; }
+  const g = guests[state.activeGuest];
+  if (g) (g.notes = g.notes || []).push(`${state.remCat}: ${txt}`);
+  shut('veil-rem'); renderDetail();
+  toast(g ? `Saved to ${g.name.split(' ')[0]}` : 'Saved', 'bookmark-check');
+}
+
+/* ══════════════════════════════════════════════════════════════
    VIEWS
    ══════════════════════════════════════════════════════════════ */
 const STUBS = {
@@ -969,11 +1185,18 @@ document.addEventListener('click', e => {
     renderPax(); return;
   }
   if (e.target.closest('#a-confirm')) { confirmAllocate(); return; }
+  const rc = e.target.closest('[data-rem]');
+  if (rc) { state.remCat = rc.dataset.rem; renderRemCats(); return; }
+  if (e.target.closest('#rem-save')) { saveRemember(); return; }
 
   // detail
   if (e.target.closest('#dm-close')) { shut('veil-detail'); return; }
   const av = e.target.closest('[data-g]');
   if (av) { state.activeGuest = av.dataset.g; renderDetail(); return; }
+  const doBtn = e.target.closest('[data-do]');
+  if (doBtn) { markDone(state.detailId, doBtn.dataset.do); return; }
+  if (e.target.closest('#act-more')) { state.allActions = !state.allActions; renderDetail(); return; }
+  if (e.target.closest('#remember')) { openRemember(); return; }
   if (e.target.closest('#btn-paybill'))   { openPay(); return; }
   if (e.target.closest('#btn-receipt'))   { toast('Receipt sent to printer', 'printer'); return; }
   if (e.target.closest('#add-order'))     { toast('Opening menu to add items', 'plus'); return; }
@@ -994,6 +1217,7 @@ document.addEventListener('click', e => {
   // click the veil backdrop to dismiss
   if (e.target.id === 'veil-alloc') shut('veil-alloc');
   if (e.target.id === 'veil-pay')   shut('veil-pay');
+  if (e.target.id === 'veil-rem')   shut('veil-rem');
 });
 
 document.addEventListener('input', e => {
