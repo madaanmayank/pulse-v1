@@ -142,6 +142,35 @@
 
   .content{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 18px 22px}
 
+  /* the floor-level call bar — a request is never left to be scrolled to */
+  .callbar{
+    flex:0 0 auto;display:none;gap:10px;align-items:center;
+    margin:0 18px 10px;padding:11px 14px;border-radius:12px;
+    background:rgba(216,72,63,.14);border:1px solid #6b332c;
+    animation:barIn .28s cubic-bezier(.2,.7,.2,1) both;
+  }
+  .callbar.on{display:flex}
+  @keyframes barIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .callbar .cb-ic{
+    width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:rgba(216,72,63,.22);color:#f0b3ab;
+    animation:callPulse 1.8s ease-in-out infinite;
+  }
+  .callbar .cb-b{flex:1;min-width:0}
+  .callbar .cb-t{font-size:13.5px;font-weight:800;color:#f0b3ab}
+  .callbar .cb-s{font-size:12px;color:#c9a29c;margin-top:1px}
+  .callbar .cb-go{
+    flex:0 0 auto;height:38px;padding:0 15px;border-radius:9px;
+    background:#f0b3ab;color:#3a1512;font-size:13px;font-weight:800;
+  }
+  .callbar .cb-go:hover{background:#f6c9c3}
+  body.light .callbar{background:rgba(184,54,46,.09);border-color:#e0b3ae}
+  body.light .callbar .cb-t{color:#8e2a23}
+  body.light .callbar .cb-s{color:#a1665f}
+  body.light .callbar .cb-ic{background:rgba(184,54,46,.14);color:#b8362e}
+  body.light .callbar .cb-go{background:#b8362e;color:#fff}
+
   /* ─────────── table grid ─────────── */
   .grid{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(198px,1fr));
@@ -273,8 +302,9 @@
   .setwrap{max-width:820px;margin:0 auto;padding:10px 0 30px}
   .set-h{font-size:17px;font-weight:800;margin-bottom:5px}
   .set-sub{font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:14px;max-width:620px}
-  .ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-  @media (max-width:980px){ .ph-grid{grid-template-columns:1fr} }
+  .ph-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media (max-width:1180px){ .ph-grid{grid-template-columns:1fr 1fr} }
+  @media (max-width:640px){ .ph-grid{grid-template-columns:1fr} }
   .ph-card{
     display:flex;flex-direction:column;gap:8px;text-align:left;
     background:var(--card);border:1.5px solid var(--line-soft);border-radius:var(--r-card);
@@ -321,6 +351,15 @@
   .rm-b{flex:1;min-width:0}
   .rm-n2{display:block;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.35}
   .rm-note{display:block;font-size:11.5px;color:var(--ink-3);margin-top:3px;font-style:italic}
+  .rm-ui{display:flex;align-items:flex-start;gap:5px;font-size:11.5px;color:var(--gold-soft);margin-top:4px;line-height:1.4}
+  .rm-ui i[data-lucide]{margin-top:2px;flex:0 0 auto}
+  .rm-pill{
+    font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    border-radius:4px;padding:2px 5px;vertical-align:middle;margin-left:4px;
+    background:#2a2c30;color:var(--ink-2);
+  }
+  .rm-pill.hero{background:var(--gold);color:var(--gold-ink)}
+  body.light .rm-pill{background:#efece4;color:#6a655c}
   .rm-meta{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
   .rm-own{font-size:11px;font-weight:700;color:var(--ink-3);white-space:nowrap}
   .rm-tag{
@@ -418,7 +457,7 @@
     display:flex;flex-direction:column;overflow:hidden;
     animation:sheetIn .24s cubic-bezier(.2,.7,.2,1) both;
   }
-  .dm-cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1fr 1fr 1fr}
+  .dm-cols{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:1.25fr 1fr}
   .dm-col{min-width:0;display:flex;flex-direction:column;overflow:hidden;padding:20px}
   .dm-col + .dm-col{border-left:1px solid #202225}
   .dm-h{font-size:19px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
@@ -569,6 +608,35 @@
   .bkt.amber{background:rgba(201,138,58,.14);border-color:#6d4f24;color:#dcae6e}
   .bkt.red  {background:rgba(216,72,63,.13);border-color:#6b332c;color:#e8a099}
   .bkt-hint{font-size:12px;color:#9c9a95;line-height:1.45;margin-top:7px}
+
+  /* recommendations — a strip that scrolls sideways, so it costs one row not one column */
+  .reco-strip{margin-top:16px;padding-top:14px;border-top:1px solid #202225}
+  .rs-h{
+    display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;
+  }
+  .rs-h i[data-lucide]{color:var(--gold)}
+  .rs-row{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+  .rs-row::-webkit-scrollbar{display:none}
+  .rs-card{
+    flex:0 0 auto;width:170px;display:flex;gap:9px;align-items:center;
+    background:#1a1b1e;border:1px solid #26282c;border-radius:10px;padding:9px;
+  }
+  .rs-img{
+    width:38px;height:38px;border-radius:8px;flex:0 0 auto;position:relative;
+    background:linear-gradient(135deg,#2a2c30,#1f2124);
+    display:flex;align-items:center;justify-content:center;color:#4d5055;
+  }
+  .rs-best{
+    position:absolute;left:-2px;bottom:-2px;background:var(--red);color:#fff;
+    font-size:8px;font-weight:800;border-radius:4px;padding:1px 3px;
+  }
+  .rs-b{min-width:0}
+  .rs-n{font-size:12px;font-weight:700;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rs-m{font-size:11px;color:var(--ink-3);font-weight:600;margin-top:2px}
+  body.light .rs-card{background:#faf8f3;border-color:var(--line-soft)}
+  body.light .rs-img{background:linear-gradient(135deg,#eae6dd,#f4f1ea);color:#a9a49a}
+  body.light .rs-n{color:#1b1917}
 
   /* reco column */
   .reco{
@@ -794,8 +862,8 @@
   /* ─────────── responsive ─────────── */
   @media (max-width:1080px){
     .dm-veil{padding:16px 16px 16px 62px}
-    .dm-cols{grid-template-columns:1fr 1fr}
-    .dm-col.order{grid-column:1/-1;border-left:none;border-top:1px solid #202225}
+    .dm-cols{grid-template-columns:1fr}
+    .dm-col + .dm-col{border-left:none;border-top:1px solid #202225}
   }
   @media (max-width:1120px){
     .seg button{padding:9px 17px}
@@ -853,6 +921,7 @@
     </div></div>
   </header>
 
+  <div class="callbar" id="callbar"></div>
   <div class="content" id="content">
     <div class="legend" id="legend"></div>
     <div class="searchwrap" id="searchwrap">
@@ -936,7 +1005,7 @@
    DATA — mirrors the seeded state in the live app
    ══════════════════════════════════════════════════════════════ */
 const guests = {
-  max: { id:'max', name:'Maximiliano', phone:'+65 8900 XXXX', initials:'M',
+  max: { id:'max', tastes:['spicy','chicken'], name:'Maximiliano', phone:'+65 8900 XXXX', initials:'M',
     rating:4.6, lastVisit:'12 days ago', visits:4, avgSpend:50,
     occasion:'Celebration',
     summary:'Maximiliano usually spends more than SGD50 at Chinese restaurants.',
@@ -948,19 +1017,19 @@ const guests = {
     voucher:{ label:'SGD15 off the next visit', why:'Spends above average and is due back within a month' } },
   ana: { id:'ana', name:'Ana', phone:'+65 8811 XXXX', initials:'A', rating:4.2, lastVisit:'2 months ago', visits:2, avgSpend:38,
     summary:'Prefers lighter dishes and sparkling water.' },
-  vik: { id:'vik', name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:64,
+  vik: { id:'vik', tastes:['chicken','spicy'], name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:64,
     summary:'Regular for weekday lunch. Usually orders chicken.',
     score:{ pct:10, label:'Top 10% of your guests' },
     last:{ when:'5 days ago', meal:'Lunch', pax:2, spend:96.00, rated:4 },
     sentiment:'positive',
     promos:['Set lunch, SGD28 per head'],
     voucher:{ label:'Free side on the next visit', why:'Six visits and climbing' } },
-  jes: { id:'jes', name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
+  jes: { id:'jes', tastes:['light'], name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
     summary:'Always finishes with dessert. Sits alone, likes it quiet.',
     last:{ when:'3 weeks ago', meal:'Lunch', pax:1, spend:38.50, rated:5 },
     sentiment:'positive',
     promos:['Complimentary dessert on 4+ covers'] },
-  jho: { id:'jho', name:'Jhonson', phone:'+65 9450 XXXX', initials:'J', rating:4.1, lastVisit:'9 days ago', visits:5, avgSpend:71,
+  jho: { id:'jho', tastes:['beef','noodles'], name:'Jhonson', phone:'+65 9450 XXXX', initials:'J', rating:4.1, lastVisit:'9 days ago', visits:5, avgSpend:71,
     summary:'Comes with colleagues. Orders for the table.',
     // something specific went wrong last time — recovery is never inferred
     prevIssue:'Waited 25 minutes between starters and mains',
@@ -981,6 +1050,23 @@ const CALL_TYPES = {
   bill:    { label:'Requested the bill',  act:'Bring the bill',         icon:'receipt',   done:'Bill brought' },
   assist:  { label:'Asked for help',      act:'Respond to the table',   icon:'hand',      done:'Responded' },
 };
+
+/* Menu items carry a taste so a stated preference can become a named dish. */
+const DISH_TASTE = [
+  { name:'Savory Grilled Chicken', taste:'chicken' },
+  { name:'Chilli Garlic Prawns',   taste:'spicy' },
+  { name:'Sichuan Beef',           taste:'spicy' },
+  { name:'Wagyu Ribeye',           taste:'beef' },
+  { name:'Citrus Salad',           taste:'light' },
+  { name:'Dan Dan Noodles',        taste:'noodles' },
+];
+function dishForTaste(tastes) {
+  for (const t of tastes || []) {
+    const hit = DISH_TASTE.find(d => d.taste === t);
+    if (hit) return hit;
+  }
+  return null;
+}
 
 const RECOS = [
   { name:'Savory Grilled Chicken with Garlic Herb Sauce', price:12.50, reorder:4, best:true, icon:'drumstick' },
@@ -1012,7 +1098,7 @@ let tables = [
   { id:'19', sec:'Bar', status:'vacant' },
   { id:'20', sec:'Bar', status:'vacant' },
   { id:'21', sec:'Indoor', status:'seated', guest:null, others:true, pax:2, mins:11, bill:0, server:'Aisha', ticket:0, dishes:0,
-    sw:{ cat:'wine', catMin:4 } },
+    sw:{ cat:'wine', catMin:4, cartItems:3, cartMin:6 } },
 ];
 
 /* ══════════════════════════════════════════════════════════════
@@ -1022,67 +1108,95 @@ let tables = [
    ui = needs a surface in Pulse. built = live in this prototype.
    ══════════════════════════════════════════════════════════════ */
 const FEATURES = [
-  /* ── shipped ── */
-  { n:'All existing POS functionality in the premium theme', p:0, tag:'Done', own:'Pulse', ui:1, built:1 },
-  { n:'New vs returning, visit count, days since last visit', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'Usual spend', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'AI guest summary', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'Known favourites / reorder, one combined section', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'AI recommendations — 2–3 items, compact', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'Top taste tags', p:0, tag:'Done', own:'Data', ui:1, built:1 },
-  { n:'Guest name, masked phone, email, birthday', p:0, tag:'Done', own:'Data', ui:1, built:1, note:'Static data from CRM' },
+  /* ══ PHASE 1 · KNOW — the guest intelligence that already ships ══ */
+  { n:'All existing POS functionality in the premium theme', p:1, own:'Pulse', built:1,
+    ui:'Table grid, allocate sheet, order items, void, payment summary' },
+  { n:'Guest name, masked phone, birthday', p:1, own:'Data', built:1, note:'Static data from CRM',
+    ui:'Guest card in the table view' },
+  { n:'New vs returning, visit count, days since last visit', p:1, own:'Data', built:1,
+    ui:'Stat row above the guest card' },
+  { n:'Usual spend', p:1, own:'Data', built:1, ui:'Stat row' },
+  { n:'AI guest summary — history, ratings, comments and sentiment', p:1, own:'Data', built:1,
+    ui:'Pulse Summary and Guest Summary cards' },
+  { n:'Known favourites and reorder, one combined section', p:1, own:'Data', built:1,
+    ui:'Dish Recommendation strip' },
+  { n:'AI recommendations — 2–3 items, compact', p:1, own:'Data', built:1,
+    ui:'Dish Recommendation strip' },
+  { n:'Top taste tags', p:1, own:'Data', built:1, ui:'Taste chips on the guest card' },
+  { n:'Network customer score', p:1, own:'Data', built:1, ui:'Score chip on the guest card' },
+  { n:'Pre-shift briefing', p:1, own:'Data', note:'Same APIs, called earlier in the shift' },
 
-  /* ── phase 2 ── */
-  { n:'Call waiter', p:2, tag:'2', own:'SW', sup:'Pulse', ui:1, built:1 },
-  { n:'Service recovery flag — bad last visit, clear visual cue', p:2, tag:'2 · Hero', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'Time on table — attention nudge at 20–30 min unordered', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1, note:'Seating and ordering time computed in Pulse' },
-  { n:'Customer score — “top 1% of your guests”', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'Last visit details — date, meal, pax, spend', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'Available promotions — staff informs, cannot apply here', p:2, tag:'2', own:'CRM', sup:'Data, Pulse', ui:1, built:1 },
-  { n:'Recommended next-visit voucher', p:2, tag:'2 · Hero', own:'CRM', sup:'Data, Pulse', ui:1, built:1 },
-  { n:'QR feedback sentiment on the profile', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'AI guest summary including past ratings and comments', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'Section-wise table selection', p:2, tag:'2', own:'Pulse', ui:1, built:1 },
-  { n:'Light theme', p:2, tag:'2 · Foundation', own:'Pulse', ui:1, built:1 },
-  { n:'Dish and restaurant feedback collection', p:2, tag:'2', own:'SW', sup:'Data, Pulse', ui:1 },
-  { n:'Reservation integration (SevenRooms)', p:2, tag:'2 · Foundation', own:'Pulse', sup:'Data, SW', ui:1 },
-  { n:'Dynamic QR handling', p:2, tag:'2 · Foundation', own:'Pulse' },
-  { n:'Pulse for Pro and Pulse for VIBE', p:2, tag:'2', own:'Pulse' },
+  /* ══ PHASE 2 · ACT — turn what we know into a checklist ══ */
+  { n:'Action framework — signal, why it matters, what to do, done', p:2, own:'Pulse', built:1,
+    ui:'WHAT TO DO checklist at the top of the table view' },
+  { n:'Call waiter', p:2, own:'SW', sup:'Pulse', built:1,
+    ui:'Floor alert bar, red strip on the card, top row of the checklist' },
+  { n:'Customer scoring and guest bucketing', p:2, own:'Data', sup:'Pulse', built:1,
+    ui:'Score chip, bucket label on the guest card and on the floor card' },
+  { n:'Service recovery from past feedback', p:2, own:'Data', sup:'Pulse', built:1, hero:1,
+    ui:'Red checklist row: prioritise this table' },
+  { n:'Table taking no action — seated without ordering', p:2, own:'Data', sup:'Pulse', built:1,
+    ui:'Amber checklist row at 20 minutes', note:'Timing computed in Pulse' },
+  { n:'Recommend a dish for a stated preference', p:2, own:'Data', sup:'Pulse', built:1,
+    ui:'Checklist row naming the dish and the reason' },
+  { n:'Recommended next-visit voucher', p:2, own:'CRM', sup:'Data, Pulse', built:1, hero:1,
+    ui:'Checklist row: offer the voucher' },
+  { n:'Remember this — staff teach the profile', p:2, own:'Pulse', sup:'Data', built:1,
+    ui:'Two taps and a line on the guest card' },
+  { n:'Section-wise table selection', p:2, own:'Pulse', built:1,
+    ui:'Section picker in the top bar, combines with the filters' },
+  { n:'Light theme', p:2, own:'Pulse', built:1, foundation:1, ui:'Settings, Look' },
+  { n:'Dynamic QR handling', p:2, own:'SW', foundation:1,
+    note:'Not a Pulse dashboard surface — SmartWeb side' },
+  { n:'Reservation integration (SevenRooms)', p:2, own:'Pulse', sup:'Data, SW', foundation:1,
+    ui:'Reservation list and seating a booked guest' },
+  { n:'Pulse for Pro and Pulse for VIBE', p:2, own:'Pulse' },
 
-  /* ── phase 3 ── */
-  { n:'Occasion + staff notes from CRM', p:3, tag:'3', own:'CRM', sup:'SW, Pulse', ui:1, built:1, note:'Static data from CRM' },
-  { n:'Table state labels — at risk, lapsed, high value', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, built:1 },
-  { n:'Live QR behaviour — browsing, re-opens, hesitation', p:3, tag:'3', own:'SW', sup:'Data, Pulse', ui:1, built:1 },
-  { n:'Multi-guest handling on one table', p:3, tag:'3', own:'Data', sup:'SW, Pulse', ui:1, built:1 },
-  { n:'Reorder and recommendations split by category', p:3, tag:'3', own:'Data', sup:'SW, Pulse', ui:1 },
-  { n:'Course gap timer — time since last course', p:3, tag:'3 · proposed', own:'Data', sup:'Pulse', ui:1, note:'Computed in Pulse' },
-  { n:'Preferred day / time and preferred table', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Slipping regulars list', p:3, tag:'3 · Hero', own:'Data', sup:'Pulse', ui:1, note:'Open question: what is the staff action?' },
-  { n:'Pre-shift briefing', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, note:'Same APIs, called earlier in the shift' },
-  { n:'Staff feedback on guests — notes after the visit', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, note:'Collection should sit with CRM' },
-  { n:'MunchMate target history', p:3, tag:'3', own:'CRM', sup:'Data, Pulse', ui:1 },
-  { n:'Vouchers and promos beyond the above', p:3, tag:'3', own:'CRM', sup:'Pulse', ui:1, note:'Only if a merchant asks' },
-  { n:'Table layout management and merging', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
-  { n:'Ordering through Pulse directly', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
-  { n:'Order editing for POS-integrated merchants', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
+  /* ══ PHASE 3 · SEE LIVE — the QR journey and CRM statics ══ */
+  { n:'Help ordering — guest is stuck in the menu', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber checklist row: walk them through the menu' },
+  { n:'Cart left too long — items added, never sent', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber checklist row: ask if they meant to send it' },
+  { n:'Live browsing and repeated item views', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber checklist rows naming the section or dish' },
+  { n:'Available promotions', p:3, own:'CRM', sup:'Data, Pulse', built:1,
+    ui:'Promotions card on the guest column, plus a checklist row to mention it',
+    note:'Staff informs the guest — Pulse cannot apply it' },
+  { n:'Occasion and staff notes', p:3, own:'CRM', sup:'SW, Pulse', built:1, note:'Static data from CRM',
+    ui:'Occasion chip and Staff Notes card' },
+  { n:'Table state labels — at risk, lapsed, high value', p:3, own:'Data', sup:'Pulse', built:1,
+    ui:'Bucket label on the floor card' },
+  { n:'Restaurant and dish feedback collection', p:3, own:'SW', sup:'Data, Pulse',
+    ui:'Rating shown on the profile once collected' },
+  { n:'Preferred table', p:3, own:'Data', sup:'Pulse',
+    ui:'Shown when allocating a table and when taking a reservation' },
+  { n:'Staff notes after the visit', p:3, own:'Data', sup:'Pulse', note:'Collection should sit with CRM',
+    ui:'Prompt on closing the table' },
+  { n:'Slipping regulars list', p:3, own:'Data', sup:'Pulse', hero:1,
+    note:'Open question: what is the staff action?' },
+  { n:'MunchMate target history', p:3, own:'CRM', sup:'Data, Pulse' },
+  { n:'Vouchers and promos beyond the above', p:3, own:'CRM', sup:'Pulse', note:'Only if a merchant asks' },
+  { n:'Table layout management and merging', p:3, own:'Pulse', foundation:1 },
+  { n:'Ordering through Pulse directly', p:3, own:'Pulse', foundation:1 },
+  { n:'Order editing for POS-integrated merchants', p:3, own:'Pulse', foundation:1 },
 
-  /* ── phase 4 ── */
-  { n:'Allergies and dislikes', p:4, tag:'4', own:'Data', sup:'SW, Pulse', ui:1, note:'Needs a collection route first' },
-  { n:'Favourites and preferences as an action', p:4, tag:'4', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Preferred seating at allocation', p:4, tag:'4', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Action log — recommended vs what staff did', p:4, tag:'4', own:'Pulse', sup:'Data', ui:1 },
-  { n:'Drink refill timing', p:4, tag:'4 · Hero', own:'Data', sup:'Pulse, SW', ui:1 },
-  { n:'Own reservation module', p:4, tag:'3++', own:'Pulse', sup:'Data, SW', ui:1 },
-  { n:'Visit frequency trend', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Network visits across branches', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Network customer score', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
-  { n:'Preferred table auto-suggest', p:4, tag:'3++', own:'Data', sup:'SW, Pulse', ui:1 },
+  /* ══ PHASE 4 · DEEPEN — needs data routes we do not have ══ */
+  { n:'Course gap timer — time since the last course', p:4, own:'Data', sup:'Pulse', note:'Computed in Pulse' },
+  { n:'Allergies and dislikes', p:4, own:'Data', sup:'SW, Pulse', note:'Needs a collection route first' },
+  { n:'Drink refill timing', p:4, own:'Data', sup:'Pulse, SW', hero:1 },
+  { n:'Action log — recommended versus what staff did', p:4, own:'Pulse', sup:'Data' },
+  { n:'Visit frequency trend', p:4, own:'Data', sup:'Pulse' },
+  { n:'Network visits across branches', p:4, own:'Data', sup:'Pulse' },
+  { n:'Preferred table auto-suggest', p:4, own:'Data', sup:'SW, Pulse' },
+  { n:'Own reservation module', p:4, own:'Pulse', sup:'Data, SW' },
 ];
 const PHASE_META = {
-  2:{ name:'Action layer',   blurb:'Turns what we already know — visit history, spend, score, last visit, promotions, order state — into a checklist of things to do.' },
-  3:{ name:'Live behaviour', blurb:'Adds what the guest is doing on the QR right now, plus table state labels and CRM occasion data.' },
-  4:{ name:'Depth',          blurb:'Allergies, preferences, refill timing, network history and the learning loop. Each needs a data route we do not have yet.' },
+  1:{ verb:'Know',   name:'Guest intelligence', blurb:'Who is at the table. Everything here is display — Pulse shows what we know and the waiter decides what it means.' },
+  2:{ verb:'Act',    name:'Action layer',       blurb:'The same information turned into a checklist. Scores, buckets, recovery, call waiter and a table sitting without ordering all become one thing to do.' },
+  3:{ verb:'See live', name:'QR journey',       blurb:'What the guest is doing on their phone right now — stuck in the menu, cart left sitting, browsing — plus promotions, occasions and staff notes from CRM.' },
+  4:{ verb:'Deepen', name:'Depth',             blurb:'Course timing, allergies, refill prediction and the learning loop. Each needs a data route that does not exist yet.' },
 };
+
 
 /* ══════════════════════════════════════════════════════════════
    GUEST BUCKETS
@@ -1138,9 +1252,9 @@ const SIGNALS = [
     done:'Manager visited' },
 
   { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 10,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 20,
     act:'Check in with the table',
-    why:c => `Seated ${dur(c.mins)} with nothing ordered yet.`,
+    why:c => `Seated ${dur(c.mins)} and no order has been placed.`,
     done:'Checked in' },
 
   { id:'long-stay', phase:2, lvl:'amber', who:'waiter', icon:'hourglass', score:64,
@@ -1149,7 +1263,7 @@ const SIGNALS = [
     why:c => `On the table ${dur(c.mins)} — read whether they are ready to settle.`,
     done:'Check offered' },
 
-  { id:'occasion', phase:2, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
+  { id:'occasion', phase:3, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
     on:c => c.g && c.g.occasion,
     act:'Acknowledge the occasion',
     why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
@@ -1185,13 +1299,19 @@ const SIGNALS = [
     why:'The party has settled.',
     done:'Table cleared' },
 
+  { id:'recommend', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:76,
+    on:c => c.g && (c.g.tastes||[]).length && !c.t.dishes && dishForTaste(c.g.tastes),
+    act:c => { const d = dishForTaste(c.g.tastes); return `Recommend the ${d.name}`; },
+    why:c => { const d = dishForTaste(c.g.tastes); return `${c.g.name.split(' ')[0]} prefers ${d.taste} — it is the closest thing on tonight's menu.`; },
+    done:'Dish recommended' },
+
   { id:'voucher', phase:2, lvl:'gold', who:'waiter', icon:'ticket', score:62,
     on:c => c.g && c.g.voucher && c.t.status !== 'paid',
     act:c => `Offer ${c.g.voucher.label}`,
     why:c => c.g.voucher.why + '.',
     done:'Voucher offered' },
 
-  { id:'promo', phase:2, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
+  { id:'promo', phase:3, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
     on:c => c.g && (c.g.promos||[]).length && !c.t.dishes,
     act:c => `Mention: ${c.g.promos[0]}`,
     why:'They qualify and have not ordered yet — Pulse cannot apply it, so it has to be said.',
@@ -1216,10 +1336,10 @@ const SIGNALS = [
     why:c => `Opened ${c.sw.repeatItem} ${c.sw.repeatViews} times without adding it.`,
     done:'Dish explained' },
 
-  { id:'menu-idle', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:78,
+  { id:'help-ordering', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:78,
     on:c => c.sw.menuOpenMin >= 4 && c.sw.itemsViewed === 0,
     act:'Walk them through the menu',
-    why:c => `Menu open ${c.sw.menuOpenMin} minutes with nothing opened.`,
+    why:c => `The menu has been open ${c.sw.menuOpenMin} minutes and nothing has been opened.`,
     done:'Menu explained' },
 
   { id:'hesitation', phase:3, lvl:'amber', who:'waiter', icon:'help-circle', score:70,
@@ -1228,11 +1348,11 @@ const SIGNALS = [
     why:c => `Taking ${c.sw.hesitationMin} minutes to decide — longer than usual.`,
     done:'Assistance offered' },
 
-  { id:'abandoned', phase:3, lvl:'amber', who:'waiter', icon:'undo-2', score:66,
-    on:c => c.sw.abandoned,
-    act:'Check if they need help deciding',
-    why:c => `Added ${c.sw.abandoned} then removed it before ordering.`,
-    done:'Checked in' },
+  { id:'cart-idle', phase:3, lvl:'amber', who:'waiter', icon:'shopping-cart', score:84,
+    on:c => c.sw.cartItems >= 1 && c.sw.cartMin >= 4,
+    act:'Ask if they meant to send the order',
+    why:c => `${c.sw.cartItems} ${c.sw.cartItems===1?'item':'items'} have been sitting in their cart for ${c.sw.cartMin} minutes — the kitchen has not seen it.`,
+    done:'Order sent' },
 ];
 
 const doneActions = {};                                   // "<table>:<signal>" -> true
@@ -1285,7 +1405,7 @@ function attentionCount() {
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false, rmPhase:2, section:'all', secOpen:false,
+                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false,
                 theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
@@ -1372,7 +1492,24 @@ function renderSecMenu() {
   document.getElementById('sec-lbl').textContent = state.section === 'all' ? 'All sections' : state.section;
 }
 
+function renderCallBar() {
+  const bar = document.getElementById('callbar');
+  const calling = state.phase >= 2 ? tables.filter(t => t.call) : [];
+  if (!calling.length) { bar.classList.remove('on'); bar.innerHTML = ''; return; }
+  const first = calling[0];
+  const more = calling.length - 1;
+  bar.innerHTML = `<span class="cb-ic">${ic('bell-ring','sm')}</span>
+    <span class="cb-b">
+      <span class="cb-t">Table ${first.id} — ${CALL_TYPES[first.call.type].label.toLowerCase()}${more?` · +${more} more waiting`:''}</span>
+      <span class="cb-s">${CALL_TYPES[first.call.type].act}${first.call.note?` · “${first.call.note}”`:''}</span>
+    </span>
+    <button class="cb-go" data-goto="${first.id}">Open Table ${first.id}</button>`;
+  bar.classList.add('on');
+  icons();
+}
+
 function renderGrid() {
+  renderCallBar();
   const cnt = attentionCount();
   const badge = document.getElementById('attn-cnt');
   if (badge) { badge.textContent = cnt; badge.style.display = cnt ? '' : 'none'; }
@@ -1569,7 +1706,7 @@ function renderDetail() {
             ${g.last.comment ? `<div class="lv-quote">${ic('quote','xs')} ${g.last.comment}</div>` : ''}
           </div>` : ''}
 
-          ${(g.promos||[]).length ? `<div class="info-card plain">
+          ${state.phase >= 3 && (g.promos||[]).length ? `<div class="info-card plain">
             <div class="ic-h">${ic('megaphone')} Promotions they qualify for</div>
             ${g.promos.map(pr => `<div class="promo-row">${ic('check','xs')} ${pr}</div>`).join('')}
             <div class="promo-note">Tell the guest — promotions cannot be applied from Pulse.</div>
@@ -1605,14 +1742,6 @@ function renderDetail() {
         </div>
       </div>
 
-      <!-- DISH RECOMMENDATION -->
-      <div class="dm-col">
-        <div class="dm-h tab">${ic('sparkles','sm')} Dish Recommendation</div>
-        <div class="dm-scroll">
-          ${RECOS.map(r => recoHtml(r)).join('')}
-        </div>
-      </div>
-
       <!-- TABLE / ORDER -->
       <div class="dm-col order">
         <div class="ord-head">
@@ -1635,6 +1764,18 @@ function renderDetail() {
         <div class="ord-btns">
           ${items.length ? `<button class="btn-ghost" id="void-item">Reduce Item / Void</button>` : ''}
           <button class="btn-ghost" id="add-order">Add Order</button>
+        </div>
+
+        <!-- recommendations: a compact strip, not a column of its own -->
+        <div class="reco-strip">
+          <div class="rs-h">${ic('sparkles','xs')} Worth suggesting</div>
+          <div class="rs-row">${RECOS.map(r => `<div class="rs-card">
+              <div class="rs-img">${ic(r.icon,'sm')}${r.best?`<span class="rs-best">#1</span>`:''}</div>
+              <div class="rs-b">
+                <div class="rs-n">${r.name}</div>
+                <div class="rs-m">${money(r.price)}${r.reorder?` · ${r.reorder}× reorder`:''}</div>
+              </div>
+            </div>`).join('')}</div>
         </div>
       </div>
     </div>
@@ -1738,7 +1879,7 @@ function settingsHtml() {
     <div class="set-h">Service intelligence</div>
     <div class="set-sub">Which layer of intelligence Pulse is running tonight. Each phase only adds actions we can genuinely ground in data.</div>
     <div class="ph-grid">
-      ${[2,3,4].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].name}`, PHASE_META[pn].blurb)).join('')}
+      ${[1,2,3,4].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
     ${state.phase >= 3 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
     <div class="set-sub">Requests arrive from the guest's QR. Trigger one to see the handoff from a guest's phone to the floor.</div>
@@ -1765,18 +1906,18 @@ function settingsHtml() {
     <div class="set-h" style="margin-top:30px">Roadmap</div>
     <div class="set-sub">Every feature on the plan, with the phase it lands in and who owns it. ${FEATURES.filter(f=>f.built).length} of ${FEATURES.length} are live in this prototype.</div>
     <div class="rm-tabs" id="rm-tabs">
-      ${[0,2,3,4].map(pn => `<button class="rm-tab ${state.rmPhase===pn?'on':''}" data-rm="${pn}">${pn===0?'Shipped':'Phase '+pn}<span class="rm-n">${FEATURES.filter(f=>f.p===pn).length}</span></button>`).join('')}
+      ${[1,2,3,4].map(pn => `<button class="rm-tab ${state.rmPhase===pn?'on':''}" data-rm="${pn}">Phase ${pn} · ${PHASE_META[pn].verb}<span class="rm-n">${FEATURES.filter(f=>f.p===pn).length}</span></button>`).join('')}
     </div>
     <div class="rm-list">
       ${FEATURES.filter(f => f.p === state.rmPhase).map(f => `<div class="rm-row ${f.built?'built':''}">
           <span class="rm-tick">${ic(f.built?'check':'circle-dashed','xs')}</span>
           <span class="rm-b">
-            <span class="rm-n2">${f.n}</span>
+            <span class="rm-n2">${f.n}${f.hero?' <span class="rm-pill hero">Hero</span>':''}${f.foundation?' <span class="rm-pill">Foundation</span>':''}</span>
+            ${f.ui ? `<span class="rm-ui">${ic('layout-template','xs')} ${f.ui}</span>` : ''}
             ${f.note ? `<span class="rm-note">${f.note}</span>` : ''}
           </span>
           <span class="rm-meta">
             <span class="rm-own">${f.own}${f.sup?` + ${f.sup}`:''}</span>
-            <span class="rm-tag">${f.tag}</span>
           </span>
         </div>`).join('')}
     </div>
@@ -1808,6 +1949,7 @@ function renderView() {
   const onTable = state.view === 'table';
   document.getElementById('seg').style.display = onTable ? '' : 'none';
   document.getElementById('btn-sec').style.display = onTable ? '' : 'none';
+  if (!onTable) document.getElementById('callbar').classList.remove('on');
   if (!onTable) { state.secOpen = false; document.getElementById('sec-menu').classList.remove('on'); }
   else renderSecMenu();
   document.querySelector('.top-actions').style.display = onTable ? '' : 'none';
@@ -1885,7 +2027,7 @@ document.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('#btn-phase')) {
-    state.phase = state.phase >= 4 ? 2 : state.phase + 1;
+    state.phase = state.phase >= 4 ? 1 : state.phase + 1;
     syncPhaseChip(); renderView();
     toast(`Phase ${state.phase} — ${PHASE_META[state.phase].name}`, 'zap');
     return;
@@ -1901,6 +2043,8 @@ document.addEventListener('click', e => {
   if (e.target.closest('#q-clear'))     { state.q = ''; state.searchOpen = false; renderView(); return; }
 
   // table card
+  const goto = e.target.closest('[data-goto]');
+  if (goto) { openDetail(goto.dataset.goto); return; }
   const card = e.target.closest('.tcard');
   if (card) {
     const t = T(card.dataset.id);
