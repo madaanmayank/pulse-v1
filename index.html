@@ -86,6 +86,26 @@
   .seg button{flex:0 0 auto;white-space:nowrap}
   .seg button.on{background:#efece3;color:#1a1a1a;font-weight:700}
   .view-title{font-size:17px;font-weight:800;display:none;white-space:nowrap}
+  .sec-btn{
+    display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 14px;
+    border-radius:999px;background:#151618;border:1px solid var(--line-soft);
+    font-size:13px;font-weight:700;color:var(--ink-2);white-space:nowrap;transition:all .16s;
+  }
+  .sec-btn:hover{color:var(--ink);border-color:#3a3d42}
+  .sec-btn.filtered{color:var(--gold-soft);border-color:var(--gold-line);background:rgba(217,180,95,.1)}
+  .sec-menu{
+    display:none;position:absolute;top:60px;left:18px;z-index:40;min-width:184px;
+    background:#1b1c1f;border:1px solid var(--line);border-radius:12px;padding:6px;
+    box-shadow:0 18px 44px -14px rgba(0,0,0,.75);
+  }
+  .sec-menu.on{display:block}
+  .sec-item{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;
+    padding:10px 12px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--ink-2);
+  }
+  .sec-item:hover{background:#232529;color:var(--ink)}
+  .sec-item.on{color:var(--gold-soft)}
+  .sec-item .n{font-size:11.5px;font-weight:700;color:var(--ink-3)}
   .top-actions{display:flex;gap:10px;flex:0 0 auto}
   .top-btn{
     width:44px;height:44px;border-radius:50%;
@@ -253,7 +273,8 @@
   .setwrap{max-width:820px;margin:0 auto;padding:10px 0 30px}
   .set-h{font-size:17px;font-weight:800;margin-bottom:5px}
   .set-sub{font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:14px;max-width:620px}
-  .ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:980px){ .ph-grid{grid-template-columns:1fr} }
   .ph-card{
     display:flex;flex-direction:column;gap:8px;text-align:left;
     background:var(--card);border:1.5px solid var(--line-soft);border-radius:var(--r-card);
@@ -266,6 +287,51 @@
   .ph-body{font-size:13px;color:#b4b2ac;line-height:1.55}
   .ph-n{font-size:11.5px;font-weight:700;color:var(--ink-3)}
   .ph-card.on .ph-n{color:var(--gold-soft)}
+  .theme-row{display:flex;gap:10px}
+  .theme-opt{
+    display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;
+    background:var(--card);border:1.5px solid var(--line-soft);border-radius:11px;
+    padding:12px 20px;color:var(--ink-2);transition:all .15s;
+  }
+  .theme-opt:hover{color:var(--ink);border-color:#3a3d42}
+  .theme-opt.on{border-color:var(--gold);color:var(--gold-soft);background:rgba(217,180,95,.1)}
+  body.light .theme-opt{background:#fff}
+  body.light .theme-opt.on{background:#fdf6e6}
+  .rm-tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .rm-tab{
+    display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:999px;
+    padding:8px 14px;color:var(--ink-2);transition:all .14s;
+  }
+  .rm-tab:hover{color:var(--ink);border-color:#3a3d42}
+  .rm-tab.on{background:#efece3;color:#1a1a1a;border-color:#efece3}
+  .rm-tab .rm-n{
+    font-size:10.5px;font-weight:800;background:#2a2c30;color:var(--ink-2);
+    border-radius:8px;padding:1px 6px;
+  }
+  .rm-tab.on .rm-n{background:rgba(0,0,0,.14);color:#1a1a1a}
+  .rm-list{display:flex;flex-direction:column;gap:7px}
+  .rm-row{
+    display:flex;align-items:flex-start;gap:11px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:10px;padding:11px 13px;
+  }
+  .rm-row.built{border-color:#25402f;background:#151d18}
+  .rm-tick{flex:0 0 auto;margin-top:2px;color:var(--ink-3)}
+  .rm-row.built .rm-tick{color:#5fae82}
+  .rm-b{flex:1;min-width:0}
+  .rm-n2{display:block;font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.35}
+  .rm-note{display:block;font-size:11.5px;color:var(--ink-3);margin-top:3px;font-style:italic}
+  .rm-meta{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+  .rm-own{font-size:11px;font-weight:700;color:var(--ink-3);white-space:nowrap}
+  .rm-tag{
+    font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--gold-soft);background:rgba(217,180,95,.11);border:1px solid var(--gold-line);
+    border-radius:5px;padding:2px 6px;white-space:nowrap;
+  }
+  @media (max-width:640px){
+    .rm-row{flex-wrap:wrap}
+    .rm-meta{flex-direction:row;align-items:center;width:100%;margin-top:4px}
+  }
   .call-sim{background:var(--card);border:1px solid var(--line-soft);border-radius:var(--r-card);padding:15px}
   .cs-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
   .cs-btns{display:flex;flex-wrap:wrap;gap:9px}
@@ -377,6 +443,28 @@
     background:#1f1c15;border:1px solid #3a3223;color:var(--gold-soft);
     border-radius:8px;padding:7px 11px;margin-bottom:10px;
   }
+  .score-chip{
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:10px;
+  }
+  .score-chip .sc-b{
+    display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;
+    color:var(--gold-ink);background:var(--gold-grad);border-radius:8px;padding:6px 10px;
+  }
+  .score-chip .sc-n{font-size:11.5px;font-weight:700;color:var(--gold-soft)}
+  .lv-rate{
+    margin-left:auto;font-size:10.5px;font-weight:800;border-radius:5px;padding:2px 6px;
+  }
+  .lv-rate.ok{background:#1e3b2b;color:#8fe0b0}
+  .lv-rate.bad{background:#3a2320;color:#e8a099}
+  .lv-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12.5px;color:#b4b2ac}
+  .lv-grid b{color:var(--ink);font-weight:700}
+  .lv-quote{
+    font-size:12px;color:#9c9a95;line-height:1.5;margin-top:9px;padding-top:9px;
+    border-top:1px solid #26282c;font-style:italic;
+  }
+  .promo-row{display:flex;align-items:flex-start;gap:7px;font-size:12.5px;color:#c9c7c1;padding:3px 0;line-height:1.45}
+  .promo-row i[data-lucide]{width:12px;height:12px;color:var(--gold);margin-top:3px;flex:0 0 auto}
+  .promo-note{font-size:11px;color:var(--ink-3);margin-top:8px;font-style:italic}
   .info-card{
     background:#1c1a14;border:1px solid #322c1e;border-radius:11px;
     padding:12px 13px;margin-bottom:10px;
@@ -584,6 +672,125 @@
   .searchbar input{flex:1;background:none;border:none;outline:none;color:var(--ink);font-size:14.5px}
   .searchbar i[data-lucide]{color:var(--ink-3)}
 
+
+  /* ═══════════════════════════════════════════════════════════
+     LIGHT THEME — same layout, same hierarchy, inverted ground.
+     Gold darkens so it still carries contrast on white.
+     ═══════════════════════════════════════════════════════════ */
+  body.light{
+    --bg:#f3f1ec; --card:#ffffff; --card-2:#faf8f4;
+    --line:#ddd7cb; --line-soft:#e6e1d6;
+    --ink:#1b1917; --ink-2:#6a655c; --ink-3:#98938a;
+    --gold:#9a7825; --gold-soft:#7d611c; --gold-line:#cbb98e; --gold-ink:#ffffff;
+    --gold-grad:linear-gradient(180deg,#b8912f 0%,#96731f 100%);
+    --bill-bg:#f1e8d5; --bill-ink:#6b5424;
+    --green:#2c7d52; --green-line:#8fc4a8; --green-pill:#2f7a51; --green-ink:#ffffff;
+    --red:#b8362e; --purple:#5b3fd6;
+    background:var(--bg); color:var(--ink);
+  }
+  body.light .topbar,
+  body.light .seg,
+  body.light .top-btn,
+  body.light .phase-chip,
+  body.light .sec-btn{background:#fffdf9;border-color:var(--line-soft)}
+  body.light .seg button.on{background:#2a2620;color:#fff}
+  body.light .top-btn:hover,
+  body.light .sec-btn:hover{background:#f6f3ec}
+  body.light .sec-menu{background:#fff;border-color:var(--line);box-shadow:0 18px 40px -16px rgba(60,50,30,.25)}
+  body.light .sec-item:hover{background:#f4f1ea}
+  body.light .bnav{background:#fffdf9;border-top-color:var(--line-soft)}
+
+  body.light .tcard{background:#fff;border-color:var(--line-soft);box-shadow:0 1px 2px rgba(60,50,30,.05)}
+  body.light .tcard.vacant{background:#faf8f3;border-color:#e8e3d8}
+  body.light .tcard.vacant .tc-vac{color:#3a3630}
+  body.light .tcard.blocked{
+    background:repeating-linear-gradient(-45deg,transparent 0 9px,rgba(0,0,0,.035) 9px 18px),#f0ede6;
+    border-color:#e4dfd4}
+  body.light .tcard.blocked .tc-vac{color:#b0aaa0}
+  body.light .tcard.seated{border-color:#3a3630}
+  body.light .tcard.paid{
+    background:repeating-linear-gradient(-45deg,transparent 0 9px,rgba(44,125,82,.09) 9px 18px),#eef7f1;
+    border-color:var(--green-line)}
+  body.light .tc-name{color:#1b1917}
+  body.light .tc-meta{color:#5d584f}
+  body.light .tc-call{background:rgba(184,54,46,.09);border-color:#e0b3ae;color:#8e2a23}
+
+  body.light .legend,
+  body.light .searchbar,
+  body.light .ph-card,
+  body.light .rm-row,
+  body.light .bkt-row,
+  body.light .call-sim,
+  body.light .metric-card{background:#fff;border-color:var(--line-soft)}
+  body.light .ph-card.on{background:#fdf8ec;border-color:var(--gold)}
+  body.light .rm-row.built{background:#f0f7f2;border-color:#bcdcc9}
+  body.light .rm-tab{background:#fff;border-color:var(--line-soft)}
+  body.light .rm-tab.on{background:#2a2620;color:#fff;border-color:#2a2620}
+  body.light .rm-tab .rm-n{background:#efece4;color:#6a655c}
+  body.light .rm-tab.on .rm-n{background:rgba(255,255,255,.2);color:#fff}
+  body.light .rm-n2{color:#1b1917}
+
+  body.light .veil{background:rgba(40,34,24,.34)}
+  body.light .dm-veil{background:rgba(40,34,24,.4)}
+  body.light .sheet,
+  body.light .pay-card,
+  body.light .dm{background:#fff;border-color:var(--line)}
+  body.light .dm-close{background:#fff;border-color:var(--line)}
+  body.light .dm-col + .dm-col{border-left-color:var(--line-soft)}
+  body.light .dm-foot{border-top-color:var(--line-soft)}
+  body.light .grabber{background:#d8d2c6}
+  body.light .inp,
+  body.light .pax,
+  body.light .cc{background:#faf8f3;border-color:#ddd7cb;color:var(--ink)}
+  body.light .pax.on{background:#fdf6e6;border-color:var(--gold);color:#7d611c}
+  body.light .btn-ghost{background:#f6f3ec;border-color:var(--line);color:var(--ink)}
+  body.light .btn-ghost:hover{background:#efebe2}
+
+  body.light .todo,
+  body.light .info-card.plain,
+  body.light .gcard,
+  body.light .reco{background:#faf8f3;border-color:var(--line-soft)}
+  body.light .info-card{background:#fdf7e9;border-color:#e6d9b8}
+  body.light .todo-h{border-bottom-color:var(--line-soft)}
+  body.light .todo-h b{color:#4a4640}
+  body.light .todo-row{border-bottom-color:var(--line-soft)}
+  body.light .todo-row:hover{background:#f3efe6}
+  body.light .todo-a{color:#1b1917}
+  body.light .todo-w{color:#6a655c}
+  body.light .todo-row.red{background:#fdf3f2}
+  body.light .todo-row.amber{background:#fdf8ee}
+  body.light .todo-row.gold{background:#fdfaf1}
+  body.light .todo-row.is-done{background:#f0f7f2}
+  body.light .todo-row.is-done .todo-a{color:#2c7d52}
+  body.light .tick{border-color:#c9c3b6}
+  body.light .ic-b{color:#4f4b44}
+  body.light .gstat{background:#f4f1ea;border-color:var(--line-soft)}
+  body.light .reco-img{background:linear-gradient(135deg,#eae6dd,#f4f1ea);color:#a9a49a}
+  body.light .reco-nm{color:#1b1917}
+  body.light .reco-pr{color:#3a3630}
+  body.light .oi-row{border-bottom-color:var(--line-soft)}
+  body.light .ord-meta{color:#4f4b44;border-bottom-color:var(--line-soft)}
+  body.light .tickets{background:#f4f1ea;color:#5d584f}
+  body.light .tips{background:#fdf7e9;border-color:#e6d9b8;color:#7d611c}
+  body.light .dash{border-top-color:#ddd7cb}
+  body.light .pill{background:#f6e3dd;color:#9c3a2f}
+  body.light .pill.paid{background:#e0f0e7;color:#256b45}
+  body.light .lv-grid{color:#4f4b44}
+  body.light .lv-quote{color:#6a655c;border-top-color:var(--line-soft)}
+  body.light .promo-row{color:#4f4b44}
+  body.light .bkt{background:#f4f1ea;border-color:var(--line-soft);color:#5d584f}
+  body.light .bkt.gold{background:#fdf6e6;border-color:#cbb98e;color:#7d611c}
+  body.light .bkt.amber{background:#fdf3e3;border-color:#dcc39a;color:#8a5f1e}
+  body.light .bkt.red{background:#fbeceb;border-color:#e0b3ae;color:#9c3a2f}
+  body.light .btn-pay.close{background:#fbeceb;color:#9c3a2f;border-color:#e0b3ae}
+  body.light .toast{background:#2a2620;border-color:#3a352c;color:#faf8f4}
+  body.light .toast i[data-lucide]{color:#d9b45f}
+  body.light .act-ok,
+  body.light .todo-clear{color:#2c7d52}
+  body.light ::-webkit-scrollbar-thumb{background:#d5cfc2}
+  body.light .stub b{color:#4a4640}
+  body.light .cs-live{background:#fbeceb;border-color:#e0b3ae;color:#9c3a2f}
+
   /* ─────────── responsive ─────────── */
   @media (max-width:1080px){
     .dm-veil{padding:16px 16px 16px 62px}
@@ -625,7 +832,11 @@
 
 <div class="app">
   <header class="topbar">
-    <div class="tb-side"><div class="view-title" id="view-title"></div></div>
+    <div class="tb-side">
+      <div class="view-title" id="view-title"></div>
+      <button class="sec-btn" id="btn-sec"><span id="sec-lbl">All sections</span><i data-lucide="chevron-down" class="xs"></i></button>
+      <div class="sec-menu" id="sec-menu"></div>
+    </div>
     <div class="seg" id="seg">
       <button class="on" data-f="all">All</button>
       <button data-f="allocate">Allocate</button>
@@ -729,17 +940,35 @@ const guests = {
     rating:4.6, lastVisit:'12 days ago', visits:4, avgSpend:50,
     occasion:'Celebration',
     summary:'Maximiliano usually spends more than SGD50 at Chinese restaurants.',
-    winback:'Winback SMS • June 10th' },
+    winback:'Winback SMS • June 10th',
+    score:{ pct:1, label:'Top 1% of your guests', note:'Surprise visitor' },
+    last:{ when:'12 days ago', meal:'Dinner', pax:2, spend:112.40, rated:5, comment:'Loved the chicken, service was quick.' },
+    sentiment:'positive',
+    promos:['1-for-1 mains, weekdays before 7pm','Complimentary dessert on 4+ covers'],
+    voucher:{ label:'SGD15 off the next visit', why:'Spends above average and is due back within a month' } },
   ana: { id:'ana', name:'Ana', phone:'+65 8811 XXXX', initials:'A', rating:4.2, lastVisit:'2 months ago', visits:2, avgSpend:38,
     summary:'Prefers lighter dishes and sparkling water.' },
   vik: { id:'vik', name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:64,
-    summary:'Regular for weekday lunch. Usually orders chicken.' },
+    summary:'Regular for weekday lunch. Usually orders chicken.',
+    score:{ pct:10, label:'Top 10% of your guests' },
+    last:{ when:'5 days ago', meal:'Lunch', pax:2, spend:96.00, rated:4 },
+    sentiment:'positive',
+    promos:['Set lunch, SGD28 per head'],
+    voucher:{ label:'Free side on the next visit', why:'Six visits and climbing' } },
   jes: { id:'jes', name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
-    summary:'Always finishes with dessert. Sits alone, likes it quiet.' },
+    summary:'Always finishes with dessert. Sits alone, likes it quiet.',
+    last:{ when:'3 weeks ago', meal:'Lunch', pax:1, spend:38.50, rated:5 },
+    sentiment:'positive',
+    promos:['Complimentary dessert on 4+ covers'] },
   jho: { id:'jho', name:'Jhonson', phone:'+65 9450 XXXX', initials:'J', rating:4.1, lastVisit:'9 days ago', visits:5, avgSpend:71,
     summary:'Comes with colleagues. Orders for the table.',
     // something specific went wrong last time — recovery is never inferred
-    prevIssue:'Waited 25 minutes between starters and mains' },
+    prevIssue:'Waited 25 minutes between starters and mains',
+    score:{ pct:5, label:'Top 5% of your guests' },
+    last:{ when:'9 days ago', meal:'Dinner', pax:4, spend:284.00, rated:3, comment:'Food was good but the wait between courses was long.' },
+    sentiment:'mixed',
+    promos:['Set lunch, SGD28 per head'],
+    voucher:{ label:'SGD25 off the next visit', why:'Recovery gesture after a 3★ visit' } },
   irf: { id:'irf', name:'Muhammad Irfan Anwar', phone:'+65 9077 XXXX', initials:'M', rating:0, lastVisit:'', visits:0, avgSpend:0,
     summary:'' },
 };
@@ -761,30 +990,99 @@ const RECOS = [
 
 /* status: vacant | seated | paid | blocked   ·   fresh = just allocated */
 let tables = [
-  { id:'01', status:'vacant' },
-  { id:'02', status:'vacant' },
-  { id:'03', status:'vacant' },
-  { id:'04', status:'seated', fresh:true, guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:5 },
-  { id:'05', status:'vacant' },
-  { id:'06', status:'seated', guest:'jes', pax:1, mins:135, bill:25.00, server:'Aisha', ticket:1, dishes:2 },
-  { id:'07', status:'blocked' },
-  { id:'08', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:6 },
-  { id:'09', status:'vacant' },
-  { id:'10', status:'vacant' },
-  { id:'11', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:1, dishes:4 },
-  { id:'12', status:'seated', guest:'jho', others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:2, dishes:5 },
-  { id:'13', status:'vacant' },
-  { id:'14', status:'blocked' },
-  { id:'15', status:'blocked' },
-  { id:'16', status:'vacant' },
-  { id:'17', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
+  { id:'01', sec:'Indoor', status:'vacant' },
+  { id:'02', sec:'Indoor', status:'vacant' },
+  { id:'03', sec:'Indoor', status:'vacant' },
+  { id:'04', sec:'Indoor', status:'seated', fresh:true, guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:5 },
+  { id:'05', sec:'Indoor', status:'vacant' },
+  { id:'06', sec:'Indoor', status:'seated', guest:'jes', pax:1, mins:135, bill:25.00, server:'Aisha', ticket:1, dishes:2 },
+  { id:'07', sec:'Indoor', status:'blocked' },
+  { id:'08', sec:'Indoor', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:6 },
+  { id:'09', sec:'Patio', status:'vacant' },
+  { id:'10', sec:'Patio', status:'vacant' },
+  { id:'11', sec:'Patio', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:1, dishes:4 },
+  { id:'12', sec:'Patio', status:'seated', guest:'jho', others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:2, dishes:5 },
+  { id:'13', sec:'Patio', status:'vacant' },
+  { id:'14', sec:'Outdoor', status:'blocked' },
+  { id:'15', sec:'Outdoor', status:'blocked' },
+  { id:'16', sec:'Outdoor', status:'vacant' },
+  { id:'17', sec:'Outdoor', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
     call:{ type:'assist', note:'Could we see the wine list?', min:2 } },
-  { id:'18', status:'vacant' },
-  { id:'19', status:'vacant' },
-  { id:'20', status:'vacant' },
-  { id:'21', status:'seated', guest:null, others:true, pax:2, mins:11, bill:0, server:'Aisha', ticket:0, dishes:0,
+  { id:'18', sec:'Bar', status:'vacant' },
+  { id:'19', sec:'Bar', status:'vacant' },
+  { id:'20', sec:'Bar', status:'vacant' },
+  { id:'21', sec:'Indoor', status:'seated', guest:null, others:true, pax:2, mins:11, bill:0, server:'Aisha', ticket:0, dishes:0,
     sw:{ cat:'wine', catMin:4 } },
 ];
+
+/* ══════════════════════════════════════════════════════════════
+   FEATURE REGISTRY
+   The roadmap, held in the product rather than only in a deck.
+   p = the phase gate the prototype uses. tag = the label as planned.
+   ui = needs a surface in Pulse. built = live in this prototype.
+   ══════════════════════════════════════════════════════════════ */
+const FEATURES = [
+  /* ── shipped ── */
+  { n:'All existing POS functionality in the premium theme', p:0, tag:'Done', own:'Pulse', ui:1, built:1 },
+  { n:'New vs returning, visit count, days since last visit', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'Usual spend', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'AI guest summary', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'Known favourites / reorder, one combined section', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'AI recommendations — 2–3 items, compact', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'Top taste tags', p:0, tag:'Done', own:'Data', ui:1, built:1 },
+  { n:'Guest name, masked phone, email, birthday', p:0, tag:'Done', own:'Data', ui:1, built:1, note:'Static data from CRM' },
+
+  /* ── phase 2 ── */
+  { n:'Call waiter', p:2, tag:'2', own:'SW', sup:'Pulse', ui:1, built:1 },
+  { n:'Service recovery flag — bad last visit, clear visual cue', p:2, tag:'2 · Hero', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'Time on table — attention nudge at 20–30 min unordered', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1, note:'Seating and ordering time computed in Pulse' },
+  { n:'Customer score — “top 1% of your guests”', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'Last visit details — date, meal, pax, spend', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'Available promotions — staff informs, cannot apply here', p:2, tag:'2', own:'CRM', sup:'Data, Pulse', ui:1, built:1 },
+  { n:'Recommended next-visit voucher', p:2, tag:'2 · Hero', own:'CRM', sup:'Data, Pulse', ui:1, built:1 },
+  { n:'QR feedback sentiment on the profile', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'AI guest summary including past ratings and comments', p:2, tag:'2', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'Section-wise table selection', p:2, tag:'2', own:'Pulse', ui:1, built:1 },
+  { n:'Light theme', p:2, tag:'2 · Foundation', own:'Pulse', ui:1, built:1 },
+  { n:'Dish and restaurant feedback collection', p:2, tag:'2', own:'SW', sup:'Data, Pulse', ui:1 },
+  { n:'Reservation integration (SevenRooms)', p:2, tag:'2 · Foundation', own:'Pulse', sup:'Data, SW', ui:1 },
+  { n:'Dynamic QR handling', p:2, tag:'2 · Foundation', own:'Pulse' },
+  { n:'Pulse for Pro and Pulse for VIBE', p:2, tag:'2', own:'Pulse' },
+
+  /* ── phase 3 ── */
+  { n:'Occasion + staff notes from CRM', p:3, tag:'3', own:'CRM', sup:'SW, Pulse', ui:1, built:1, note:'Static data from CRM' },
+  { n:'Table state labels — at risk, lapsed, high value', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, built:1 },
+  { n:'Live QR behaviour — browsing, re-opens, hesitation', p:3, tag:'3', own:'SW', sup:'Data, Pulse', ui:1, built:1 },
+  { n:'Multi-guest handling on one table', p:3, tag:'3', own:'Data', sup:'SW, Pulse', ui:1, built:1 },
+  { n:'Reorder and recommendations split by category', p:3, tag:'3', own:'Data', sup:'SW, Pulse', ui:1 },
+  { n:'Course gap timer — time since last course', p:3, tag:'3 · proposed', own:'Data', sup:'Pulse', ui:1, note:'Computed in Pulse' },
+  { n:'Preferred day / time and preferred table', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Slipping regulars list', p:3, tag:'3 · Hero', own:'Data', sup:'Pulse', ui:1, note:'Open question: what is the staff action?' },
+  { n:'Pre-shift briefing', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, note:'Same APIs, called earlier in the shift' },
+  { n:'Staff feedback on guests — notes after the visit', p:3, tag:'3', own:'Data', sup:'Pulse', ui:1, note:'Collection should sit with CRM' },
+  { n:'MunchMate target history', p:3, tag:'3', own:'CRM', sup:'Data, Pulse', ui:1 },
+  { n:'Vouchers and promos beyond the above', p:3, tag:'3', own:'CRM', sup:'Pulse', ui:1, note:'Only if a merchant asks' },
+  { n:'Table layout management and merging', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
+  { n:'Ordering through Pulse directly', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
+  { n:'Order editing for POS-integrated merchants', p:3, tag:'3 · Foundation', own:'Pulse', ui:1 },
+
+  /* ── phase 4 ── */
+  { n:'Allergies and dislikes', p:4, tag:'4', own:'Data', sup:'SW, Pulse', ui:1, note:'Needs a collection route first' },
+  { n:'Favourites and preferences as an action', p:4, tag:'4', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Preferred seating at allocation', p:4, tag:'4', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Action log — recommended vs what staff did', p:4, tag:'4', own:'Pulse', sup:'Data', ui:1 },
+  { n:'Drink refill timing', p:4, tag:'4 · Hero', own:'Data', sup:'Pulse, SW', ui:1 },
+  { n:'Own reservation module', p:4, tag:'3++', own:'Pulse', sup:'Data, SW', ui:1 },
+  { n:'Visit frequency trend', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Network visits across branches', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Network customer score', p:4, tag:'3++', own:'Data', sup:'Pulse', ui:1 },
+  { n:'Preferred table auto-suggest', p:4, tag:'3++', own:'Data', sup:'SW, Pulse', ui:1 },
+];
+const PHASE_META = {
+  2:{ name:'Action layer',   blurb:'Turns what we already know — visit history, spend, score, last visit, promotions, order state — into a checklist of things to do.' },
+  3:{ name:'Live behaviour', blurb:'Adds what the guest is doing on the QR right now, plus table state labels and CRM occasion data.' },
+  4:{ name:'Depth',          blurb:'Allergies, preferences, refill timing, network history and the learning loop. Each needs a data route we do not have yet.' },
+};
 
 /* ══════════════════════════════════════════════════════════════
    GUEST BUCKETS
@@ -887,6 +1185,18 @@ const SIGNALS = [
     why:'The party has settled.',
     done:'Table cleared' },
 
+  { id:'voucher', phase:2, lvl:'gold', who:'waiter', icon:'ticket', score:62,
+    on:c => c.g && c.g.voucher && c.t.status !== 'paid',
+    act:c => `Offer ${c.g.voucher.label}`,
+    why:c => c.g.voucher.why + '.',
+    done:'Voucher offered' },
+
+  { id:'promo', phase:2, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
+    on:c => c.g && (c.g.promos||[]).length && !c.t.dishes,
+    act:c => `Mention: ${c.g.promos[0]}`,
+    why:'They qualify and have not ordered yet — Pulse cannot apply it, so it has to be said.',
+    done:'Promotion mentioned' },
+
   /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
   { id:'call', phase:3, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
     on:c => !!c.call,
@@ -975,7 +1285,8 @@ function attentionCount() {
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false };
+                phase:2, legendOpen:false, rmPhase:2, section:'all', secOpen:false,
+                theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
    HELPERS
@@ -1003,6 +1314,7 @@ const shut = id => document.getElementById(id).classList.remove('on');
    ══════════════════════════════════════════════════════════════ */
 function visibleTables() {
   let list = tables.slice();
+  if (state.section !== 'all') list = list.filter(t => t.sec === state.section);
   if (state.filter === 'vacant')   list = list.filter(t => t.status === 'vacant');
   if (state.filter === 'allocate') list = list.filter(t => t.status === 'seated' || t.status === 'paid');
   if (state.filter === 'attention') {
@@ -1045,6 +1357,19 @@ function cardHtml(t) {
         : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} ${sig.top.act}</div>` : '')}
     ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
   </div>`;
+}
+
+const SECTIONS = () => [...new Set(tables.map(t => t.sec))];
+function renderSecMenu() {
+  const m = document.getElementById('sec-menu');
+  const row = (v,label) => `<button class="sec-item ${state.section===v?'on':''}" data-sec="${v}">
+      <span>${label}</span><span class="n">${v==='all'?tables.length:tables.filter(t=>t.sec===v).length}</span>
+    </button>`;
+  m.innerHTML = row('all','All sections') + SECTIONS().map(x => row(x,x)).join('');
+  m.classList.toggle('on', state.secOpen);
+  const b = document.getElementById('btn-sec');
+  b.classList.toggle('filtered', state.section !== 'all');
+  document.getElementById('sec-lbl').textContent = state.section === 'all' ? 'All sections' : state.section;
 }
 
 function renderGrid() {
@@ -1207,7 +1532,9 @@ function renderDetail() {
 
   /* null-data rule: hide anything that is zero or unknown rather than showing "0" */
   const stats = [];
+  const SENT = { positive:['smile','#8fe0b0'], mixed:['meh','#dcae6e'], negative:['frown','#e8a099'] };
   if (g.rating)    stats.push(`<span class="gstat">${ic('star')} ${g.rating}</span>`);
+  if (g.sentiment && SENT[g.sentiment]) stats.push(`<span class="gstat" style="color:${SENT[g.sentiment][1]}">${ic(SENT[g.sentiment][0])} ${g.sentiment}</span>`);
   if (g.lastVisit) stats.push(`<span class="gstat">${ic('calendar')} ${g.lastVisit}</span>`);
   if (g.visits)    stats.push(`<span class="gstat">${ic('repeat')} ${g.visits}x</span>`);
   if (g.avgSpend)  stats.push(`<span class="gstat">${ic('banknote')} ${money(g.avgSpend).replace('.00','')}</span>`);
@@ -1221,7 +1548,8 @@ function renderDetail() {
         <div class="dm-scroll">
           ${actionsHtml(t)}
           ${stats.length ? `<div class="gstats">${stats.join('')}</div>` : ''}
-          ${g.occasion ? `<div class="occ-chip">${ic('party-popper','sm')} ${g.occasion} occasions</div>` : ''}
+          ${g.score ? `<div class="score-chip"><span class="sc-b">${ic('trophy','xs')} ${g.score.label}</span>${g.score.note?`<span class="sc-n">${g.score.note}</span>`:''}</div>` : ''}
+          ${g.occasion && state.phase >= 3 ? `<div class="occ-chip">${ic('party-popper','sm')} ${g.occasion} occasions</div>` : ''}
 
           <div class="info-card">
             <div class="ic-h">${ic('sparkles')} Pulse Summary</div>
@@ -1232,7 +1560,22 @@ function renderDetail() {
             }</div>
           </div>
 
-          ${known ? `<div class="info-card plain">
+          ${g.last ? `<div class="info-card plain">
+            <div class="ic-h">${ic('history')} Last visit${g.last.rated?`<span class="lv-rate ${g.last.rated>=4?'ok':'bad'}">${g.last.rated}★</span>`:''}</div>
+            <div class="lv-grid">
+              <span><b>${g.last.when}</b></span><span>${g.last.meal}</span>
+              <span>${g.last.pax} pax</span><span>${money(g.last.spend)}</span>
+            </div>
+            ${g.last.comment ? `<div class="lv-quote">${ic('quote','xs')} ${g.last.comment}</div>` : ''}
+          </div>` : ''}
+
+          ${(g.promos||[]).length ? `<div class="info-card plain">
+            <div class="ic-h">${ic('megaphone')} Promotions they qualify for</div>
+            ${g.promos.map(pr => `<div class="promo-row">${ic('check','xs')} ${pr}</div>`).join('')}
+            <div class="promo-note">Tell the guest — promotions cannot be applied from Pulse.</div>
+          </div>` : ''}
+
+          ${known && state.phase >= 3 ? `<div class="info-card plain">
             <div class="ic-h">${ic('file-text')} Staff Notes</div>
             <div class="ic-b">A table nearby with air conditioning.</div>
           </div>` : ''}
@@ -1395,10 +1738,7 @@ function settingsHtml() {
     <div class="set-h">Service intelligence</div>
     <div class="set-sub">Which layer of intelligence Pulse is running tonight. Each phase only adds actions we can genuinely ground in data.</div>
     <div class="ph-grid">
-      ${cell(2,'Phase 2 · Action layer',
-        'Turns what we already know — visit history, spend, occasions, previous issues, order state — into a checklist of things to do.')}
-      ${cell(3,'Phase 3 · Live behaviour',
-        'Runs on top of Phase 2 and adds what the guest is doing on the QR right now: calling a waiter, browsing a section, re-opening a dish, or hesitating. Table state labels arrive here too.')}
+      ${[2,3,4].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].name}`, PHASE_META[pn].blurb)).join('')}
     </div>
     ${state.phase >= 3 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
     <div class="set-sub">Requests arrive from the guest's QR. Trigger one to see the handoff from a guest's phone to the floor.</div>
@@ -1415,7 +1755,33 @@ function settingsHtml() {
       ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
     </div>` : ''}
 
-    <div class="set-h" style="margin-top:26px">Guest buckets</div>
+    <div class="set-h" style="margin-top:30px">Look</div>
+    <div class="set-sub">Pulse ships dark for evening service. Light suits daytime rooms and bright terraces.</div>
+    <div class="theme-row">
+      <button class="theme-opt ${state.theme==='dark'?'on':''}" data-theme="dark">${ic('moon','sm')} Dark</button>
+      <button class="theme-opt ${state.theme==='light'?'on':''}" data-theme="light">${ic('sun','sm')} Light</button>
+    </div>
+
+    <div class="set-h" style="margin-top:30px">Roadmap</div>
+    <div class="set-sub">Every feature on the plan, with the phase it lands in and who owns it. ${FEATURES.filter(f=>f.built).length} of ${FEATURES.length} are live in this prototype.</div>
+    <div class="rm-tabs" id="rm-tabs">
+      ${[0,2,3,4].map(pn => `<button class="rm-tab ${state.rmPhase===pn?'on':''}" data-rm="${pn}">${pn===0?'Shipped':'Phase '+pn}<span class="rm-n">${FEATURES.filter(f=>f.p===pn).length}</span></button>`).join('')}
+    </div>
+    <div class="rm-list">
+      ${FEATURES.filter(f => f.p === state.rmPhase).map(f => `<div class="rm-row ${f.built?'built':''}">
+          <span class="rm-tick">${ic(f.built?'check':'circle-dashed','xs')}</span>
+          <span class="rm-b">
+            <span class="rm-n2">${f.n}</span>
+            ${f.note ? `<span class="rm-note">${f.note}</span>` : ''}
+          </span>
+          <span class="rm-meta">
+            <span class="rm-own">${f.own}${f.sup?` + ${f.sup}`:''}</span>
+            <span class="rm-tag">${f.tag}</span>
+          </span>
+        </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">Guest buckets</div>
     <div class="set-sub">Every guest resolves to one bucket. It is derived from history, never typed, so it cannot go stale.</div>
     <div class="bkt-list">
       ${Object.keys(BUCKETS).map(k => `<div class="bkt-row">
@@ -1441,6 +1807,9 @@ function legendHtml() {
 function renderView() {
   const onTable = state.view === 'table';
   document.getElementById('seg').style.display = onTable ? '' : 'none';
+  document.getElementById('btn-sec').style.display = onTable ? '' : 'none';
+  if (!onTable) { state.secOpen = false; document.getElementById('sec-menu').classList.remove('on'); }
+  else renderSecMenu();
   document.querySelector('.top-actions').style.display = onTable ? '' : 'none';
   document.getElementById('fab-edit').style.display = onTable ? '' : 'none';
   const vt = document.getElementById('view-title');
@@ -1492,6 +1861,15 @@ document.addEventListener('click', e => {
     renderView(); return;
   }
 
+  const th = e.target.closest('[data-theme]');
+  if (th) {
+    state.theme = th.dataset.theme;
+    document.body.classList.toggle('light', state.theme === 'light');
+    renderView(); toast(state.theme === 'light' ? 'Light theme on' : 'Dark theme on', state.theme === 'light' ? 'sun' : 'moon');
+    return;
+  }
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { state.rmPhase = +rm.dataset.rm; renderView(); return; }
   const cb = e.target.closest('[data-call]');
   if (cb) {
     const tid = document.getElementById('cs-table').value;
@@ -1507,11 +1885,15 @@ document.addEventListener('click', e => {
     return;
   }
   if (e.target.closest('#btn-phase')) {
-    state.phase = state.phase === 2 ? 3 : 2;
+    state.phase = state.phase >= 4 ? 2 : state.phase + 1;
     syncPhaseChip(); renderView();
-    toast(state.phase === 3 ? 'Phase 3 — live QR behaviour on' : 'Phase 2 — action layer only', 'zap');
+    toast(`Phase ${state.phase} — ${PHASE_META[state.phase].name}`, 'zap');
     return;
   }
+  if (e.target.closest('#btn-sec')) { state.secOpen = !state.secOpen; renderSecMenu(); return; }
+  const si = e.target.closest('[data-sec]');
+  if (si) { state.section = si.dataset.sec; state.secOpen = false; renderSecMenu(); renderGrid(); return; }
+  if (state.secOpen && !e.target.closest('#sec-menu')) { state.secOpen = false; renderSecMenu(); }
   if (e.target.closest('#btn-legend')) { state.legendOpen = !state.legendOpen; renderView(); return; }
   if (e.target.closest('#btn-search'))  { state.searchOpen = !state.searchOpen; renderView(); return; }
   if (e.target.closest('#btn-history')) { toast('Order history — coming from POS', 'history'); return; }
@@ -1592,7 +1974,7 @@ function syncPhaseChip() {
 }
 
 /* init */
-syncPhaseChip(); renderGrid(); icons();
+syncPhaseChip(); renderSecMenu(); renderGrid(); icons();
 </script>
 </body>
 </html>
