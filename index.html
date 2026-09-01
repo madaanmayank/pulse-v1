@@ -166,8 +166,9 @@
     display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;
     background:rgba(0,0,0,.22);margin-top:8px;
   }
+  @keyframes rowThrob{0%,100%{background:rgba(216,72,63,.10)}50%{background:rgba(216,72,63,.24)}}
   .cq-row.warm{box-shadow:inset 0 0 0 1px rgba(216,72,63,.4)}
-  .cq-row.hot{box-shadow:inset 0 0 0 1.5px var(--red);animation:callPulse 1.8s ease-in-out infinite}
+  .cq-row.hot{box-shadow:inset 0 0 0 1.5px var(--red);animation:rowThrob 1.8s ease-in-out infinite}
   .cq-row.ack{opacity:.72}
   .cq-t{
     flex:0 0 auto;width:38px;height:38px;border-radius:9px;
@@ -176,6 +177,16 @@
   }
   .cq-b{flex:1;min-width:0}
   .cq-n{display:block;font-size:13px;font-weight:700;color:#f4ded9;line-height:1.3}
+  .cq-blind{display:inline;font-style:normal;font-weight:600;color:#c9a29c;margin-left:6px}
+  body.light .cq-blind{color:#a1665f}
+  .cq-i{flex:0 0 auto;display:grid;place-items:center;width:26px;color:#e8a099}
+  /* a guest unhappy enough to press "raise a concern" is not a fetch task */
+  .cq-row.grave{background:rgba(216,72,63,.13);box-shadow:inset 3px 0 0 var(--red)}
+  /* a concern that has also been waiting keeps both marks, not one */
+  .cq-row.grave.warm{box-shadow:inset 3px 0 0 var(--red),inset 0 0 0 1px rgba(216,72,63,.4)}
+  .cq-row.grave.hot{box-shadow:inset 3px 0 0 var(--red),inset 0 0 0 1.5px var(--red)}
+  .cq-row.grave .cq-i{color:#ff9a8e}
+  body.light .cq-row.grave{background:rgba(184,54,46,.1)}
   .cq-m{display:block;font-size:11.5px;color:#c9a29c;margin-top:2px}
   .cq-ack,.cq-done,.cq-open{
     flex:0 0 auto;min-height:40px;border-radius:9px;font-size:12.5px;font-weight:800;
@@ -1245,12 +1256,15 @@ const guests = {
 };
 
 /* What a guest can tap on the QR. Each maps to one unambiguous action. */
+/* The guest taps one of four buttons on their phone. There is no free-text
+   field, so Pulse never shows a description of the problem — for a concern
+   it says so plainly rather than leaving the waiter waiting for detail. */
 const CALL_TYPES = {
-  waiter:  { label:'Called the waiter',   act:'Go to the table',        icon:'bell-ring', done:'Attended' },
-  order:   { label:'Needs help ordering', act:'Help them order',        icon:'book-open', done:'Order taken' },
-  water:   { label:'Asked for water',     act:'Take water over',        icon:'glass-water', done:'Water taken' },
-  bill:    { label:'Requested the bill',  act:'Bring the bill',         icon:'receipt',   done:'Bill brought' },
-  assist:  { label:'Asked for help',      act:'Respond to the table',   icon:'hand',      done:'Responded' },
+  waiter:  { label:'Called the waiter', act:'Go to the table',      icon:'bell-ring',    done:'Attended' },
+  water:   { label:'Asked for water',   act:'Take water over',      icon:'glass-water',  done:'Water taken' },
+  cutlery: { label:'Asked for cutlery', act:'Take cutlery over',    icon:'utensils',     done:'Cutlery taken' },
+  concern: { label:'Raised a concern',  act:'Go and hear them out', icon:'circle-alert', done:'Concern heard',
+             blind:'They did not say what — go and ask.', mgr:true },
 };
 
 /* Menu items carry a taste so a stated preference can become a named dish. */
@@ -1295,7 +1309,7 @@ let tables = [
   { id:'15', sec:'Outdoor', status:'blocked' },
   { id:'16', sec:'Outdoor', status:'vacant' },
   { id:'17', sec:'Outdoor', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
-    call:{ type:'assist', note:'Could we see the wine list?', min:2, ack:false, seq:0 } },
+    call:{ type:'waiter', min:2, ack:false, seq:0 } },
   { id:'18', sec:'Bar', status:'vacant' },
   { id:'19', sec:'Bar', status:'vacant' },
   { id:'20', sec:'Bar', status:'vacant' },
@@ -1527,8 +1541,15 @@ const SIGNALS = [
   { id:'call', phase:2, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
     on:c => !!c.call,
     act:c => CALL_TYPES[c.call.type].act,
-    why:c => `${CALL_TYPES[c.call.type].label}${c.call.min ? ` ${c.call.min} min ago` : ' just now'}${c.call.note ? ` — “${c.call.note}”` : '.'}`,
+    why:c => `${CALL_TYPES[c.call.type].label}${c.call.min ? ` ${c.call.min} min ago` : ' just now'}.` +
+             (CALL_TYPES[c.call.type].blind ? ` ${CALL_TYPES[c.call.type].blind}` : ''),
     done:c => CALL_TYPES[c.call.type].done },
+
+  { id:'concern-mgr', phase:2, lvl:'red', who:'manager', icon:'circle-alert', score:99,
+    on:c => !!c.call && !!CALL_TYPES[c.call.type].mgr,
+    act:'Manager touchpoint',
+    why:'A guest raised a concern from their phone. Worth you, not only the waiter.',
+    done:'You spoke to the table' },
 
   { id:'browsing', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:90,
     on:c => c.sw.cat && c.sw.catMin >= 3,
@@ -1613,10 +1634,10 @@ function turnTable(id) {
   Object.keys(gestureDone).forEach(k => { if (k.startsWith(pre)) delete gestureDone[k]; });
 }
 
-function raiseCall(tableId, type, note) {
+function raiseCall(tableId, type) {
   const t = T(tableId);
   if (!t || !CALL_TYPES[type] || t.status === 'vacant' || t.status === 'blocked') return;
-  t.call = { type, note: note || '', min: 0, ack: false, seq: ++callSeq };
+  t.call = { type, min: 0, ack: false, seq: ++callSeq };
   renderGrid();
   if (state.view === 'manager') renderManager();
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
@@ -1767,10 +1788,11 @@ function renderSecMenu() {
 
 function callRow(t) {
   const c = t.call, ct = CALL_TYPES[c.type];
-  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''}">
+  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''} ${ct.mgr?'grave':''}">
     <span class="cq-t">${t.id}</span>
+    <span class="cq-i">${ic(ct.icon,'sm')}</span>
     <span class="cq-b">
-      <span class="cq-n">${ct.label}${c.note?` — “${c.note}”`:''}</span>
+      <span class="cq-n">${ct.label}${ct.blind?`<em class="cq-blind">${ct.blind}</em>`:''}</span>
       <span class="cq-m">${c.ack ? 'On the way' : ct.act} · waiting ${c.min}m${t.sec?` · ${t.sec}`:''}</span>
     </span>
     ${c.ack ? '' : `<button class="cq-ack" data-ack="${t.id}">On my way</button>`}
@@ -2201,7 +2223,7 @@ function managerQueue() {
     if (t.call) {
       nCalls++; rank = 0; tone = 'red';
       whys.push({ icon:CALL_TYPES[t.call.type].icon,
-        text:`${CALL_TYPES[t.call.type].label}${t.call.note?` — “${t.call.note}”`:''}` });
+        text:`${CALL_TYPES[t.call.type].label}.${CALL_TYPES[t.call.type].blind?` ${CALL_TYPES[t.call.type].blind}`:''}` });
       meta = `waiting ${t.call.min}m · ${t.call.ack ? 'a waiter is on the way' : 'not acknowledged'}`;
       if (!t.call.ack) actions.push(`<button class="mg-btn ghost" data-ack="${t.id}">On my way</button>`);
       actions.push(`<button class="mg-btn" data-resolve="${t.id}">Resolve</button>`);
