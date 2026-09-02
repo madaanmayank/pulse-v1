@@ -179,7 +179,8 @@
   .cq-n{display:block;font-size:13px;font-weight:700;color:#f4ded9;line-height:1.3}
   .cq-blind{display:inline;font-style:normal;font-weight:600;color:#c9a29c;margin-left:6px}
   body.light .cq-blind{color:#a1665f}
-  .cq-i{flex:0 0 auto;display:grid;place-items:center;width:26px;color:#e8a099}
+  .cq-i{flex:0 0 auto;display:flex;align-items:center;gap:5px;min-width:26px;justify-content:center;color:#e8a099}
+  .tc-call b{font-weight:800;opacity:.75}
   /* a guest unhappy enough to press "raise a concern" is not a fetch task */
   .cq-row.grave{background:rgba(216,72,63,.13);box-shadow:inset 3px 0 0 var(--red)}
   /* a concern that has also been waiting keeps both marks, not one */
@@ -1266,6 +1267,25 @@ const CALL_TYPES = {
   concern: { label:'Raised a concern',  act:'Go and hear them out', icon:'circle-alert', done:'Concern heard',
              blind:'They did not say what — go and ask.', mgr:true },
 };
+/* Most urgent first. A table can have several requests outstanding at once —
+   one trip handles them all, so they live on one entry rather than replacing
+   each other. */
+const CALL_ORDER = ['concern','waiter','water','cutlery'];
+const callTypes = c => CALL_ORDER.filter(k => c.types.includes(k));
+const callMain  = c => CALL_TYPES[callTypes(c)[0]];
+/* "Asked for water · Raised a concern" — every ask, in urgency order. */
+const callLabel = c => callTypes(c).map(k => CALL_TYPES[k].label).join(' · ');
+/* What the waiter does: the most urgent thing, plus anything to carry over. */
+function callAct(c) {
+  const ks = callTypes(c);
+  const carry = ks.filter(k => k === 'water' || k === 'cutlery').map(k => k === 'water' ? 'water' : 'cutlery');
+  const lead = CALL_TYPES[ks[0]].act;
+  if (ks[0] === 'water' || ks[0] === 'cutlery') return carry.length > 1 ? `Take ${carry.join(' and ')} over` : lead;
+  return carry.length ? `${lead}, and take ${carry.join(' and ')} over` : lead;
+}
+const callBlind = c => callTypes(c).map(k => CALL_TYPES[k].blind).filter(Boolean).join(' ');
+const callDone  = c => callTypes(c).length > 1 ? 'Table attended' : CALL_TYPES[callTypes(c)[0]].done;
+const callIsMgr = c => callTypes(c).some(k => CALL_TYPES[k].mgr);
 
 /* Menu items carry a taste so a stated preference can become a named dish. */
 const DISH_TASTE = [
@@ -1309,7 +1329,7 @@ let tables = [
   { id:'15', sec:'Outdoor', status:'blocked' },
   { id:'16', sec:'Outdoor', status:'vacant' },
   { id:'17', sec:'Outdoor', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
-    call:{ type:'waiter', min:2, ack:false, seq:0 } },
+    call:{ types:['waiter'], min:2, ack:false, seq:0 } },
   { id:'18', sec:'Bar', status:'vacant' },
   { id:'19', sec:'Bar', status:'vacant' },
   { id:'20', sec:'Bar', status:'vacant' },
@@ -1540,13 +1560,13 @@ const SIGNALS = [
   /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
   { id:'call', phase:2, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
     on:c => !!c.call,
-    act:c => CALL_TYPES[c.call.type].act,
-    why:c => `${CALL_TYPES[c.call.type].label}${c.call.min ? ` ${c.call.min} min ago` : ' just now'}.` +
-             (CALL_TYPES[c.call.type].blind ? ` ${CALL_TYPES[c.call.type].blind}` : ''),
-    done:c => CALL_TYPES[c.call.type].done },
+    act:c => callAct(c.call),
+    why:c => `${callLabel(c.call)}${c.call.min ? ` — ${c.call.min} min ago` : ' — just now'}.` +
+             (callBlind(c.call) ? ` ${callBlind(c.call)}` : ''),
+    done:c => callDone(c.call) },
 
   { id:'concern-mgr', phase:2, lvl:'red', who:'manager', icon:'circle-alert', score:99,
-    on:c => !!c.call && !!CALL_TYPES[c.call.type].mgr,
+    on:c => !!c.call && callIsMgr(c.call),
     act:'Manager touchpoint',
     why:'A guest raised a concern from their phone. Worth you, not only the waiter.',
     done:'You spoke to the table' },
@@ -1603,7 +1623,7 @@ function markDone(tid, sid) {
   const t = T(tid);
   if (sid === 'call' && t && t.call) {
     // answering the call resolves it outright rather than leaving a tick behind
-    const label = CALL_TYPES[t.call.type].done;
+    const label = callDone(t.call);
     t.call = null;
     renderDetail(); renderGrid();
     if (state.view === 'manager') renderManager();
@@ -1637,7 +1657,14 @@ function turnTable(id) {
 function raiseCall(tableId, type) {
   const t = T(tableId);
   if (!t || !CALL_TYPES[type] || t.status === 'vacant' || t.status === 'blocked') return;
-  t.call = { type, min: 0, ack: false, seq: ++callSeq };
+  if (t.call) {
+    // they have asked for something else while still waiting — keep the
+    // original wait time, and a fresh ask needs a fresh response
+    if (!t.call.types.includes(type)) t.call.types.push(type);
+    t.call.ack = false;
+  } else {
+    t.call = { types: [type], min: 0, ack: false, seq: ++callSeq };
+  }
   renderGrid();
   if (state.view === 'manager') renderManager();
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
@@ -1661,7 +1688,7 @@ function ackCall(tableId) {
 }
 function resolveCall(tableId) {
   const t = T(tableId); if (!t || !t.call) return;
-  const label = CALL_TYPES[t.call.type].done;
+  const label = callDone(t.call);
   t.call = null;
   renderGrid(); if (state.view === 'manager') renderManager();
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
@@ -1766,7 +1793,9 @@ function cardHtml(t) {
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
     ${t.call && state.phase >= 2
-        ? `<div class="tc-call">${ic(CALL_TYPES[t.call.type].icon,'xs')} ${CALL_TYPES[t.call.type].label}${t.call.min?` · ${t.call.min}m`:''}</div>`
+        ? `<div class="tc-call">${ic(callMain(t.call).icon,'xs')} ${callMain(t.call).label}${
+             callTypes(t.call).length > 1 ? ` <b>+${callTypes(t.call).length - 1}</b>` : ''
+           }${t.call.min?` · ${t.call.min}m`:''}</div>`
         : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${sig.open.length>1?`<span class="tc-plus">+${sig.open.length-1}</span>`:''}</div>` : '')}
     ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
   </div>`;
@@ -1787,13 +1816,13 @@ function renderSecMenu() {
 }
 
 function callRow(t) {
-  const c = t.call, ct = CALL_TYPES[c.type];
-  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''} ${ct.mgr?'grave':''}">
+  const c = t.call, ks = callTypes(c), blind = callBlind(c);
+  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''} ${callIsMgr(c)?'grave':''}">
     <span class="cq-t">${t.id}</span>
-    <span class="cq-i">${ic(ct.icon,'sm')}</span>
+    <span class="cq-i">${ks.map(k => ic(CALL_TYPES[k].icon,'sm')).join('')}</span>
     <span class="cq-b">
-      <span class="cq-n">${ct.label}${ct.blind?`<em class="cq-blind">${ct.blind}</em>`:''}</span>
-      <span class="cq-m">${c.ack ? 'On the way' : ct.act} · waiting ${c.min}m${t.sec?` · ${t.sec}`:''}</span>
+      <span class="cq-n">${callLabel(c)}${blind?`<em class="cq-blind">${blind}</em>`:''}</span>
+      <span class="cq-m">${c.ack ? 'On the way' : callAct(c)} · waiting ${c.min}m${t.sec?` · ${t.sec}`:''}</span>
     </span>
     ${c.ack ? '' : `<button class="cq-ack" data-ack="${t.id}">On my way</button>`}
     <button class="cq-done" data-resolve="${t.id}">${ic('check','xs')} Done</button>
@@ -2222,8 +2251,8 @@ function managerQueue() {
 
     if (t.call) {
       nCalls++; rank = 0; tone = 'red';
-      whys.push({ icon:CALL_TYPES[t.call.type].icon,
-        text:`${CALL_TYPES[t.call.type].label}.${CALL_TYPES[t.call.type].blind?` ${CALL_TYPES[t.call.type].blind}`:''}` });
+      whys.push({ icon:callMain(t.call).icon,
+        text:`${callLabel(t.call)}.${callBlind(t.call)?` ${callBlind(t.call)}`:''}` });
       meta = `waiting ${t.call.min}m · ${t.call.ack ? 'a waiter is on the way' : 'not acknowledged'}`;
       if (!t.call.ack) actions.push(`<button class="mg-btn ghost" data-ack="${t.id}">On my way</button>`);
       actions.push(`<button class="mg-btn" data-resolve="${t.id}">Resolve</button>`);

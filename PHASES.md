@@ -38,7 +38,7 @@ Four phases. The difference is not how much data we hold — it is what Pulse do
 | | Feature | Where it appears in the UI | Owner | Support | Notes |
 |---|---|---|---|---|---|
 | ✅ | Action framework — signal, why it matters, what to do, done | WHAT TO DO checklist at the top of the table view | Pulse | — | — |
-| ✅ | Call waiter — four fixed requests | Request queue above the floor, red strip on the card, top row of the checklist, and a waiting-elsewhere bar inside any open table | SW | Pulse | Guest taps one of: call waiter, water, cutlery, raise a concern. No free text, so Pulse never shows a description |
+| ✅ | Call waiter — four fixed requests | Request queue above the floor, red strip on the card, top row of the checklist, and a waiting-elsewhere bar inside any open table | SW | Pulse | Guest taps one of: call waiter, water, cutlery, raise a concern. No free text, so Pulse never shows a description. A table can have several outstanding at once — they collect on one row, because one trip handles them all |
 | ✅ | A raised concern escalates to the manager | Manager tab, under "Needs you at the table", alongside the waiter's own row | Pulse | SW | The guest cannot say what is wrong — the UI says so rather than implying detail exists |
 | ✅ | Manager view — one worklist of the tables that need a manager | Manager tab: requests from the floor, tables needing you, approvals, and a roster of the quiet tables | Pulse | Data | One card per table — a table never appears twice |
 | ✅ | Comp and voucher approvals | Gold approve buttons on the manager card | Pulse | CRM | Reversible for five seconds after tapping |
