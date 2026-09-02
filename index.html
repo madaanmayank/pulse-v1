@@ -147,85 +147,91 @@
 
   .content{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 18px 22px}
 
-  /* the floor-level call bar — a request is never left to be scrolled to */
-  .callbar{
-    flex:0 0 auto;display:none;
-    margin:0 18px 10px;border-radius:13px;overflow:hidden;
-    background:rgba(216,72,63,.12);border:1px solid #6b332c;
+  /* ─────────── who needs you, in one row ───────────
+     Everything waiting on staff lives here as a capsule: the table number,
+     how long it has waited, and what kind of thing it is. One row, never a
+     vertical list to scroll past, because a request that scrolls out of
+     sight is a request nobody answers. */
+  .needbar{
+    flex:0 0 auto;display:none;align-items:stretch;gap:0;
+    margin:0 18px 12px;border-radius:14px;
+    background:#141517;border:1px solid var(--line-soft);
+    overflow-x:auto;overflow-y:hidden;
     animation:barIn .28s cubic-bezier(.2,.7,.2,1) both;
   }
-  .callbar.on{display:block}
-  .callbar.hot{border-color:#8e3a31;background:rgba(216,72,63,.2)}
-  .cb-head{
-    width:100%;display:flex;gap:12px;align-items:center;padding:11px 14px;text-align:left;
-  }
-  .cb-chev{color:#c9a29c;display:inline-flex;flex:0 0 auto}
-  .cq{display:none;padding:0 10px 10px}
-  .callbar.open .cq{display:block}
-  .cq-row{
-    display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;
-    background:rgba(0,0,0,.22);margin-top:8px;
-  }
-  @keyframes rowThrob{0%,100%{background:rgba(216,72,63,.10)}50%{background:rgba(216,72,63,.24)}}
-  .cq-row.warm{box-shadow:inset 0 0 0 1px rgba(216,72,63,.4)}
-  .cq-row.hot{box-shadow:inset 0 0 0 1.5px var(--red);animation:rowThrob 1.8s ease-in-out infinite}
-  .cq-row.ack{opacity:.72}
-  .cq-t{
-    flex:0 0 auto;width:38px;height:38px;border-radius:9px;
-    display:inline-flex;align-items:center;justify-content:center;
-    background:rgba(240,179,171,.16);color:#f0b3ab;font-size:14px;font-weight:800;
-  }
-  .cq-b{flex:1;min-width:0}
-  .cq-n{display:block;font-size:13px;font-weight:700;color:#f4ded9;line-height:1.3}
-  .cq-blind{display:inline;font-style:normal;font-weight:600;color:#c9a29c;margin-left:6px}
-  body.light .cq-blind{color:#a1665f}
-  .cq-i{flex:0 0 auto;display:flex;align-items:center;gap:5px;min-width:26px;justify-content:center;color:#e8a099}
-  .tc-call b{font-weight:800;opacity:.75}
-  /* a guest unhappy enough to press "raise a concern" is not a fetch task */
-  .cq-row.grave{background:rgba(216,72,63,.13);box-shadow:inset 3px 0 0 var(--red)}
-  /* a concern that has also been waiting keeps both marks, not one */
-  .cq-row.grave.warm{box-shadow:inset 3px 0 0 var(--red),inset 0 0 0 1px rgba(216,72,63,.4)}
-  .cq-row.grave.hot{box-shadow:inset 3px 0 0 var(--red),inset 0 0 0 1.5px var(--red)}
-  .cq-row.grave .cq-i{color:#ff9a8e}
-  body.light .cq-row.grave{background:rgba(184,54,46,.1)}
-  .cq-m{display:block;font-size:11.5px;color:#c9a29c;margin-top:2px}
-  .cq-ack,.cq-done,.cq-open{
-    flex:0 0 auto;min-height:40px;border-radius:9px;font-size:12.5px;font-weight:800;
-    display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 13px;
-  }
-  .cq-ack{background:rgba(240,179,171,.16);color:#f0b3ab;border:1px solid #6b332c}
-  .cq-ack:hover{background:rgba(240,179,171,.26)}
-  .cq-done{background:#f0b3ab;color:#3a1512}
-  .cq-done:hover{background:#f6c9c3}
-  .cq-open{width:40px;padding:0;background:rgba(255,255,255,.06);color:#f0b3ab}
-  body.light .cq-row{background:rgba(184,54,46,.07)}
-  body.light .cq-n{color:#7a241e}
-  body.light .cq-m{color:#a1665f}
-  body.light .cq-t{background:rgba(184,54,46,.14);color:#b8362e}
-  body.light .cq-ack{background:rgba(184,54,46,.1);color:#9c3a2f;border-color:#e0b3ae}
-  body.light .cq-done{background:#b8362e;color:#fff}
-  body.light .cq-open{background:rgba(0,0,0,.05);color:#9c3a2f}
-  body.light .cb-chev{color:#a1665f}
+  .needbar.on{display:flex}
   @keyframes barIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-  .callbar .cb-ic{
-    width:32px;height:32px;border-radius:50%;flex:0 0 auto;
-    display:inline-flex;align-items:center;justify-content:center;
-    background:rgba(216,72,63,.22);color:#f0b3ab;
-    animation:callPulse 1.8s ease-in-out infinite;
+  .nb-grp{display:flex;align-items:center;gap:11px;padding:11px 15px;flex:0 0 auto}
+  .nb-grp + .nb-grp{border-left:1px solid var(--line-soft)}
+  .nb-lbl{
+    display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap;
+    font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
   }
-  .callbar .cb-b{flex:1;min-width:0}
-  .callbar .cb-t{font-size:13.5px;font-weight:800;color:#f0b3ab}
-  .callbar .cb-s{font-size:12px;color:#c9a29c;margin-top:1px}
-  .callbar .cb-go{
-    flex:0 0 auto;height:38px;padding:0 15px;border-radius:9px;
-    background:#f0b3ab;color:#3a1512;font-size:13px;font-weight:800;
+  .nb-grp.guests .nb-lbl{color:#e8a099}
+  .nb-grp.late   .nb-lbl{color:#d69a45}
+  .nb-caps{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+
+  /* a capsule: tap the body to go to the table, tick to clear it */
+  .cap{
+    display:inline-flex;align-items:center;gap:0;flex:0 0 auto;
+    border-radius:999px;border:1px solid var(--line);background:#1b1c1f;overflow:hidden;
   }
-  .callbar .cb-go:hover{background:#f6c9c3}
-  body.light .callbar{background:rgba(184,54,46,.09);border-color:#e0b3ae}
-  body.light .callbar .cb-t{color:#8e2a23}
-  body.light .callbar .cb-s{color:#a1665f}
-  body.light .callbar .cb-ic{background:rgba(184,54,46,.14);color:#b8362e}
-  body.light .callbar .cb-go{background:#b8362e;color:#fff}
+  .cap-go{
+    display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;
+    font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;
+  }
+  .cap-go b{font-variant-numeric:tabular-nums;font-weight:800}
+  .cap-go i{font-style:normal;font-weight:700;font-size:11.5px;opacity:.7;font-variant-numeric:tabular-nums}
+  .cap-ic{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
+  .cap-x{
+    flex:0 0 auto;width:40px;min-height:40px;display:grid;place-items:center;
+    border-left:1px solid var(--line);color:var(--ink-2);
+  }
+  .cap-x:hover{background:rgba(255,255,255,.07);color:var(--ink)}
+  .cap-go:hover{background:rgba(255,255,255,.05)}
+
+  /* three kinds of request, three weights — red only where a guest is unhappy */
+  /* the capsule takes its weight from the most urgent request on it; each
+     icon inside keeps the colour of its own kind */
+  .cap.grave{border-color:#7a352d;background:rgba(216,72,63,.16)}
+  .cap.grave .cap-go{color:#ffb3a8}
+  .cap.grave .cap-x{border-left-color:#7a352d;color:#e8a099}
+  .cap.ask{border-color:#4c3f8a;background:rgba(125,92,246,.15)}
+  .cap.ask .cap-go{color:#c4b6ff}
+  .cap.ask .cap-x{border-left-color:#4c3f8a;color:#b3a2ff}
+  .cap.attend{border-color:var(--gold-line);background:rgba(217,180,95,.13)}
+  .cap.attend .cap-go{color:var(--gold-soft)}
+  .cap.attend .cap-x{border-left-color:var(--gold-line);color:var(--gold-soft)}
+  .cap.fetch{border-color:#1f5c56;background:rgba(34,184,166,.12)}
+  .cap.fetch .cap-go{color:#7fe0d5}
+  .cap.fetch .cap-x{border-left-color:#1f5c56;color:#5fd0c4}
+  .ci{display:inline-flex;font-style:normal}
+  .ci-concern{color:#ff9a8e}
+  .ci-query  {color:#b3a2ff}
+  .ci-waiter {color:var(--gold)}
+  .ci-water  {color:#4fd3c4}
+  .ci-cutlery{color:#dcc39a}
+  .ci.more{font-size:11px;font-weight:800;color:var(--ink-2);align-self:center}
+  .cap.late{border-color:#6d4f24;background:rgba(214,154,69,.13)}
+  .cap.late .cap-go,.cap.late .cap-ic{color:#e8bd7d}
+  /* waited long enough that it should catch the eye from across the room */
+  .cap.hot{animation:capThrob 1.6s ease-in-out infinite}
+  @keyframes capThrob{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.5)}50%{box-shadow:0 0 0 5px rgba(216,72,63,0)}}
+  .cap-blind{font-style:normal;font-weight:700;font-size:11.5px;opacity:.8}
+  /* a concern is the manager's call — the floor is told, not tasked */
+  .cap-mgr{
+    display:inline-flex;align-items:center;gap:4px;margin-left:8px;padding:2px 7px;
+    border-radius:99px;background:rgba(217,180,95,.18);border:1px solid var(--gold-line);
+    color:var(--gold-soft);font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  }
+  .cap-mgr svg{width:11px;height:11px}
+
+  body.light .needbar{background:#fffdf8;border-color:var(--line-soft)}
+  body.light .cap{background:#fff}
+  body.light .cap.grave{background:rgba(184,54,46,.09);border-color:#e0b3ae}
+  body.light .cap.grave .cap-go,body.light .cap.grave .cap-ic{color:#9c3a2f}
+  body.light .cap.attend{background:rgba(217,180,95,.14)}
+  body.light .cap.late{background:rgba(214,154,69,.14)}
 
   /* ─────────── table grid ─────────── */
   .grid{
@@ -265,7 +271,6 @@
 
   /* occupied */
   .tcard.seated{border-color:#e6e2d6}
-  .tcard.fresh{border-color:var(--gold);box-shadow:0 0 0 1px rgba(217,180,95,.18)}
   .tcard.paid{
     border-color:var(--green-line);
     background:
@@ -278,12 +283,15 @@
   .tc-doc{color:var(--gold);opacity:.9;display:inline-flex}
   .tc-doc svg{width:19px;height:19px}
   .tcard.paid .tc-doc{color:var(--green)}
+  /* the guest's name is their identity — let a long one take two lines
+     rather than cutting it off mid-word */
   .tc-name{
-    font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.1;
+    font-size:23px;font-weight:800;letter-spacing:-.01em;line-height:1.12;
     color:#f2efe7;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
-  .tcard.fresh .tc-name{color:var(--gold-soft)}
+  /* a long name steps down a size instead of losing its last word */
+  .tc-name.long{font-size:18px;line-height:1.18}
   .tc-name .others{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0}
   .tc-meta{display:flex;align-items:center;gap:14px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500}
   .tc-meta svg{width:15px;height:15px}
@@ -299,37 +307,51 @@
   }
   .tc-count.red{background:var(--red);color:#fff}
   .tc-count.amber{background:#d69a45;color:#241d0c}
-  .tc-mgr{
-    width:20px;height:20px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;
-    background:rgba(217,180,95,.16);border:1px solid var(--gold-line);color:var(--gold);
+  /* nobody has closed anything here for a while */
+  .tc-count.late{background:#d69a45;color:#241d0c;box-shadow:0 0 0 3px rgba(214,154,69,.28)}
+  /* something appeared since the waiter last looked at this table */
+  .tc-count.fresh{outline:2px solid var(--gold-soft);outline-offset:2px}
+  .tc-act.late{color:#e8bd7d}
+  .tc-late,.tc-new{
+    flex:0 0 auto;margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.04em;
+    border-radius:5px;padding:2px 6px;text-transform:uppercase;
   }
+  .tc-late{background:rgba(214,154,69,.2);color:#e8bd7d}
+  .tc-new{background:rgba(217,180,95,.18);color:var(--gold-soft)}
   .tc-act{
     display:flex;align-items:flex-start;gap:6px;margin-top:9px;
     font-size:11.5px;font-weight:700;min-width:0;
   }
   .tc-act > svg{margin-top:2px}
-  .tc-act > span:not(.tc-plus){
+  .tc-act > span:first-of-type{
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
     overflow:hidden;line-height:1.32;
   }
-  .tc-plus{
-    flex:0 0 auto;font-size:10.5px;font-weight:800;color:var(--ink-2);
-    background:rgba(255,255,255,.06);border-radius:5px;padding:1px 5px;
+  .tc-call span{
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;line-height:1.32;
   }
-  body.light .tc-plus{background:rgba(0,0,0,.06)}
   .tc-act svg{width:13px;height:13px}
   .tc-act.red{color:#e8a099}
   .tc-act.amber{color:#dcae6e}
   .tc-act.gold{color:var(--ink-2)}
 
   /* a guest calling is the one thing that must be unmistakable */
+  /* the request chip on a card wears the colour of the kind of request it is,
+     and only a concern is urgent enough to pulse */
   .tc-call{
-    display:flex;align-items:center;gap:6px;margin-top:8px;
-    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+    display:flex;align-items:flex-start;gap:6px;margin-top:8px;
     border-radius:8px;padding:6px 9px;font-size:11.5px;font-weight:800;
-    animation:callPulse 1.8s ease-in-out infinite;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--ink-2);
   }
-  .tc-call svg{width:13px;height:13px}
+  .tc-call.k-grave{background:rgba(216,72,63,.16);border-color:#6b332c;color:#f0b3ab;
+    animation:callPulse 1.8s ease-in-out infinite}
+  .tc-call.k-ask{background:rgba(125,92,246,.14);border-color:#4c3f8a;color:#c4b6ff}
+  .tc-call.k-attend{background:rgba(217,180,95,.13);border-color:var(--gold-line);color:var(--gold-soft)}
+  .tc-call.k-fetch{background:rgba(34,184,166,.12);border-color:#1f5c56;color:#7fe0d5}
+  .tc-call svg{width:13px;height:13px;margin-top:1px;flex:0 0 auto}
+  .tc-call u{text-decoration:none;font-weight:800;opacity:.65;flex:0 0 auto;margin-left:auto;font-variant-numeric:tabular-nums}
+  .tc-call .ci{flex:0 0 auto}
   @keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.45)}50%{box-shadow:0 0 0 6px rgba(216,72,63,0)}}
   .seg button .cnt{
     display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;
@@ -397,23 +419,33 @@
   .mg-stat b{display:block;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
   .mg-stat span{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
   .mg-stat.red b{color:var(--red)}
+  /* a note, not an alarm — it tells the waiter the floor is still moving
+     without competing with the table they are actually working */
   .dm-elsewhere{
-    display:none;position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:3;
-    align-items:center;gap:9px;padding:7px 9px 7px 14px;border-radius:999px;
-    background:rgba(58,20,17,.94);border:1px solid #7a352d;backdrop-filter:blur(8px);
-    box-shadow:0 8px 26px rgba(0,0,0,.45);max-width:min(92vw,560px);overflow-x:auto;
+    display:none;position:absolute;top:13px;left:50%;transform:translateX(-50%);z-index:3;
+    max-width:min(92vw,520px);
   }
-  .dm-elsewhere.on{display:flex}
-  .dm-el-l{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:800;
-    color:#f0b3ab;white-space:nowrap}
-  .dm-el-b{flex:0 0 auto;min-height:40px;padding:0 13px;border-radius:99px;font-size:12px;font-weight:800;
-    background:#f0b3ab;color:#3a1512;font-variant-numeric:tabular-nums}
-  .dm-el-b.warm{background:#f6c9c3}
-  .dm-el-b.hot{background:#fff;animation:callPulse 1.4s ease-in-out infinite}
-  .dm-el-b:hover{filter:brightness(1.07)}
-  body.light .dm-elsewhere{background:rgba(255,247,246,.97);border-color:#e0b3ae}
-  body.light .dm-el-l{color:#9c3a2f}
-  body.light .dm-el-b{background:#b8362e;color:#fff}
+  .dm-elsewhere.on{display:block}
+  .dm-el{
+    display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px 0 14px;
+    border-radius:999px;background:rgba(20,21,23,.92);border:1px solid #4a2b27;
+    backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.4);
+    color:#c9a29c;font-size:12.5px;font-weight:700;white-space:nowrap;
+  }
+  .dm-el:hover{border-color:#7a352d;color:#f0b3ab;background:rgba(38,22,20,.95)}
+  .dm-el-l{font-weight:800}
+  .dm-el-n{display:inline-flex;align-items:center;gap:6px}
+  .dm-el-n em{
+    font-style:normal;display:inline-flex;align-items:baseline;gap:3px;
+    padding:2px 7px;border-radius:99px;background:rgba(240,179,171,.12);
+    color:#e8a099;font-weight:800;font-variant-numeric:tabular-nums;
+  }
+  .dm-el-n em i{font-style:normal;font-size:10.5px;opacity:.7}
+  .dm-el-n em.hot{background:rgba(216,72,63,.28);color:#ffb3a8}
+  .dm-el-n em.more{background:none;color:var(--ink-3)}
+  body.light .dm-el{background:rgba(255,252,250,.96);border-color:#e0b3ae;color:#a1665f}
+  body.light .dm-el:hover{color:#9c3a2f}
+  body.light .dm-el-n em{background:rgba(184,54,46,.1);color:#9c3a2f}
 
   .mg-grid{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:22px;align-items:start}
   .mg-side{position:sticky;top:0;min-width:0}
@@ -424,8 +456,35 @@
   }
   .mg-sh:first-child{margin-top:0}
   .mg-sh.urgent{color:var(--red)}
+  .mg-rule{
+    font-size:12px;color:var(--ink-3);line-height:1.5;margin:-4px 0 11px;max-width:74ch;
+  }
   .mg-sh b{margin-left:auto;font-size:10.5px;color:var(--ink-2);background:var(--line-soft);
     border-radius:99px;padding:2px 8px;font-weight:800;letter-spacing:0}
+  /* the manual lever sits below the suggested decisions, quieter than them */
+  .mg-house{
+    min-height:36px;padding:0 12px;border-radius:9px;white-space:nowrap;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    background:none;border:1px dashed var(--gold-line);color:var(--gold-soft);
+    font-size:12px;font-weight:800;
+  }
+  .mg-house:hover{background:rgba(217,180,95,.1);border-style:solid}
+  .mg-sent{
+    display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+    color:#8fe0b0;line-height:1.35;
+  }
+  .cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .cp-opt{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+    min-height:88px;padding:12px 8px;border-radius:12px;text-align:center;
+    background:var(--card);border:1px solid var(--line-soft);color:var(--ink);
+    font-size:12px;font-weight:700;line-height:1.3;
+  }
+  .cp-opt svg{color:var(--gold)}
+  .cp-opt:hover{border-color:var(--gold-line);background:rgba(217,180,95,.08)}
+  body.light .cp-opt{background:#fff}
+  @media (max-width:520px){ .cp-grid{grid-template-columns:repeat(2,1fr)} }
+
   .mg-quiet{display:flex;flex-direction:column;gap:7px}
   .mg-q{display:flex;align-items:center;gap:9px;min-height:42px;padding:0 12px 0 8px;text-align:left;
     background:var(--card);border:1px solid var(--line-soft);border-radius:11px;color:var(--ink-2);
@@ -489,11 +548,94 @@
     .mg-btn{flex:1;justify-content:center}
   }
 
+  /* ─────────── design guide ───────────
+     Its own screen, because a prototype that explains itself is worth more
+     than one that has to be explained. */
+  .gd{max-width:1120px}
+  .gd-lede{margin:2px 0 26px}
+  .gd-lede h2{font-size:27px;font-weight:800;letter-spacing:-.015em;margin-bottom:8px}
+  .gd-lede p{font-size:14px;color:var(--ink-2);line-height:1.6;max-width:70ch}
+
+  .gd-rows{display:flex;flex-direction:column;gap:9px}
+  .gd-row{
+    display:grid;grid-template-columns:180px minmax(0,1.15fr) minmax(0,1fr);
+    gap:18px;align-items:center;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:13px 16px;
+  }
+  .gd-a{display:flex;align-items:center;gap:8px;min-width:0}
+  .gd-b{min-width:0;display:flex;flex-direction:column;gap:3px}
+  .gd-b b{font-size:14px;font-weight:800}
+  .gd-b i{font-style:normal;font-size:12.5px;color:var(--ink-2);line-height:1.45}
+  .gd-b em{font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.45}
+  .gd-c{font-size:12px;color:var(--ink-3);line-height:1.5;min-width:0}
+  .gd-tick{
+    width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+    border:2px solid var(--line);color:var(--ink-3);
+  }
+  .gd-tick.done{background:var(--green);border-color:var(--green);color:#0d1a12}
+  .gd-tick.drop{border-style:dashed}
+
+  .gd-anat{display:grid;grid-template-columns:236px minmax(0,1fr);gap:26px;align-items:start}
+  .gd-demo{pointer-events:none}
+  .gd-demo .tcard{cursor:default}
+  .gd-notes{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:9px}
+  .gd-notes li{font-size:13px;color:var(--ink-2);line-height:1.55}
+  .gd-notes b{color:var(--ink);font-weight:800}
+  .gd-notes em{font-style:italic;color:var(--ink)}
+
+  .gd-states{display:flex;flex-wrap:wrap;gap:10px}
+  .gd-state{
+    display:flex;align-items:center;gap:10px;flex:1 1 190px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:12px 14px;
+  }
+  .gd-state b{font-size:13.5px;font-weight:800}
+  .gd-state i{font-style:normal;font-size:12px;color:var(--ink-3);margin-left:auto;text-align:right}
+
+  .gd-screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:12px}
+  .gd-screen{background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:15px 16px}
+  .gd-sh{display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:800}
+  .gd-sh svg{color:var(--gold)}
+  .gd-who{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-soft);margin:7px 0 8px}
+  .gd-screen p{font-size:12.5px;color:var(--ink-2);line-height:1.55}
+  .gd-screen ul{margin:10px 0 0;padding-left:17px;display:flex;flex-direction:column;gap:5px}
+  .gd-screen li{font-size:12px;color:var(--ink-3);line-height:1.5}
+
+  .gd-sws{display:grid;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));gap:10px}
+  .gd-sw{
+    display:flex;align-items:center;gap:11px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:11px;padding:10px 13px;
+  }
+  .gd-chip{width:30px;height:30px;border-radius:8px;flex:0 0 auto;border:1px solid rgba(255,255,255,.14)}
+  .gd-sw b{font-size:12.5px;font-weight:800;min-width:0}
+  .gd-sw i{font-style:normal;margin-left:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+  .gd-rules{display:flex;flex-direction:column;gap:9px}
+  .gd-rule{
+    display:flex;gap:14px;align-items:flex-start;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;
+  }
+  .gd-rule > span{
+    flex:0 0 auto;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+    background:rgba(217,180,95,.14);border:1px solid var(--gold-line);color:var(--gold-soft);
+    font-size:12.5px;font-weight:800;
+  }
+  .gd-rule b{display:block;font-size:14px;font-weight:800;margin-bottom:4px}
+  .gd-rule p{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+
+  body.light .gd-row,body.light .gd-state,body.light .gd-screen,
+  body.light .gd-sw,body.light .gd-rule{background:#fff}
+
+  @media (max-width:1000px){
+    .gd-row{grid-template-columns:150px minmax(0,1fr)}
+    .gd-c{grid-column:1 / -1;padding-top:2px}
+    .gd-anat{grid-template-columns:1fr}
+  }
+
   /* ─────────── settings ─────────── */
   .setwrap{max-width:820px;margin:0 auto;padding:10px 0 30px}
   .set-h{font-size:17px;font-weight:800;margin-bottom:5px}
   .set-sub{font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:14px;max-width:620px}
-  .ph-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .ph-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   @media (max-width:1180px){ .ph-grid{grid-template-columns:1fr 1fr} }
   @media (max-width:640px){ .ph-grid{grid-template-columns:1fr} }
   .ph-card{
@@ -758,8 +900,10 @@
   .todo-row.red::before  {background:var(--red)}
   .todo-row.amber::before{background:#c98a3a}
   .todo-row.gold::before {background:var(--gold)}
+  /* the ring stays 20px; the button around it is finger-sized */
+  .tick-hit{flex:0 0 auto;width:40px;min-height:40px;display:grid;place-items:center;align-self:flex-start}
   .tick{
-    width:20px;height:20px;border-radius:50%;flex:0 0 auto;margin-top:1px;
+    width:20px;height:20px;border-radius:50%;flex:0 0 auto;
     border:2px solid #43464c;display:inline-flex;align-items:center;justify-content:center;
     color:transparent;transition:all .16s;
   }
@@ -768,9 +912,66 @@
   .todo-row.gold .tick{border-color:var(--gold-line)}
   .todo-row:hover .tick{border-color:var(--gold);color:rgba(217,180,95,.4)}
   .tick svg{width:12px;height:12px}
-  .todo-b{flex:1;min-width:0}
+  .todo-b{flex:1;min-width:0;min-height:40px;display:flex;flex-direction:column;justify-content:center;text-align:left;padding:2px 0}
+  .tick-hit{order:9}
   .todo-a{display:block;font-size:14px;font-weight:800;color:#f2efe7;line-height:1.3}
   .todo-w{display:block;font-size:12px;color:#9c9a95;line-height:1.45;margin-top:3px}
+  /* an action nobody has closed, and one that has only just appeared */
+  .todo-age,.todo-flag{
+    display:inline-flex;align-items:center;gap:4px;vertical-align:middle;margin-left:7px;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    border-radius:5px;padding:2px 6px;
+  }
+  .todo-age{background:rgba(214,154,69,.2);color:#e8bd7d;border:1px solid #6d4f24}
+  .todo-flag{background:rgba(217,180,95,.18);color:var(--gold-soft);border:1px solid var(--gold-line)}
+  .todo-row.late{border-color:#6d4f24;background:linear-gradient(180deg,rgba(214,154,69,.09),transparent 65%)}
+  .todo-row.late .tick{border-color:#6d4f24;color:#e8bd7d}
+  .todo-row.is-new{box-shadow:inset 3px 0 0 var(--gold)}
+  /* dismiss on the left, done on the right — two deliberate targets, and the
+     row body between them is not a button, so nothing closes by accident */
+  .todo-x{
+    flex:0 0 auto;width:40px;min-height:40px;display:grid;place-items:center;
+    color:var(--ink-3);border-radius:9px;align-self:flex-start;
+  }
+  .todo-x:hover{background:rgba(255,255,255,.06);color:var(--ink-2)}
+  .todo-x:disabled{opacity:.3}
+
+  /* a closed row strikes through, holds for three seconds with Undo, then
+     collapses out of the list */
+  .todo-row{overflow:hidden;transition:opacity .24s ease,max-height .24s ease,margin .24s ease}
+  .todo-row.settling .todo-a{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--ink-3)}
+  .todo-row.settling .todo-w{color:var(--ink-3);font-style:italic}
+  .todo-row.settling{background:rgba(255,255,255,.02)}
+  .todo-row.settling.done .tick,.todo-row.settling.done{border-color:var(--green-line)}
+  .todo-row.leaving{opacity:0;max-height:0!important;margin-top:0;margin-bottom:0}
+  .todo-undo{
+    flex:0 0 auto;align-self:center;min-height:40px;padding:0 13px;border-radius:9px;
+    display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+    background:rgba(217,180,95,.16);border:1px solid var(--gold-line);color:var(--gold-soft);
+    font-size:12.5px;font-weight:800;
+  }
+  .todo-undo:hover{background:rgba(217,180,95,.28)}
+  .todo-sub{
+    display:flex;align-items:center;gap:6px;margin:14px 0 8px;
+    font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  }
+  /* the quiet close: one line, no border, no colour asking for attention */
+  .todo.all-good{background:transparent;border-color:var(--line-soft)}
+  .todo.all-good .todo-clear{
+    display:flex;align-items:center;gap:9px;padding:14px 16px;
+    font-size:13px;font-weight:700;color:var(--ink-2);
+  }
+  .todo.all-good .todo-clear svg{color:#5fae82}
+  .todo.all-good .todo-clear i{
+    font-style:normal;margin-left:auto;font-size:11.5px;font-weight:700;color:var(--ink-3);
+  }
+  .todo-warn{
+    display:inline-flex;align-items:center;gap:5px;margin-left:10px;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    color:#e8bd7d;background:rgba(214,154,69,.16);border:1px solid #6d4f24;
+    border-radius:6px;padding:3px 7px;
+  }
+  body.light .todo-x:hover{background:rgba(0,0,0,.05)}
   .todo-who{
     flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
     color:var(--gold-soft);background:rgba(217,180,95,.13);border:1px solid var(--gold-line);
@@ -987,7 +1188,11 @@
     border-color:var(--green-line)}
   body.light .tc-name{color:#1b1917}
   body.light .tc-meta{color:#5d584f}
-  body.light .tc-call{background:rgba(184,54,46,.09);border-color:#e0b3ae;color:#8e2a23}
+  body.light .tc-call{background:rgba(0,0,0,.04);border-color:var(--line);color:#4f4b44}
+  body.light .tc-call.k-grave{background:rgba(184,54,46,.09);border-color:#e0b3ae;color:#8e2a23}
+  body.light .tc-call.k-ask{background:rgba(125,92,246,.1);border-color:#c3b6ee;color:#5140a0}
+  body.light .tc-call.k-attend{background:rgba(217,180,95,.16);border-color:#d9c79a;color:#6d5518}
+  body.light .tc-call.k-fetch{background:rgba(34,184,166,.12);border-color:#9dd6cf;color:#12655c}
 
   body.light .legend,
   body.light .searchbar,
@@ -1133,7 +1338,7 @@
     </div></div>
   </header>
 
-  <div class="callbar" id="callbar"></div>
+  <div class="needbar" id="callbar"></div>
   <div class="content" id="content">
     <div class="legend" id="legend"></div>
     <div class="searchwrap" id="searchwrap">
@@ -1152,6 +1357,7 @@
     <button data-v="order"><i data-lucide="shopping-bag"></i><span>Order</span></button>
     <button data-v="menu"><i data-lucide="utensils-crossed"></i><span>Menu</span></button>
     <button data-v="settings"><i data-lucide="settings"></i><span>Settings</span></button>
+    <button data-v="guide"><i data-lucide="book-open-text"></i><span>Guide</span></button>
   </nav>
 </div>
 
@@ -1189,6 +1395,42 @@
   <button class="dm-close" id="dm-close"><i data-lucide="x" class="lg"></i></button>
   <div class="dm-elsewhere" id="dm-elsewhere"></div>
   <div class="dm" id="dm"></div>
+</div>
+
+<!-- A manager's own lever: put something on a table because they judged it
+     was the right thing, not because Pulse suggested it. -->
+<div class="veil" id="veil-comp" style="z-index:80">
+  <div class="sheet" style="max-width:460px">
+    <div class="sheet-head" style="padding-top:18px">
+      <div class="sheet-title" id="cp-title">On the house</div>
+      <button class="x-btn" data-close="veil-comp"><i data-lucide="x" class="lg"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="fld-lbl" id="cp-sub"></div>
+      <div class="cp-grid" id="cp-grid"></div>
+      <div id="cp-sent" style="margin-top:14px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Closing a table is the one moment staff know something Pulse does not.
+     Asking then costs nothing and is always skippable. -->
+<div class="veil" id="veil-close" style="z-index:80">
+  <div class="sheet" style="max-width:400px">
+    <div class="sheet-head" style="padding-top:18px">
+      <div class="sheet-title" id="cl-title">Close table</div>
+      <button class="x-btn" data-close="veil-close"><i data-lucide="x" class="lg"></i></button>
+    </div>
+    <div class="sheet-body">
+      <div class="fld-lbl" id="cl-sub">Anything worth remembering for next time? Optional.</div>
+      <div class="pax-grid" id="cl-cats" style="grid-template-columns:repeat(3,1fr);margin:12px 0 14px"></div>
+      <input class="inp" id="cl-text" placeholder="One line, in your own words" />
+    </div>
+    <div class="sheet-foot" style="display:flex;gap:10px">
+      <button class="btn-ghost" id="cl-skip" style="flex:0 0 auto">Close without a note</button>
+      <button class="btn-gold" id="cl-save" style="flex:1">Save and close</button>
+    </div>
+  </div>
 </div>
 
 <!-- Remember this — staff teach the system what it did not know -->
@@ -1257,31 +1499,42 @@ const guests = {
 };
 
 /* What a guest can tap on the QR. Each maps to one unambiguous action. */
-/* The guest taps one of four buttons on their phone. There is no free-text
-   field, so Pulse never shows a description of the problem — for a concern
-   it says so plainly rather than leaving the waiter waiting for detail. */
+/* The guest taps a button on their phone — there is no free-text field, so
+   Pulse never invents a description. Three groups, because they need three
+   different things: someone to listen, someone to come, something carried. */
 const CALL_TYPES = {
-  waiter:  { label:'Called the waiter', act:'Go to the table',      icon:'bell-ring',    done:'Attended' },
-  water:   { label:'Asked for water',   act:'Take water over',      icon:'glass-water',  done:'Water taken' },
-  cutlery: { label:'Asked for cutlery', act:'Take cutlery over',    icon:'utensils',     done:'Cutlery taken' },
-  concern: { label:'Raised a concern',  act:'Go and hear them out', icon:'circle-alert', done:'Concern heard',
-             blind:'They did not say what — go and ask.', mgr:true },
+  concern: { label:'Raised a concern',  short:'Concern',  act:'Hear them out',
+             icon:'circle-alert', kind:'grave', mgr:true,
+             blind:'They could not say what — go and ask.', done:'Concern heard',
+             wt:'A guest is unhappy and cannot say why — red' },
+  query:   { label:'Has a question',    short:'Question', act:'Answer their question',
+             icon:'message-circle-question', kind:'ask',
+             blind:'They could not say what about — go and ask.', done:'Question answered',
+             wt:'A guest is stuck and needs a person — violet' },
+  waiter:  { label:'Called the waiter', short:'Waiter',   act:'Go to the table',
+             icon:'bell-ring', kind:'attend', done:'Attended',
+             wt:'Someone has to go over — gold' },
+  water:   { label:'Asked for water',   short:'Water',    act:'Take water over',
+             icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken',
+             wt:'Something to carry — teal' },
+  cutlery: { label:'Asked for cutlery', short:'Cutlery',  act:'Take cutlery over',
+             icon:'utensils', kind:'fetch', carry:'cutlery', done:'Cutlery taken',
+             wt:'Something to carry — sand' },
 };
-/* Most urgent first. A table can have several requests outstanding at once —
-   one trip handles them all, so they live on one entry rather than replacing
-   each other. */
-const CALL_ORDER = ['concern','waiter','water','cutlery'];
+/* Most urgent first. A table can have several outstanding at once — one trip
+   handles them all, so they collect on one entry instead of replacing each
+   other. */
+const CALL_ORDER = ['concern','query','waiter','water','cutlery'];
 const callTypes = c => CALL_ORDER.filter(k => c.types.includes(k));
 const callMain  = c => CALL_TYPES[callTypes(c)[0]];
-/* "Asked for water · Raised a concern" — every ask, in urgency order. */
+const callKind  = c => callMain(c).kind;
 const callLabel = c => callTypes(c).map(k => CALL_TYPES[k].label).join(' · ');
-/* What the waiter does: the most urgent thing, plus anything to carry over. */
+/* What the waiter does: the most urgent thing, carrying anything asked for. */
 function callAct(c) {
-  const ks = callTypes(c);
-  const carry = ks.filter(k => k === 'water' || k === 'cutlery').map(k => k === 'water' ? 'water' : 'cutlery');
-  const lead = CALL_TYPES[ks[0]].act;
-  if (ks[0] === 'water' || ks[0] === 'cutlery') return carry.length > 1 ? `Take ${carry.join(' and ')} over` : lead;
-  return carry.length ? `${lead}, and take ${carry.join(' and ')} over` : lead;
+  const ks = callTypes(c), lead = CALL_TYPES[ks[0]];
+  const carry = ks.map(k => CALL_TYPES[k].carry).filter(Boolean);
+  if (lead.carry) return `Take ${carry.join(' and ')} over`;
+  return carry.length ? `${lead.act}, and take ${carry.join(' and ')} over` : lead.act;
 }
 const callBlind = c => callTypes(c).map(k => CALL_TYPES[k].blind).filter(Boolean).join(' ');
 const callDone  = c => callTypes(c).length > 1 ? 'Table attended' : CALL_TYPES[callTypes(c)[0]].done;
@@ -1310,32 +1563,58 @@ const RECOS = [
   { name:'Chocolate lava cake',                            price:8.00,  reorder:0, icon:'cake-slice' },
 ];
 
-/* status: vacant | seated | paid | blocked   ·   fresh = just allocated */
+/* status: vacant | seated | paid | blocked
+   sw = what the guest's phone is doing right now (Phase 3)
+        menuOpenMin  minutes the menu has been open · 0 = never opened
+        itemsViewed  dishes opened
+        cartItems / cartMin   built a cart and never sent it
+        cat / catMin          lingering in one category
+        repeatItem / repeatViews
+   lastOrderMin = minutes since anything was last ordered
+   lastDrinkMin = minutes since a drink was last ordered
+   Both come from order data. Pulse does not know what is on the table.   */
 let tables = [
   { id:'01', sec:'Indoor', status:'vacant' },
-  { id:'02', sec:'Indoor', status:'vacant' },
+  // sat down and has not even opened the menu — probably waiting for someone
+  { id:'02', sec:'Indoor', status:'seated', guest:'irf', others:true, pax:2, mins:14, bill:0, server:'Aisha', ticket:0, dishes:0,
+    sw:{ menuOpenMin:0, itemsViewed:0 } },
   { id:'03', sec:'Indoor', status:'vacant' },
-  { id:'04', sec:'Indoor', status:'seated', fresh:true, guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:5 },
-  { id:'05', sec:'Indoor', status:'vacant' },
+  { id:'04', sec:'Indoor', status:'seated', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:5 },
+  // deep in the menu, nothing added
+  { id:'05', sec:'Indoor', status:'seated', guest:null, others:true, pax:3, mins:19, bill:0, server:'Tom', ticket:0, dishes:0,
+    sw:{ menuOpenMin:9, itemsViewed:7 },
+    call:{ types:['water','cutlery'], min:1, seq:2 } },
   { id:'06', sec:'Indoor', status:'seated', guest:'jes', pax:1, mins:135, bill:25.00, server:'Aisha', ticket:1, dishes:2 },
   { id:'07', sec:'Indoor', status:'blocked' },
   { id:'08', sec:'Indoor', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:6 },
-  { id:'09', sec:'Patio', status:'vacant' },
+  // built a cart and never sent it — the kitchen has no idea
+  { id:'09', sec:'Patio', status:'seated', guest:'max', others:true, pax:2, mins:23, bill:0, server:'Maria', ticket:0, dishes:0,
+    sw:{ menuOpenMin:11, itemsViewed:9, cartItems:4, cartMin:7 },
+    call:{ types:['concern'], min:3, seq:1 } },
   { id:'10', sec:'Patio', status:'vacant' },
   { id:'11', sec:'Patio', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:1, dishes:4 },
   { id:'12', sec:'Patio', status:'seated', guest:'jho', others:true, pax:4, mins:135, bill:86.00, server:'Maria', ticket:2, dishes:5 },
-  { id:'13', sec:'Patio', status:'vacant' },
+  // a long gap since they last ordered anything
+  { id:'13', sec:'Patio', status:'seated', guest:'ana', others:true, pax:2, mins:96, bill:112.40, server:'Tom', ticket:2, dishes:6,
+    lastOrderMin:34 },
   { id:'14', sec:'Outdoor', status:'blocked' },
   { id:'15', sec:'Outdoor', status:'blocked' },
-  { id:'16', sec:'Outdoor', status:'vacant' },
+  // no drinks ordered for a long stretch
+  { id:'16', sec:'Outdoor', status:'seated', guest:null, others:true, pax:5, mins:74, bill:143.20, server:'Jason', ticket:3, dishes:7,
+    lastDrinkMin:26 },
   { id:'17', sec:'Outdoor', status:'seated', guest:'vik', others:true, pax:1, mins:218, bill:158.63, server:'Tom', ticket:3, dishes:9,
-    call:{ types:['waiter'], min:2, ack:false, seq:0 } },
+    call:{ types:['waiter'], min:6, seq:0 } },
   { id:'18', sec:'Bar', status:'vacant' },
   { id:'19', sec:'Bar', status:'vacant' },
-  { id:'20', sec:'Bar', status:'vacant' },
+  // keeps re-opening the same dish without adding it
+  { id:'20', sec:'Bar', status:'seated', guest:null, others:false, pax:2, mins:16, bill:0, server:'Aisha', ticket:0, dishes:0,
+    sw:{ menuOpenMin:5, itemsViewed:4, repeatItem:'Wagyu Ribeye', repeatViews:4 },
+    call:{ types:['query'], min:0, seq:3 } },
+  // lingering in the wine list
   { id:'21', sec:'Indoor', status:'seated', guest:null, others:true, pax:2, mins:11, bill:0, server:'Aisha', ticket:0, dishes:0,
-    sw:{ cat:'wine', catMin:4, cartItems:3, cartMin:6 } },
+    sw:{ menuOpenMin:4, itemsViewed:2, cat:'wine list', catMin:5 } },
 ];
+
 
 /* ══════════════════════════════════════════════════════════════
    FEATURE REGISTRY
@@ -1365,18 +1644,26 @@ const FEATURES = [
   /* ══ PHASE 2 · ACT — turn what we know into a checklist ══ */
   { n:'Action framework — signal, why it matters, what to do, done', p:2, own:'Pulse', built:1,
     ui:'WHAT TO DO checklist at the top of the table view' },
-  { n:'Call waiter', p:2, own:'SW', sup:'Pulse', built:1,
-    ui:'Request queue above the floor, red strip on the card, top row of the checklist, and a waiting-elsewhere bar inside any open table' },
-  { n:'Manager view — one worklist of the tables that need a manager', p:2, own:'Pulse', sup:'Data', built:1,
-    ui:'Manager tab: requests from the floor, tables needing you, approvals, and a roster of the quiet tables' },
+  { n:'Guest requests — five fixed kinds', p:2, own:'SW', sup:'Pulse', built:1,
+    ui:'Capsule row above the floor, one per table with its kind and wait; red strip on the card; top of the checklist; and a waiting-elsewhere bar inside any open table',
+    note:'Concern, question, waiter, water, cutlery. No free text on the guest side, so Pulse never shows a description' },
+  { n:'Action lifecycle — new, unattended, done or dismissed', p:2, own:'Pulse', built:1, hero:1,
+    ui:'NEW flag on an action raised mid-meal, WAITING n MIN once nobody has closed it for 15, an Unattended group in the capsule row, and a dismiss × on every row',
+    note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after' },
+  { n:'Manager view — only what is actually a manager\u2019s job', p:2, own:'Pulse', sup:'Data', built:1,
+    ui:'Manager tab: a guest is unhappy · needs you at the table · nobody has picked these up · waiting on your approval · a roster of the rest',
+    note:'Water, cutlery, questions and "called the waiter" are errands and never reach this screen. Every row carries a decision, never an Open table link' },
   { n:'Comp and voucher approvals', p:2, own:'Pulse', sup:'CRM', built:1,
-    ui:'Gold approve buttons on the manager card, reversible for five seconds' },
+    ui:'Gold approve buttons on the manager card for the gesture Pulse suggests, reversible for five seconds' },
+  { n:'On the house — the manager\u2019s own call', p:2, own:'Pulse', sup:'CRM', built:1, hero:1,
+    ui:'A dashed control on every manager card opens six things they can send: dessert, a round, champagne, a starter, coffee, or a next-visit voucher',
+    note:'Pulse suggests a gesture; the manager decides. The sheet names the occasion and any concern so the judgement is informed' },
   { n:'Customer scoring and guest bucketing', p:2, own:'Data', sup:'Pulse', built:1,
     ui:'Score chip, bucket label on the guest card and on the floor card' },
   { n:'Service recovery from past feedback', p:2, own:'Data', sup:'Pulse', built:1, hero:1,
     ui:'Red checklist row: prioritise this table' },
   { n:'Table taking no action — seated without ordering', p:2, own:'Data', sup:'Pulse', built:1,
-    ui:'Amber checklist row at 20 minutes', note:'Timing computed in Pulse' },
+    ui:'Amber checklist row at 20 minutes', note:'Timing computed in Pulse. Phase 3 replaces it with something sharper once we can see the phone' },
   { n:'Recommend a dish for a stated preference', p:2, own:'Data', sup:'Pulse', built:1,
     ui:'Checklist row naming the dish and the reason' },
   { n:'Recommended next-visit voucher', p:2, own:'CRM', sup:'Data, Pulse', built:1, hero:1,
@@ -1392,13 +1679,28 @@ const FEATURES = [
     ui:'Reservation list and seating a booked guest' },
   { n:'Pulse for Pro and Pulse for VIBE', p:2, own:'Pulse' },
 
-  /* ══ PHASE 3 · SEE LIVE — the QR journey and CRM statics ══ */
-  { n:'Help ordering — guest is stuck in the menu', p:3, own:'SW', sup:'Data, Pulse', built:1,
-    ui:'Amber checklist row: walk them through the menu' },
-  { n:'Cart left too long — items added, never sent', p:3, own:'SW', sup:'Data, Pulse', built:1,
-    ui:'Amber checklist row: ask if they meant to send it' },
-  { n:'Live browsing and repeated item views', p:3, own:'SW', sup:'Data, Pulse', built:1,
-    ui:'Amber checklist rows naming the section or dish' },
+  /* ══ PHASE 3 · ANTICIPATE — the guest's phone, the clock, and the
+        manager's own calls. Each row names what was observed. ══ */
+  { n:'Cart built but never placed', p:3, own:'SW', sup:'Data, Pulse', built:1, hero:1,
+    ui:'Red checklist row naming the item count and how long it has sat unsent',
+    note:'An order the kitchen has never seen — the highest-value thing on this list' },
+  { n:'Menu open too long with nothing added', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber row: go and help them choose, with minutes in the menu and dishes opened' },
+  { n:'Table nobody has started — menu never opened', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber row: go and start them off' },
+  { n:'One dish opened again and again', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber row naming the dish and the view count' },
+  { n:'Lingering in one part of the menu', p:3, own:'SW', sup:'Data, Pulse', built:1,
+    ui:'Amber row: offer to choose it with them' },
+  { n:'Order gap timer — time since anything was last ordered', p:3, own:'Data', sup:'Pulse', built:1,
+    ui:'Amber row: offer the next course, naming the minutes since the last order',
+    note:'Order data only. Pulse cannot see whether a plate is on the table, so it does not claim to' },
+  { n:'Drink reorder timing', p:3, own:'Data', sup:'Pulse, SW', built:1, hero:1,
+    ui:'Amber row: offer another round, naming the minutes since the last drink was ordered',
+    note:'Order data only — not glass level' },
+  { n:'Managerial touchpoints', p:3, own:'Pulse', sup:'Data', built:1,
+    ui:'Visit the table — on the manager card and as a Manager row in the checklist',
+    note:'Judgement, not errands, so it only appears once the live layer is on' },
   { n:'Available promotions', p:3, own:'CRM', sup:'Data, Pulse', built:1,
     ui:'Promotions card on the guest column, plus a checklist row to mention it',
     note:'Staff informs the guest — Pulse cannot apply it' },
@@ -1410,8 +1712,14 @@ const FEATURES = [
     ui:'Rating shown on the profile once collected' },
   { n:'Preferred table', p:3, own:'Data', sup:'Pulse',
     ui:'Shown when allocating a table and when taking a reservation' },
-  { n:'Staff notes after the visit', p:3, own:'Data', sup:'Pulse', note:'Collection should sit with CRM',
-    ui:'Prompt on closing the table' },
+  { n:'Staff notes after the visit', p:3, own:'Data', sup:'Pulse', built:1,
+    ui:'Optional note sheet when closing a table — a category and one line, saved to the guest',
+    note:'Skippable by design. Storage should sit with CRM' },
+  { n:'Allergies and dislikes', p:3, own:'Data', sup:'SW, Pulse', note:'Needs a collection route first' },
+  { n:'Action log — recommended versus what staff did', p:3, own:'Pulse', sup:'Data',
+    note:'The dismiss reason is the missing half of this' },
+  { n:'Visit frequency trend', p:3, own:'Data', sup:'Pulse' },
+  { n:'Network visits across branches', p:3, own:'Data', sup:'Pulse' },
   { n:'Slipping regulars list', p:3, own:'Data', sup:'Pulse', hero:1,
     note:'Open question: what is the staff action?' },
   { n:'MunchMate target history', p:3, own:'CRM', sup:'Data, Pulse' },
@@ -1419,22 +1727,13 @@ const FEATURES = [
   { n:'Table layout management and merging', p:3, own:'Pulse', foundation:1 },
   { n:'Ordering through Pulse directly', p:3, own:'Pulse', foundation:1 },
   { n:'Order editing for POS-integrated merchants', p:3, own:'Pulse', foundation:1 },
-
-  /* ══ PHASE 4 · DEEPEN — needs data routes we do not have ══ */
-  { n:'Course gap timer — time since the last course', p:4, own:'Data', sup:'Pulse', note:'Computed in Pulse' },
-  { n:'Allergies and dislikes', p:4, own:'Data', sup:'SW, Pulse', note:'Needs a collection route first' },
-  { n:'Drink refill timing', p:4, own:'Data', sup:'Pulse, SW', hero:1 },
-  { n:'Action log — recommended versus what staff did', p:4, own:'Pulse', sup:'Data' },
-  { n:'Visit frequency trend', p:4, own:'Data', sup:'Pulse' },
-  { n:'Network visits across branches', p:4, own:'Data', sup:'Pulse' },
-  { n:'Preferred table auto-suggest', p:4, own:'Data', sup:'SW, Pulse' },
-  { n:'Own reservation module', p:4, own:'Pulse', sup:'Data, SW' },
+  { n:'Own reservation module', p:3, own:'Pulse', sup:'Data, SW' },
 ];
 const PHASE_META = {
-  1:{ verb:'Know',   name:'Guest intelligence', blurb:'Who is at the table. Everything here is display — Pulse shows what we know and the waiter decides what it means.' },
-  2:{ verb:'Act',    name:'Action layer',       blurb:'The same information turned into a checklist. Scores, buckets, recovery, call waiter and a table sitting without ordering all become one thing to do.' },
-  3:{ verb:'See live', name:'QR journey',       blurb:'What the guest is doing on their phone right now — stuck in the menu, cart left sitting, browsing — plus promotions, occasions and staff notes from CRM.' },
-  4:{ verb:'Deepen', name:'Depth',             blurb:'Course timing, allergies, refill prediction and the learning loop. Each needs a data route that does not exist yet.' },
+  1:{ verb:'Know', name:'Guest intelligence', blurb:'Who is at the table. Everything here is display — Pulse shows what it knows and the waiter decides what it means.' },
+  2:{ verb:'Act',  name:'Action layer',       blurb:'The same information turned into a checklist. Scores, buckets, recovery, guest requests and a table sitting without ordering all become one thing to do.' },
+  3:{ verb:'Anticipate', name:'Live behaviour and timing',
+      blurb:'The guest\u2019s phone and the clock. A cart built but never sent, a menu open too long, a table nobody has touched, mains going cold, glasses empty — and the calls that are the manager\u2019s to make.' },
 };
 
 
@@ -1478,42 +1777,25 @@ function bucketOfTable(t) {
    what a staff member does next.
    ══════════════════════════════════════════════════════════════ */
 const SIGNALS = [
-  /* ───────── PHASE 2 · grounded in the guest profile + POS we already have ───────── */
+  /* ───────── PHASE 2 · from the guest profile and the POS we already have ───────── */
   { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-crack', score:96,
     on:c => c.g && c.g.prevIssue,
     act:'Prioritise this table',
     why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
     done:'Table prioritised' },
 
-  { id:'mgr-recovery', phase:2, lvl:'red', who:'manager', icon:'user-check', score:94,
-    on:c => c.g && c.g.prevIssue && (c.bucket === 'risk') && (c.g.avgSpend||0) >= 60,
-    act:'Manager touchpoint',
-    why:c => `High-value guest whose last visit fell short. Worth you personally.`,
-    done:'Manager visited' },
-
   { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 20,
+    // only when we cannot see their phone — Phase 3 says something sharper
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 20 && !c.hasSw,
     act:'Check in with the table',
-    why:c => `Seated ${dur(c.mins)} and no order has been placed.`,
+    why:c => `Seated ${dur(c.mins)}, nothing ordered.`,
     done:'Checked in' },
 
   { id:'long-stay', phase:2, lvl:'amber', who:'waiter', icon:'hourglass', score:64,
     on:c => c.t.status === 'seated' && c.mins >= 180,
     act:'Offer the check',
-    why:c => `On the table ${dur(c.mins)} — read whether they are ready to settle.`,
+    why:c => `On the table ${dur(c.mins)}.`,
     done:'Check offered' },
-
-  { id:'occasion', phase:3, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
-    on:c => c.g && c.g.occasion,
-    act:'Acknowledge the occasion',
-    why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
-    done:'Occasion acknowledged' },
-
-  { id:'vip-welcome', phase:2, lvl:'gold', who:'manager', icon:'crown', score:78,
-    on:c => c.bucket === 'vip',
-    act:'Personally welcome them',
-    why:c => `${c.g.name.split(' ')[0]} averages ${money(c.g.avgSpend)} a visit.`,
-    done:'Guest welcomed' },
 
   { id:'lapsed', phase:2, lvl:'gold', who:'waiter', icon:'calendar-clock', score:74,
     on:c => c.bucket === 'lapsed',
@@ -1533,16 +1815,10 @@ const SIGNALS = [
     why:c => c.g.summary,
     done:'Usual suggested' },
 
-  { id:'turn', phase:2, lvl:'gold', who:'waiter', icon:'badge-check', score:56,
-    on:c => c.t.status === 'paid',
-    act:'Clear and turn the table',
-    why:'The party has settled.',
-    done:'Table cleared' },
-
   { id:'recommend', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:76,
     on:c => c.g && (c.g.tastes||[]).length && !c.t.dishes && dishForTaste(c.g.tastes),
     act:c => { const d = dishForTaste(c.g.tastes); return `Recommend the ${d.name}`; },
-    why:c => { const d = dishForTaste(c.g.tastes); return `${c.g.name.split(' ')[0]} prefers ${d.taste} — it is the closest thing on tonight's menu.`; },
+    why:c => { const d = dishForTaste(c.g.tastes); return `${c.g.name.split(' ')[0]} prefers ${d.taste}.`; },
     done:'Dish recommended' },
 
   { id:'voucher', phase:2, lvl:'gold', who:'waiter', icon:'ticket', score:62,
@@ -1551,93 +1827,234 @@ const SIGNALS = [
     why:c => c.g.voucher.why + '.',
     done:'Voucher offered' },
 
-  { id:'promo', phase:3, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
-    on:c => c.g && (c.g.promos||[]).length && !c.t.dishes,
-    act:c => `Mention: ${c.g.promos[0]}`,
-    why:'They qualify and have not ordered yet — Pulse cannot apply it, so it has to be said.',
-    done:'Promotion mentioned' },
+  { id:'turn', phase:2, lvl:'amber', who:'waiter', icon:'badge-check', score:58,
+    on:c => c.t.status === 'paid',
+    act:'Clear and turn the table',
+    why:'Settled — every minute costs a cover.',
+    done:'Table cleared' },
 
-  /* ───────── PHASE 3 · live behaviour from the QR journey ───────── */
-  { id:'call', phase:2, lvl:'red', who:'waiter', icon:'bell-ring', score:100,
+  { id:'call', phase:2, lvl:'red', icon:'bell-ring', score:100,
+    who:c => c.call && callIsMgr(c.call) ? 'manager' : 'waiter',
     on:c => !!c.call,
-    act:c => callAct(c.call),
+    act:c => callIsMgr(c.call) ? 'Get the manager to this table' : callAct(c.call),
     why:c => `${callLabel(c.call)}${c.call.min ? ` — ${c.call.min} min ago` : ' — just now'}.` +
              (callBlind(c.call) ? ` ${callBlind(c.call)}` : ''),
     done:c => callDone(c.call) },
 
-  { id:'concern-mgr', phase:2, lvl:'red', who:'manager', icon:'circle-alert', score:99,
-    on:c => !!c.call && callIsMgr(c.call),
-    act:'Manager touchpoint',
-    why:'A guest raised a concern from their phone. Worth you, not only the waiter.',
-    done:'You spoke to the table' },
+  /* ───────── PHASE 3 · the guest's phone, the clock, and the manager's calls ─────────
+     Every line below names what was observed. A waiter should never have to
+     guess what Pulse noticed.                                                       */
 
-  { id:'browsing', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:90,
-    on:c => c.sw.cat && c.sw.catMin >= 3,
-    act:c => `Offer help choosing ${c.sw.cat === 'wine' ? 'a wine' : 'a dish'}`,
-    why:c => `Browsing ${c.sw.cat} for ${c.sw.catMin} minutes without ordering.`,
-    done:'Assistance offered' },
+  // they have a cart and never sent it. This is an order the kitchen has not seen.
+  { id:'cart-unsent', phase:3, lvl:'red', who:'waiter', icon:'shopping-cart', score:93,
+    on:c => c.sw.cartItems >= 1 && c.sw.cartMin >= 3,
+    act:'Nudge them to place the order',
+    why:c => `${c.sw.cartItems} items in their cart, never sent — ${c.sw.cartMin} min.`,
+    done:'Order placed' },
 
+  // sitting there without even opening the menu
+  { id:'idle-table', phase:3, lvl:'amber', who:'waiter', icon:'armchair', score:89,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.hasSw && !c.sw.menuOpenMin && c.mins >= 8,
+    act:'Go and start them off',
+    why:c => `Sitting ${dur(c.mins)}, menu never opened.`,
+    done:'Table started' },
+
+  // long in the menu, nothing added
+  { id:'menu-stall', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:87,
+    on:c => c.sw.menuOpenMin >= 6 && !c.sw.cartItems && !c.t.dishes,
+    act:'Go and help them choose',
+    why:c => `${c.sw.menuOpenMin} min in the menu, nothing added.`,
+    done:'Helped them choose' },
+
+  // a long gap since anything was ordered
+  { id:'course-gap', phase:3, lvl:'amber', who:'waiter', icon:'timer', score:85,
+    on:c => (c.t.lastOrderMin||0) >= 25 && c.t.status === 'seated',
+    act:'Offer the next course',
+    why:c => `Last ordered ${c.t.lastOrderMin} min ago.`,
+    done:'Next course offered' },
+
+  // a long gap since the last drink was ordered
+  { id:'drink-refill', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:83,
+    on:c => (c.t.lastDrinkMin||0) >= 20 && c.t.status === 'seated',
+    act:'Offer another round',
+    why:c => `Last drink ${c.t.lastDrinkMin} min ago.`,
+    done:'Round offered' },
+
+  // one dish, opened again and again
   { id:'repeat-item', phase:3, lvl:'amber', who:'waiter', icon:'eye', score:80,
     on:c => c.sw.repeatItem && c.sw.repeatViews >= 3,
     act:c => `Talk them through the ${c.sw.repeatItem}`,
-    why:c => `Opened ${c.sw.repeatItem} ${c.sw.repeatViews} times without adding it.`,
+    why:c => `Opened it ${c.sw.repeatViews} times, never added it.`,
     done:'Dish explained' },
 
-  { id:'help-ordering', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:78,
-    on:c => c.sw.menuOpenMin >= 4 && c.sw.itemsViewed === 0,
-    act:'Walk them through the menu',
-    why:c => `The menu has been open ${c.sw.menuOpenMin} minutes and nothing has been opened.`,
-    done:'Menu explained' },
+  // lingering in one part of the menu
+  { id:'browsing', phase:3, lvl:'amber', who:'waiter', icon:'wine', score:78,
+    on:c => c.sw.cat && c.sw.catMin >= 3,
+    act:c => `Offer to choose ${c.sw.cat === 'wine list' ? 'a wine' : 'something'} with them`,
+    why:c => `${c.sw.catMin} min in the ${c.sw.cat}, nothing ordered.`,
+    done:'Choice made together' },
 
-  { id:'hesitation', phase:3, lvl:'amber', who:'waiter', icon:'help-circle', score:70,
-    on:c => c.sw.hesitationMin >= 6,
-    act:'Offer ordering assistance',
-    why:c => `Taking ${c.sw.hesitationMin} minutes to decide — longer than usual.`,
-    done:'Assistance offered' },
+  { id:'occasion', phase:3, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
+    on:c => c.g && c.g.occasion,
+    act:'Acknowledge the occasion',
+    why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
+    done:'Occasion acknowledged' },
 
-  { id:'cart-idle', phase:3, lvl:'amber', who:'waiter', icon:'shopping-cart', score:84,
-    on:c => c.sw.cartItems >= 1 && c.sw.cartMin >= 4,
-    act:'Ask if they meant to send the order',
-    why:c => `${c.sw.cartItems} ${c.sw.cartItems===1?'item':'items'} have been sitting in their cart for ${c.sw.cartMin} minutes — the kitchen has not seen it.`,
-    done:'Order sent' },
+  { id:'promo', phase:3, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
+    on:c => c.g && (c.g.promos||[]).length && !c.t.dishes,
+    act:c => `Mention: ${c.g.promos[0]}`,
+    why:'They qualify and have not ordered yet.',
+    done:'Promotion mentioned' },
+
+  /* Manager's own calls. Judgement, not errands — so Phase 3, and the action
+     says plainly what to do: go to the table. */
+  { id:'mgr-recovery', phase:3, lvl:'red', who:'manager', mgrRank:1, icon:'user-check', score:94,
+    on:c => c.g && c.g.prevIssue && c.bucket === 'risk' && (c.g.avgSpend||0) >= 60,
+    act:'Visit the table',
+    why:'High-value guest, last visit fell short.',
+    done:'You visited the table' },
+
+  { id:'concern-mgr', phase:3, lvl:'red', who:'manager', mgrRank:0, icon:'circle-alert', score:99,
+    on:c => !!c.call && callIsMgr(c.call),
+    act:'Visit the table',
+    why:'A concern raised from their phone.',
+    done:'You visited the table' },
+
+  { id:'vip-welcome', phase:3, lvl:'gold', who:'manager', mgrRank:2, icon:'crown', score:77,
+    on:c => c.bucket === 'vip',
+    act:'Visit the table',
+    why:c => `${c.g.name.split(' ')[0]} averages ${money(c.g.avgSpend)} a visit.`,
+    done:'You visited the table' },
 ];
+
+
 
 const doneActions = {};                                   // "<table>:<signal>" -> true
 const aKey = (tid,sid) => tid + ':' + sid;
 const val = (v,c) => typeof v === 'function' ? v(c) : v;
 
+/* ── An action has a life, not just a state ───────────────────────────────
+   Something Pulse raises mid-meal is easy to miss, and something nobody
+   closes is worse than something nobody raised. So every action records the
+   minute it appeared, and carries its own age:
+
+     NEW         it appeared after the waiter had already seen this table
+     (quiet)     it is being worked
+     UNATTENDED  open STALE_MIN minutes and still nobody has closed it
+
+   Two ways out, because "not applicable" is a real answer: complete it, or
+   dismiss it. Both are reversible.                                        */
+let clockMin = 0;                    // minutes of service, advanced by the tick
+const STALE_MIN = 15;
+const MAX_SHOW  = 5;      // rows a waiter will actually read at a glance
+const actionSeen = {};               // "table:signal" -> clockMin it appeared
+const tableSeen  = {};               // "table"        -> clockMin it first showed
+const dismissed  = {};               // "table:signal" -> true
+
 function signalsFor(t) {
-  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], done:[], top:null, lvl:null, all:[] };
+  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], now:[], soft:[], liveNow:[], done:[], top:null, lvl:null, all:[], stale:[] };
   const g = t.guest ? guests[t.guest] : null;
-  const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null, call: t.call || null };
+  const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null,
+              call: t.call || null, hasSw: !!t.sw };
+  if (tableSeen[t.id] === undefined) tableSeen[t.id] = clockMin;
   const all = SIGNALS.filter(s => s.phase <= state.phase)
     .filter(s => { try { return !!s.on(c); } catch(e){ return false; } })
-    .map(s => ({ id:s.id, lvl:s.lvl, who:s.who, icon:s.icon, score:s.score, phase:s.phase,
-                 why:val(s.why,c), act:val(s.act,c), done:val(s.done,c),
-                 isDone: !!doneActions[aKey(t.id,s.id)] }));
+    .map(s => {
+      const k = aKey(t.id, s.id);
+      const mgrRank = s.mgrRank;
+      // first time Pulse can know this action exists is the moment it computes it
+      if (actionSeen[k] === undefined) actionSeen[k] = clockMin;
+      const openMin = clockMin - actionSeen[k];
+      const isWork = s.lvl !== 'gold';     // gold is something to say, not a task
+      return { id:s.id, lvl:s.lvl, who:val(s.who,c), mgrRank, icon:s.icon, score:s.score, phase:s.phase,
+               why:val(s.why,c), act:val(s.act,c), done:val(s.done,c),
+               openMin,
+               isNew:   isWork && actionSeen[k] > tableSeen[t.id] && openMin < STALE_MIN,
+               isStale: isWork && openMin >= STALE_MIN,
+               isDone:  !!doneActions[k], isDropped: !!dismissed[k] };
+    })
+    .filter(x => !x.isDropped);
   const rank = { red:0, amber:1, gold:2 };
-  const open = all.filter(x => !x.isDone).sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
-  return { open, done:all.filter(x => x.isDone), top:open[0] || null, lvl:open[0] ? open[0].lvl : null, all };
+  const open = all.filter(x => !x.isDone)
+    // an action nobody has closed outranks a fresher one of the same severity
+    .sort((a,b) => (b.isStale - a.isStale) || rank[a.lvl]-rank[b.lvl] || b.score-a.score);
+  const now  = open.filter(x => x.lvl !== 'gold');
+  const soft = open.filter(x => x.lvl === 'gold');
+  const live = x => !pending[aKey(t.id, x.id)];
+  return { open, now, soft, done:all.filter(x => x.isDone),
+           top:now[0] || soft[0] || null,
+           lvl:open[0] ? open[0].lvl : null, all,
+           liveNow:now.filter(live), stale:now.filter(x => x.isStale && live(x)) };
 }
-function markDone(tid, sid) {
+
+/* Tables carrying an action nobody has closed. */
+function unattended() {
+  return tables.filter(t => signalsFor(t).stale.length)
+    .sort((a,b) => signalsFor(b).stale[0].openMin - signalsFor(a).stale[0].openMin);
+}
+/* The waiter has looked at this table, so anything already showing is not new. */
+function markTableSeen(tid) {
+  tableSeen[tid] = clockMin;
+  signalsFor(T(tid)).open.forEach(a => { actionSeen[aKey(tid,a.id)] = Math.min(actionSeen[aKey(tid,a.id)], clockMin); });
+}
+/* Closing a row is not instant. It strikes through, holds for three seconds
+   with Undo where the waiter's thumb already is, then commits and collapses. */
+const chased     = {};     // table -> clockMin the section was chased
+const mgrVisited = {};     // table -> the manager has been over
+const pending = {};        // "table:signal" -> { kind:'done'|'drop' }
+const pendTimer = {};
+const GRACE_MS = 3000;
+
+function repaint() {
+  renderDetail(); renderGrid();
+  if (state.view === 'manager') renderManager();
+}
+function closeRow(tid, sid, kind) {
+  const k = aKey(tid, sid);
+  if (pending[k]) return;
+  pending[k] = { kind };
+  repaint();
+  pendTimer[k] = setTimeout(() => commitRow(tid, sid), GRACE_MS);
+}
+function undoRow(tid, sid) {
+  const k = aKey(tid, sid);
+  clearTimeout(pendTimer[k]); delete pendTimer[k]; delete pending[k];
+  repaint();
+}
+function commitRow(tid, sid) {
+  const k = aKey(tid, sid), p = pending[k];
+  if (!p) return;
+  const el = document.querySelector(`.todo-row[data-k="${tid}:${sid}"]`);
+  const finish = () => {
+    delete pending[k]; delete pendTimer[k];
+    if (p.kind === 'done') applyDone(tid, sid); else dismissed[k] = true;
+    repaint();
+  };
+  // let it collapse out before the list reflows
+  if (el) { el.classList.add('leaving'); setTimeout(finish, 260); } else finish();
+}
+function applyDone(tid, sid) {
   const t = T(tid);
   if (sid === 'call' && t && t.call) {
     // answering the call resolves it outright rather than leaving a tick behind
-    const label = callDone(t.call);
     t.call = null;
-    renderDetail(); renderGrid();
-    if (state.view === 'manager') renderManager();
-    toast(label, 'check-circle');
     return;
   }
   doneActions[aKey(tid,sid)] = true;
-  renderDetail(); renderGrid();
-  if (state.view === 'manager') renderManager();
+}
+
+/* The manager card has no row to strike through, so it keeps the toast. */
+function markDone(tid, sid) {
+  const t = T(tid);
   const s = SIGNALS.find(x => x.id === sid);
-  toast(s ? val(s.done, { t, g:t && t.guest ? guests[t.guest] : null, sw:(t&&t.sw)||{}, call:t&&t.call }) : 'Done',
-    'check-circle',
-    () => { delete doneActions[aKey(tid,sid)];
-            renderDetail(); renderGrid(); if (state.view === 'manager') renderManager(); });
+  const label = (sid === 'call' && t && t.call) ? callDone(t.call)
+    : (s ? val(s.done, { t, g:t && t.guest ? guests[t.guest] : null, sw:(t&&t.sw)||{}, call:t&&t.call }) : 'Done');
+  const hadCall = sid === 'call' && t && t.call ? { ...t.call } : null;
+  applyDone(tid, sid); repaint();
+  toast(label, 'check-circle', () => {
+    if (hadCall) t.call = hadCall; else delete doneActions[aKey(tid,sid)];
+    repaint();
+  });
 }
 
 /* A guest raising a request from the QR. In the real product this arrives
@@ -1650,27 +2067,27 @@ function turnTable(id) {
   Object.assign(t, { status:'vacant', guest:null, others:false, pax:0, mins:0,
     bill:0, ticket:0, dishes:0, fresh:false, walkInName:null, call:null, sw:null });
   const pre = id + ':';
-  Object.keys(doneActions).forEach(k => { if (k.startsWith(pre)) delete doneActions[k]; });
-  Object.keys(gestureDone).forEach(k => { if (k.startsWith(pre)) delete gestureDone[k]; });
+  [doneActions, gestureDone, dismissed, actionSeen].forEach(m =>
+    Object.keys(m).forEach(k => { if (k.startsWith(pre)) delete m[k]; }));
+  delete tableSeen[id]; delete chased[id]; delete mgrVisited[id]; delete compsSent[id];
 }
 
 function raiseCall(tableId, type) {
   const t = T(tableId);
   if (!t || !CALL_TYPES[type] || t.status === 'vacant' || t.status === 'blocked') return;
   if (t.call) {
-    // they have asked for something else while still waiting — keep the
-    // original wait time, and a fresh ask needs a fresh response
+    // asked for something else while still waiting — keep the original wait,
+    // because that is how long they have actually been sitting there
     if (!t.call.types.includes(type)) t.call.types.push(type);
-    t.call.ack = false;
   } else {
-    t.call = { types: [type], min: 0, ack: false, seq: ++callSeq };
+    t.call = { types: [type], min: 0, seq: ++callSeq };
   }
   renderGrid();
   if (state.view === 'manager') renderManager();
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
   toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, 'bell-ring');
 }
-let callSeq = 0;
+let callSeq = 3;   // the seeded requests already used 0-3
 /* oldest first — a guest who has waited longest is served first */
 function openCalls() {
   return tables.filter(t => t.call)
@@ -1679,13 +2096,6 @@ function openCalls() {
 function anyCalls() { return openCalls().length; }
 /* how urgent a wait has become — the one place the escalation rule lives */
 function callHeat(c) { return c.min >= 5 ? 'hot' : c.min >= 3 ? 'warm' : ''; }
-function ackCall(tableId) {
-  const t = T(tableId); if (!t || !t.call) return;
-  t.call.ack = true;
-  renderGrid(); if (state.view === 'manager') renderManager();
-  if (state.detailId === tableId) renderDetail(); else renderElsewhere();
-  toast(`On your way to Table ${t.id}`, 'footprints');
-}
 function resolveCall(tableId) {
   const t = T(tableId); if (!t || !t.call) return;
   const label = callDone(t.call);
@@ -1694,17 +2104,28 @@ function resolveCall(tableId) {
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
   toast(`Table ${tableId} — ${label.toLowerCase()}`, 'check-circle');
 }
+/* One shared way for time to pass, so a hand-pushed minute and a real one
+   are indistinguishable to everything downstream. */
+function advanceClock(mins = 1) {
+  for (let i = 0; i < mins; i++) {
+    clockMin += 1;
+    tables.forEach(t => {
+      if (t.status === 'seated' || t.status === 'paid') t.mins += 1;
+      if (t.call) t.call.min += 1;
+      if (t.lastOrderMin != null) t.lastOrderMin += 1;
+      if (t.lastDrinkMin != null) t.lastDrinkMin += 1;
+    });
+  }
+  renderView();
+  if (state.detailId) renderDetail();
+  if (mins > 1) toast(`${mins} minutes on — ${unattended().length} ${unattended().length===1?'table':'tables'} unattended`, 'timer');
+}
+
 /* requests age while the floor runs, so the queue reorders itself */
 setInterval(() => {
   // the floor keeps running: a party's time at the table and a guest's wait
   // both advance, so "seated 38m" and "waiting 4m" stay honest together
-  tables.forEach(t => {
-    if (t.status === 'seated' || t.status === 'paid') t.mins += 1;
-    if (t.call) t.call.min += 1;
-  });
-  renderGrid();
-  if (state.view === 'manager') renderManager();
-  if (state.detailId) renderDetail();   // also refreshes the "elsewhere" strip
+  advanceClock(1);
 }, 60000);
 function attentionCount() {
   return tables.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'amber'; }).length;
@@ -1712,7 +2133,7 @@ function attentionCount() {
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, callsOpen:true,
+                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, 
                 theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
@@ -1723,7 +2144,7 @@ const icons = () => { if (window.lucide) window.lucide.createIcons(); };
 const money = n => 'SGD' + Number(n).toFixed(2);
 const T = id => tables.find(t => t.id === id);
 const dur = m => { const h = Math.floor(m/60), mm = m%60; return h ? `${h}h ${mm}m` : `${mm}m`; };
-const nameOf = t => t.guest ? guests[t.guest].name : (t.walkInName || 'Walk-in');
+const nameOf = t => t.guest ? guests[t.guest].name : (t.walkInName || 'Guest');
 const firstName = t => nameOf(t).split(' ')[0];
 
 let toastTimer;
@@ -1773,30 +2194,35 @@ function cardHtml(t) {
   if (t.status === 'blocked')
     return `<div class="tcard blocked" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
 
-  const cls = t.status === 'paid' ? 'paid' : (t.fresh ? 'fresh' : 'seated');
+  const cls = t.status === 'paid' ? 'paid' : 'seated';
   const sig = signalsFor(t);
   const bkt = bucketOfTable(t);
-  const mgrNeeded = sig.open.some(a => a.who === 'manager');
+  // the badge is the single indicator: how many things this table needs, and
+  // how loudly. Nobody has closed one for a while -> it reads as late.
+  const tone = sig.stale.length ? 'late' : (sig.liveNow[0] ? sig.liveNow[0].lvl : '');
+  const isNew = sig.liveNow.some(a => a.isNew);
   return `<div class="tcard ${cls}" data-id="${t.id}">
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
       <span class="tc-right">
-        ${sig.open.length ? `<span class="tc-count ${sig.open[0].lvl}">${sig.open.length}</span>` : ''}
-        ${mgrNeeded ? `<span class="tc-mgr" title="Needs a manager">${ic('crown','xs')}</span>` : ''}
+        ${sig.liveNow.length ? `<span class="tc-count ${tone}${isNew?' fresh':''}"
+            title="${sig.liveNow.length} to do${sig.stale.length?` · ${sig.stale[0].openMin} min unattended`:''}">${sig.liveNow.length}</span>` : ''}
         <span class="tc-doc">${ic('receipt-text','sm')}</span>
       </span>
     </div>
-    <div class="tc-name">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
+    <div class="tc-name${nameOf(t).length > 15 ? ' long' : ''}">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
     ${t.call && state.phase >= 2
-        ? `<div class="tc-call">${ic(callMain(t.call).icon,'xs')} ${callMain(t.call).label}${
-             callTypes(t.call).length > 1 ? ` <b>+${callTypes(t.call).length - 1}</b>` : ''
-           }${t.call.min?` · ${t.call.min}m`:''}</div>`
-        : (sig.top ? `<div class="tc-act ${sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${sig.open.length>1?`<span class="tc-plus">+${sig.open.length-1}</span>`:''}</div>` : '')}
+        ? `<div class="tc-call k-${callKind(t.call)}">
+             ${callTypes(t.call).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'xs')}</em>`).join('')}
+             <span>${callMain(t.call).label}${callIsMgr(t.call)?' — manager':''}</span>${t.call.min?`<u>${t.call.min}m</u>`:''}</div>`
+        : (sig.top ? `<div class="tc-act ${sig.top.isStale?'late':sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${
+             sig.top.isStale ? `<span class="tc-late">${sig.top.openMin}m</span>` : (sig.top.isNew ? `<span class="tc-new">New</span>` : '')
+           }</div>` : '')}
     ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
   </div>`;
 }
@@ -1815,39 +2241,48 @@ function renderSecMenu() {
   document.getElementById('sec-lbl').textContent = state.section === 'all' ? 'All sections' : state.section;
 }
 
-function callRow(t) {
+/* One capsule per table: what kind of request, which table, how long.
+   Tap it to go there; tick it to clear it. There is no "on my way" —
+   a waiter who is walking over does not stop to tell the tablet. */
+function callCap(t) {
   const c = t.call, ks = callTypes(c), blind = callBlind(c);
-  return `<div class="cq-row ${callHeat(c)} ${c.ack?'ack':''} ${callIsMgr(c)?'grave':''}">
-    <span class="cq-t">${t.id}</span>
-    <span class="cq-i">${ks.map(k => ic(CALL_TYPES[k].icon,'sm')).join('')}</span>
-    <span class="cq-b">
-      <span class="cq-n">${callLabel(c)}${blind?`<em class="cq-blind">${blind}</em>`:''}</span>
-      <span class="cq-m">${c.ack ? 'On the way' : callAct(c)} · waiting ${c.min}m${t.sec?` · ${t.sec}`:''}</span>
-    </span>
-    ${c.ack ? '' : `<button class="cq-ack" data-ack="${t.id}">On my way</button>`}
-    <button class="cq-done" data-resolve="${t.id}">${ic('check','xs')} Done</button>
-    <button class="cq-open" data-goto="${t.id}">${ic('arrow-right','xs')}</button>
-  </div>`;
+  return `<span class="cap ${callKind(c)} ${callHeat(c)==='hot'?'hot':''}" title="${callLabel(c)}${blind?' — '+blind:''}">
+    <button class="cap-go" data-goto="${t.id}">
+      <span class="cap-ic">${ks.slice(0,3).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'sm')}</em>`).join('')}${
+        ks.length > 3 ? `<em class="ci more">+${ks.length-3}</em>` : ''}</span>
+      <b>${t.id}</b><i>${c.min}m</i>${callIsMgr(c) ? `<span class="cap-mgr">${ic('crown','xs')} Manager</span>` : ''}
+    </button>
+    <button class="cap-x" data-resolve="${t.id}" title="Handled">${ic('check','sm')}</button>
+  </span>`;
+}
+
+/* A table whose actions nobody has closed. No tick here — you have to open
+   it and either do the thing or say it does not apply. */
+function lateCap(t) {
+  const st = signalsFor(t).stale, a = st[0];
+  return `<span class="cap late" title="${a.act} — open ${a.openMin} min">
+    <button class="cap-go" data-goto="${t.id}">
+      <b>${t.id}</b><i>${a.openMin}m</i>${st.length>1?`<em class="ci more">${st.length}</em>`:''}
+    </button>
+  </span>`;
 }
 
 function renderCallBar() {
   const bar = document.getElementById('callbar');
   if (!bar) return;
   const calling = state.phase >= 2 ? openCalls() : [];
-  if (!calling.length) { bar.classList.remove('on','open'); bar.innerHTML = ''; return; }
-  const waiting = calling.filter(t => !t.call.ack).length;
-  const hottest = calling[0];
-  bar.className = 'callbar on' + (state.callsOpen ? ' open' : '') + (callHeat(hottest.call) ? ' ' + callHeat(hottest.call) : '');
-  bar.innerHTML = `
-    <button class="cb-head" id="cb-toggle">
-      <span class="cb-ic">${ic('bell-ring','sm')}</span>
-      <span class="cb-b">
-        <span class="cb-t">${calling.length} ${calling.length===1?'table is':'tables are'} calling${waiting?` · ${waiting} unanswered`:' · all acknowledged'}</span>
-        <span class="cb-s">Longest wait ${hottest.call.min}m — Table ${hottest.id}</span>
-      </span>
-      <span class="cb-chev">${ic(state.callsOpen?'chevron-up':'chevron-down','sm')}</span>
-    </button>
-    <div class="cq">${calling.map(callRow).join('')}</div>`;
+  const late    = state.phase >= 2 ? unattended() : [];
+  if (!calling.length && !late.length) { bar.classList.remove('on'); bar.innerHTML = ''; return; }
+  bar.className = 'needbar on';
+  bar.innerHTML =
+    (calling.length ? `<div class="nb-grp guests">
+        <span class="nb-lbl">${ic('bell-ring','sm')} ${calling.length===1?'Guest waiting':'Guests waiting'}</span>
+        <span class="nb-caps">${calling.map(callCap).join('')}</span>
+      </div>` : '') +
+    (late.length ? `<div class="nb-grp late">
+        <span class="nb-lbl">${ic('timer','sm')} Unattended ${STALE_MIN}m+</span>
+        <span class="nb-caps">${late.map(lateCap).join('')}</span>
+      </div>` : '');
   icons();
 }
 
@@ -1964,32 +2399,54 @@ function recoHtml(r) {
    waiter is reading rather than acting. */
 function actionsHtml(t) {
   const sig = signalsFor(t);
-  if (!sig.all.length) {
-    return `<div class="todo"><div class="todo-clear">${ic('check-circle')}<span>Nothing needs doing — this table is running fine.</span></div></div>`;
+  const settling = sig.open.some(a => pending[aKey(t.id, a.id)]);
+  if (!sig.open.length && !settling) {
+    const nDone = sig.done.length;
+    return `<div class="todo all-good"><div class="todo-clear">${ic('check-circle','sm')}
+      <span>All good here</span>
+      ${nDone ? `<i>${nDone} handled</i>` : ''}</div></div>`;
   }
-  const CAP = 3;
-  const show = state.allActions ? sig.open : sig.open.slice(0, CAP);
-  const hidden = sig.open.length - show.length;
+  // Five rows, total. Work takes the slots first; whatever is left goes to
+  // talking points. Past that a waiter is reading, not glancing — so the rest
+  // sits behind one tap rather than making the list longer.
+  const nowRows  = state.allActions ? sig.now  : sig.now.slice(0, MAX_SHOW);
+  const slots    = Math.max(0, MAX_SHOW - nowRows.length);
+  const soft     = state.allActions ? sig.soft : sig.soft.slice(0, slots);
+  const hidden   = (sig.now.length - nowRows.length) + (sig.soft.length - soft.length);
   const total = sig.all.length, doneN = sig.done.length;
 
-  const row = a => `<button class="todo-row ${a.lvl}" data-do="${a.id}">
-      <span class="tick">${ic('check')}</span>
-      <span class="todo-b">
-        <span class="todo-a">${a.act}</span>
-        <span class="todo-w">${a.why}</span>
-      </span>
-      ${a.who === 'manager' ? `<span class="todo-who">Manager</span>` : ''}
-    </button>`;
+  /* Two ways out of every row, because "not applicable" is a real answer.
+     Dismiss sits left, done sits right, and either one strikes the row through
+     and holds it for three seconds with Undo in place — no hunting for a
+     toast at the other end of the screen. */
+  const row = a => {
+    const p = pending[aKey(t.id, a.id)];
+    return `<div class="todo-row ${a.isStale?'late':a.lvl} ${a.isNew?'is-new':''} ${p?'settling '+p.kind:''}"
+                 data-k="${t.id}:${a.id}">
+      <button class="todo-x" data-drop="${a.id}" title="Not applicable — dismiss" ${p?'disabled':''}>${ic('x','sm')}</button>
+      <div class="todo-b">
+        <span class="todo-a">${a.act}
+          ${p ? '' : a.isStale ? `<span class="todo-age">${ic('timer','xs')} ${a.openMin}m</span>`
+                   : (a.isNew ? `<span class="todo-flag">New</span>` : '')}</span>
+        <span class="todo-w">${p ? (p.kind==='done' ? val(a.done,null) || 'Done' : 'Dismissed — will not be raised again') : a.why}</span>
+      </div>
+      ${p ? `<button class="todo-undo" data-undo="${a.id}">${ic('undo-2','xs')} Undo</button>`
+          : `${a.who === 'manager' ? `<span class="todo-who">Manager</span>` : ''}
+             <button class="tick-hit" data-do="${a.id}" title="Mark done"><span class="tick">${ic('check')}</span></button>`}
+    </div>`;
+  };
 
-  return `<div class="todo">
-    <div class="todo-h"><b>What to do</b><span class="todo-prog">${doneN} of ${total} done</span></div>
-    ${show.map(row).join('')}
-    ${sig.done.map(a => `<div class="todo-row is-done">
-        <span class="tick">${ic('check')}</span>
-        <span class="todo-b"><span class="todo-a">${a.done}</span></span>
-      </div>`).join('')}
+  const staleN = sig.stale.length;
+  return `<div class="todo${staleN?' has-late':''}">
+    <div class="todo-h"><b>${sig.now.length ? 'Do now' : 'What to do'}</b>
+      ${staleN ? `<span class="todo-warn">${ic('timer','xs')} ${staleN} overdue</span>` : ''}
+      <span class="todo-prog">${doneN} of ${total} done</span></div>
+    ${nowRows.map(row).join('')}
+    ${nowRows.length && soft.length ? `<div class="todo-sub">${ic('message-square','xs')} Worth mentioning while you are there</div>` : ''}
+    ${soft.map(row).join('')}
+
     ${hidden ? `<button class="todo-more" id="act-more">+ ${hidden} more</button>` : ''}
-    ${state.allActions && sig.open.length > CAP ? `<button class="todo-more" id="act-more">Show fewer</button>` : ''}
+    ${state.allActions && sig.open.length > MAX_SHOW ? `<button class="todo-more" id="act-more">Show fewer</button>` : ''}
   </div>`;
 }
 
@@ -1997,6 +2454,7 @@ function openDetail(id) {
   const t = T(id); if (!t || t.status === 'vacant' || t.status === 'blocked') return;
   state.detailId = id;
   state.allActions = false;
+  markTableSeen(id);
   const party = partyOf(t);
   if (!state.activeGuest || !party.includes(state.activeGuest)) state.activeGuest = party[0];
   renderDetail();
@@ -2009,10 +2467,15 @@ function renderElsewhere() {
   const others = openCalls().filter(x => x.id !== state.detailId);
   el.classList.toggle('on', others.length > 0);
   if (!others.length) { el.innerHTML = ''; return; }
-  el.innerHTML = `<span class="dm-el-l">${ic('bell-ring','xs')} ${others.length === 1
-      ? `Table ${others[0].id} is waiting` : `${others.length} tables are waiting`}</span>
-    ${others.slice(0,3).map(x => `<button class="dm-el-b ${callHeat(x.call)}" data-goto="${x.id}">
-      ${x.id} · ${x.call.min}m</button>`).join('')}`;
+  el.innerHTML = `<button class="dm-el" id="dm-el-back"
+      title="Back to the floor — these tables are waiting">
+    ${ic('bell-ring','xs')}
+    <span class="dm-el-l">${others.length === 1 ? '1 table waiting' : `${others.length} tables waiting`}</span>
+    <span class="dm-el-n">${others.slice(0,4).map(x =>
+      `<em class="${callHeat(x.call)==='hot'?'hot':''}">${x.id}<i>${x.call.min}m</i></em>`).join('')}${
+      others.length > 4 ? `<em class="more">+${others.length-4}</em>` : ''}</span>
+    ${ic('chevron-right','xs')}
+  </button>`;
   icons();
 }
 
@@ -2028,9 +2491,7 @@ function renderDetail() {
 
   /* null-data rule: hide anything that is zero or unknown rather than showing "0" */
   const stats = [];
-  const SENT = { positive:['smile','#8fe0b0'], mixed:['meh','#dcae6e'], negative:['frown','#e8a099'] };
   if (g.rating)    stats.push(`<span class="gstat">${ic('star')} ${g.rating}</span>`);
-  if (g.sentiment && SENT[g.sentiment]) stats.push(`<span class="gstat" style="color:${SENT[g.sentiment][1]}">${ic(SENT[g.sentiment][0])} ${g.sentiment}</span>`);
   if (g.lastVisit) stats.push(`<span class="gstat">${ic('calendar')} ${g.lastVisit}</span>`);
   if (g.visits)    stats.push(`<span class="gstat">${ic('repeat')} ${g.visits}x</span>`);
   if (g.avgSpend)  stats.push(`<span class="gstat">${ic('banknote')} ${money(g.avgSpend).replace('.00','')}</span>`);
@@ -2215,6 +2676,44 @@ function doGesture(tid, gid, label) {
     () => { delete gestureDone[tid + ':' + gid]; renderManager(); renderGrid(); });
 }
 
+/* What a manager can put on a table, at their own discretion. Pulse suggests
+   some of these; this list is the manual override, always available. */
+const COMPS = [
+  { id:'dessert',   icon:'cake-slice',      label:'Dessert' },
+  { id:'drinks',    icon:'wine',            label:'Round of drinks' },
+  { id:'champagne', icon:'martini',         label:'Glass of champagne' },
+  { id:'starter',   icon:'soup',            label:'Starter' },
+  { id:'coffee',    icon:'coffee',          label:'Coffee and petits fours' },
+  { id:'voucher',   icon:'ticket',          label:'Voucher for the next visit' },
+];
+const compsSent = {};      // table -> [label]
+
+function openComp(id) {
+  state.compId = id;
+  const t = T(id), g = t && t.guest ? guests[t.guest] : null;
+  document.getElementById('cp-title').textContent = `On the house — Table ${id}`;
+  document.getElementById('cp-sub').textContent = g
+    ? `${g.name.split(' ')[0]}${g.occasion ? ` · here for a ${g.occasion.toLowerCase()}` : ''}${t.call && callIsMgr(t.call) ? ' · raised a concern' : ''}`
+    : 'Choose what goes to the table with your compliments.';
+  document.getElementById('cp-grid').innerHTML = COMPS.map(c =>
+    `<button class="cp-opt" data-comp-pick="${c.id}">${ic(c.icon,'lg')}<span>${c.label}</span></button>`).join('');
+  const sent = compsSent[id] || [];
+  document.getElementById('cp-sent').innerHTML = sent.length
+    ? `<div class="fld-lbl" style="margin:0 0 8px">Already sent</div>` +
+      sent.map(l => `<span class="bkt gold">${ic('check','xs')} ${l}</span>`).join(' ')
+    : '';
+  open('veil-comp'); icons();
+}
+function sendComp(cid) {
+  const id = state.compId, c = COMPS.find(x => x.id === cid);
+  (compsSent[id] = compsSent[id] || []).push(c.label);
+  shut('veil-comp'); renderManager(); renderGrid();
+  toast(`${c.label} sent to Table ${id} — on the house`, c.icon, () => {
+    compsSent[id] = (compsSent[id] || []).filter(l => l !== c.label);
+    renderManager(); renderGrid();
+  });
+}
+
 /* One card per table. A manager scanning this screen should never see the
    same table twice — every reason it needs them, and every action they can
    take, collapses onto a single row. */
@@ -2234,7 +2733,11 @@ function mgrCard(t, o) {
       </div>
       ${o.whys.map((w,i) => `<div class="mg-why${i?' more':''}">${ic(w.icon,'xs')}<span>${w.text}</span></div>`).join('')}
     </div>
-    <div class="mg-act">${o.actions.join('')}</div>
+    <div class="mg-act">
+      ${o.actions.join('')}
+      <button class="mg-house" data-comp="${t.id}">${ic('hand-heart','xs')} On the house</button>
+      ${(compsSent[t.id]||[]).length ? `<span class="mg-sent">${ic('check','xs')} ${(compsSent[t.id]||[]).join(', ')}</span>` : ''}
+    </div>
   </div>`;
 }
 
@@ -2243,57 +2746,94 @@ function mgrCard(t, o) {
 function managerQueue() {
   const occupied = tables.filter(t => t.status === 'seated' || t.status === 'paid');
   const rows = [];
-  let nCalls = 0, nVisit = 0, nRisk = 0, nGest = 0;
+  let nCalls = 0, nVisit = 0, nRisk = 0, nGest = 0, nLate = 0;
 
   occupied.forEach(t => {
     const whys = [], actions = [];
     let rank = 99, tone = '', meta = `${t.pax} pax · ${dur(t.mins)} in`;
 
-    if (t.call) {
+    /* Water, cutlery, a question, "called the waiter" — all errands, and all
+       the floor's job. A manager is only pulled in when a guest is unhappy. */
+    if (t.call && callIsMgr(t.call)) {
       nCalls++; rank = 0; tone = 'red';
-      whys.push({ icon:callMain(t.call).icon,
-        text:`${callLabel(t.call)}.${callBlind(t.call)?` ${callBlind(t.call)}`:''}` });
-      meta = `waiting ${t.call.min}m · ${t.call.ack ? 'a waiter is on the way' : 'not acknowledged'}`;
-      if (!t.call.ack) actions.push(`<button class="mg-btn ghost" data-ack="${t.id}">On my way</button>`);
-      actions.push(`<button class="mg-btn" data-resolve="${t.id}">Resolve</button>`);
+      whys.push({ icon:'circle-alert',
+        text:`Raised a concern.${callBlind(t.call)?` ${callBlind(t.call)}`:''}` });
+      meta = `waiting ${t.call.min}m`;
+      actions.push({ r:0, html:`<button class="mg-btn" data-resolve="${t.id}">Handled</button>` });
     }
 
-    const mgrSig = signalsFor(t).open.filter(a => a.who === 'manager');
-    if (mgrSig.length) {
-      nVisit++; rank = Math.min(rank, 1); if (mgrSig.some(a => a.lvl === 'red')) tone = tone || 'red';
-      mgrSig.forEach(a => {
-        whys.push({ icon:a.icon, text:a.why });
-        actions.push(`<button class="mg-btn" data-do-mgr="${t.id}|${a.id}">${a.act}</button>`);
-      });
-    }
+    const mgrSig = signalsFor(t).open.filter(a => a.who === 'manager' && a.id !== 'call');
+    mgrSig.forEach(a => {
+      const r = a.mgrRank != null ? a.mgrRank : 2;
+      nVisit++; rank = Math.min(rank, r); if (a.lvl === 'red') tone = tone || 'red';
+      whys.push({ icon:a.icon, text:a.why });
+      actions.push({ r, html:`<button class="mg-btn" data-do-mgr="${t.id}|${a.id}">${a.act}</button>` });
+    });
 
     const b = bucketOfTable(t), g = guests[t.guest];
     if (g && (b === 'risk' || b === 'lapsed')) {
-      nRisk++; rank = Math.min(rank, 1); tone = tone || (b === 'risk' ? 'red' : 'amber');
+      // a bad last visit is its own thing; a quiet spell is a relationship
+      const r = b === 'risk' ? 1 : 2;
+      nRisk++; rank = Math.min(rank, r); tone = tone || (b === 'risk' ? 'red' : 'amber');
       const line = b === 'risk' ? `Last visit went wrong — ${g.prevIssue.toLowerCase()}.`
                                 : `Has not dined here since ${g.lastVisit}.`;
       if (!whys.some(w => w.text === line)) whys.push({ icon:'heart-crack', text:line });
+      if (!mgrSig.some(a => (a.mgrRank != null ? a.mgrRank : 2) === r) && !mgrVisited[t.id])
+        actions.push({ r, html:`<button class="mg-btn" data-mgr-visit="${t.id}">Visit the table</button>` });
+    }
+
+    /* Nothing being picked up is supervision, not an errand — that one is
+       squarely the manager's, and the decision is who they push it to. */
+    const st = signalsFor(t).stale;
+    if (st.length) {
+      nLate++; rank = Math.min(rank, 3); tone = tone || 'amber';
+      whys.push({ icon:'timer',
+        text:`${st[0].act} — nobody has closed it for ${st[0].openMin} min.` });
+      const since = chased[t.id] != null ? clockMin - chased[t.id] : null;
+      actions.push({ r:3, html: since != null
+        ? `<button class="mg-btn ghost" data-chase="${t.id}">${ic('check','xs')} ${t.server} chased ${since}m ago</button>`
+        : `<button class="mg-btn" data-chase="${t.id}">${ic('megaphone','xs')} Chase ${t.server}</button>` });
+      actions.push({ r:3, html:`<button class="mg-btn ghost" data-take="${t.id}|${st[0].id}">I will take it</button>` });
     }
 
     gesturesFor(t).forEach(x => {
-      nGest++; rank = Math.min(rank, 2);
+      nGest++; rank = Math.min(rank, 4);
       if (!whys.some(w => w.text === x.why)) whys.push({ icon:'gift', text:x.why });
-      actions.push(`<button class="mg-btn" data-gesture="${t.id}|${x.id}|${x.label}">${ic(x.icon,'xs')} ${x.label}</button>`);
+      actions.push({ r:4, html:`<button class="mg-btn" data-gesture="${t.id}|${x.id}|${x.label}">${ic(x.icon,'xs')} ${x.label}</button>` });
     });
 
-    if (rank === 99) return;
-    if (!actions.length) actions.push(`<button class="mg-btn ghost" data-goto="${t.id}">Open table</button>`);
-    rows.push({ t, rank, tone, whys, actions, meta });
+    /* Show the decisions that belong to why this card is here, plus money —
+       authorising a comp is always the manager's alone. A card offering six
+       buttons is a card nobody reads. */
+    const keep = actions.filter(a => a.r === rank || a.r === 4).slice(0, 3).map(a => a.html);
+    // a row with nothing to decide is not a row
+    if (rank === 99 || !keep.length) return;
+    rows.push({ t, rank, tone, whys: whys.slice(0, 3), actions: keep, meta });
   });
 
   rows.sort((a,b) => a.rank - b.rank || (b.t.call?.min||0) - (a.t.call?.min||0));
-  return { rows, occupied, counts:{ calls:nCalls, visit:nVisit, risk:nRisk, gest:nGest } };
+  return { rows, occupied, counts:{ calls:nCalls, visit:nVisit, risk:nRisk, gest:nGest, late:nLate } };
 }
 
+/* Four things a manager is actually for: an unhappy guest, a relationship
+   worth their own attention, work the floor has dropped, and money only they
+   can give away. Errands are not on this list. */
 const MG_SECTIONS = [
-  { rank:0, icon:'bell-ring', title:'Requests from the floor',  empty:'No open requests.', urgent:true },
-  { rank:1, icon:'crown',     title:'Needs you at the table',   empty:'No table needs you personally.' },
-  { rank:2, icon:'gift',      title:'Waiting on your approval', empty:'Nothing to authorise.' },
+  { rank:0, icon:'circle-alert', title:'A concern, raised just now', urgent:true,
+    rule:'They pressed “raise a concern” on their phone minutes ago. There is no detail — the app has no text field — so go and ask.',
+    empty:'Nobody has raised a concern.' },
+  { rank:1, icon:'heart-crack', title:'Last visit went badly',
+    rule:'Poor feedback or a service failure the last time they came in. Tonight is the visit that fixes it.',
+    empty:'Nobody on the floor was let down last time.' },
+  { rank:2, icon:'crown', title:'Worth a word from you',
+    rule:'Top spenders, regulars, and guests who have not been in for a while. A hello from the manager lands differently.',
+    empty:'No guest needs you personally right now.' },
+  { rank:3, icon:'timer', title:'Nobody has picked these up',
+    rule:`An action has been open ${STALE_MIN} minutes or more and no one has closed it. Chase the section, or take it on yourself.`,
+    empty:'The floor is keeping up.' },
+  { rank:4, icon:'gift', title:'Waiting on your approval',
+    rule:'Comps and vouchers. Only you can authorise money off a bill.',
+    empty:'Nothing to authorise.' },
 ];
 
 function renderManager() {
@@ -2305,15 +2845,16 @@ function renderManager() {
 
   /* A gesture on a table that is already listed higher up is not "nothing to
      authorise" — say where it went instead of claiming there is no work. */
-  const elsewhereGestures = rows.filter(r => r.rank < 2 && r.actions.some(a => a.includes('data-gesture'))).length;
+  const elsewhereGestures = rows.filter(r => r.rank < 4 && r.actions.some(a => a.includes('data-gesture'))).length;
 
   const sec = s => {
     const mine = rows.filter(r => r.rank === s.rank);
     let empty = s.empty;
-    if (s.rank === 2 && !mine.length && elsewhereGestures)
+    if (s.rank === 4 && !mine.length && elsewhereGestures)
       empty = `${elsewhereGestures} ${elsewhereGestures === 1 ? 'approval sits' : 'approvals sit'} on the ${elsewhereGestures === 1 ? 'table' : 'tables'} above.`;
     return `<div class="mg-sh ${s.urgent && mine.length ? 'urgent':''}">${ic(s.icon,'xs')} ${s.title}
         ${mine.length ? `<b>${mine.length}</b>` : ''}</div>
+      <div class="mg-rule">${s.rule}</div>
       ${mine.length ? mine.map(r => mgrCard(r.t, r)).join('')
                     : `<div class="mg-empty">${ic('check-circle','sm')} ${empty}</div>`}`;
   };
@@ -2325,9 +2866,9 @@ function renderManager() {
         <div class="mg-sub">${occupied.length} tables · ${covers} covers on the floor</div>
       </div>
       <div class="mg-stats">
-        <div class="mg-stat ${counts.calls?'red':''}"><b>${counts.calls}</b><span>Requests</span></div>
-        <div class="mg-stat"><b>${counts.visit}</b><span>Your tables</span></div>
-        <div class="mg-stat"><b>${counts.risk}</b><span>At risk</span></div>
+        <div class="mg-stat ${counts.calls?'red':''}"><b>${counts.calls}</b><span>Concerns now</span></div>
+        <div class="mg-stat"><b>${counts.risk}</b><span>Let down before</span></div>
+        <div class="mg-stat"><b>${counts.late}</b><span>Dropped</span></div>
         <div class="mg-stat"><b>${counts.gest}</b><span>To approve</span></div>
       </div>
     </div>
@@ -2336,6 +2877,7 @@ function renderManager() {
       <aside class="mg-side">
         <div class="mg-sh">${ic('users','xs')} Rest of the floor
           ${quiet.length ? `<b>${quiet.length}</b>` : ''}</div>
+        <div class="mg-rule">Running fine. Nothing here needs you.</div>
         ${quiet.length
           ? `<div class="mg-quiet">${quiet.map(t => `<button class="mg-q" data-goto="${t.id}">
                <span>${t.id}</span><em>${firstName(t)}</em><i>${dur(t.mins)}</i></button>`).join('')}</div>`
@@ -2343,6 +2885,44 @@ function renderManager() {
       </aside>
     </div>`;
   icons();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CLOSING A TABLE
+   The only moment staff reliably know something Pulse does not. Ask
+   once, keep it to one line, and never make it a gate.
+   ══════════════════════════════════════════════════════════════ */
+function closeTable(id) {
+  const t = T(id); if (!t) return;
+  turnTable(id);
+  shut('veil-close'); shut('veil-detail'); state.detailId = null;
+  renderGrid(); if (state.view === 'manager') renderManager();
+  toast(`Table ${id} closed`, 'check-circle');
+}
+function openClose(id) {
+  state.closeId = id; state.clCat = null;
+  const t = T(id), g = t && t.guest ? guests[t.guest] : null;
+  document.getElementById('cl-title').textContent = `Close Table ${id}`;
+  document.getElementById('cl-sub').textContent = g
+    ? `Anything worth remembering about ${g.name.split(' ')[0]} for next time? Optional.`
+    : 'Anything worth remembering about this table? Optional.';
+  document.getElementById('cl-text').value = '';
+  renderClCats(); open('veil-close'); icons();
+}
+function renderClCats() {
+  const el = document.getElementById('cl-cats'); if (!el) return;
+  el.innerHTML = REM_CATS.map(c =>
+    `<button class="pax ${state.clCat===c?'on':''}" data-cl="${c}" style="font-size:12.5px">${c}</button>`).join('');
+}
+function saveCloseNote() {
+  const txt = document.getElementById('cl-text').value.trim();
+  const id = state.closeId, t = T(id);
+  if (!txt) { closeTable(id); return; }                 // never gate on the note
+  const g = t && t.guest ? guests[t.guest] : null;
+  const line = `${state.clCat ? state.clCat + ': ' : ''}${txt}`;
+  if (g) (g.notes = g.notes || []).push(line);
+  closeTable(id);
+  toast(g ? `Saved to ${g.name.split(' ')[0]}` : 'Note saved to this table', 'bookmark-check');
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -2375,6 +2955,162 @@ function saveRemember() {
 /* ══════════════════════════════════════════════════════════════
    VIEWS
    ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   DESIGN GUIDE
+   Every element in the product, rendered from the same code the
+   product uses — so it cannot describe something that is no longer
+   true. A prototype's own legend.
+   ══════════════════════════════════════════════════════════════ */
+const GUIDE_SCREENS = [
+  { icon:'lamp-desk', name:'Table — the floor',
+    who:'The waiter, all shift',
+    what:'Every table as a card. The row above it holds anything waiting on staff.',
+    has:['Capsule row: guest requests and unattended work','Section picker and filters','One card per table, one indicator each'] },
+  { icon:'receipt-text', name:'Table — detail',
+    who:'The waiter, on the way to a table',
+    what:'What to do here, who is sitting here, and what is on the bill.',
+    has:['Do now, then Worth mentioning — five rows at most','Guest history, score and summary','Order items, recommendations, payment','A bar naming any other table that is waiting'] },
+  { icon:'crown', name:'Manager',
+    who:'The floor manager',
+    what:'One worklist. Each table appears once, under the most urgent reason it needs you.',
+    has:['Requests from the floor','Needs you at the table','Waiting on your approval — comps and vouchers','A roster of the quiet tables'] },
+  { icon:'shopping-bag', name:'Order · Menu',
+    who:'Anyone',
+    what:'Handled by the POS. Pulse reads them; it does not own them.',
+    has:['Placeholder in this prototype'] },
+  { icon:'settings', name:'Settings',
+    who:'Whoever is demonstrating Pulse',
+    what:'Switch the intelligence phase, raise a guest request, push the clock, read the roadmap.',
+    has:['Phase switch','Guest request simulator','Service clock','Theme','Full feature roadmap'] },
+];
+
+const GUIDE_RULES = [
+  ['Never make the waiter read', 'Every action is one line of what to do and one line of why. If a screen needs a paragraph, the screen is wrong.'],
+  ['One indicator per card', 'A floor card carries a single count badge. No second glyph competing with it — that is why the crown and the gold "just seated" treatment were removed.'],
+  ['Red is for intervention only', 'A guest is unhappy, or money is on the floor. Everything else is amber or gold, or it stops meaning anything.'],
+  ['Five rows, then stop', 'Nine true things about a table is a to-do list, not a briefing. Work takes the slots first.'],
+  ['Never invent what we cannot measure', 'The guest has five buttons and no free-text field, so Pulse never describes their problem — it says it does not know. Timing comes from order data, so it says "last ordered 34 min ago", never "the plates are sitting".'],
+  ['Every action has a way out', 'Done or dismissed. "Not applicable" is a real answer, and both are reversible.'],
+  ['Nothing may sit ignored', `An action nobody closes for ${STALE_MIN} minutes escalates to the floor row by name.`],
+];
+
+function guideHtml() {
+  const sw = (v, label) => `<div class="gd-sw"><span class="gd-chip" style="background:${v}"></span><b>${label}</b><i>${v}</i></div>`;
+  const demoCall = (types, min) => callCap({ id:'00', sec:'Indoor', call:{ types, min, seq:0 } });
+
+  return `<div class="setwrap gd">
+    <div class="gd-lede">
+      <h2>How to read Pulse</h2>
+      <p>Everything below is rendered by the product's own code. If a colour or a label changes,
+         this page changes with it — it cannot go out of date.</p>
+    </div>
+
+    <div class="set-h">1 · What a guest can send</div>
+    <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem — where it does not know, it says so.</div>
+    <div class="gd-rows">
+      ${CALL_ORDER.map(k => { const c = CALL_TYPES[k]; return `<div class="gd-row">
+        <span class="gd-a">${demoCall([k], k==='concern'?6:k==='waiter'?3:0)}</span>
+        <span class="gd-b"><b>${c.label}</b><i>${c.act}</i>${c.blind?`<em>Pulse adds: “${c.blind}”</em>`:''}</span>
+        <span class="gd-c">${c.wt}</span>
+      </div>`; }).join('')}
+      <div class="gd-row">
+        <span class="gd-a">${demoCall(['concern','water','cutlery'], 4)}</span>
+        <span class="gd-b"><b>Several at once</b><i>${callAct({types:['concern','water','cutlery']})}</i></span>
+        <span class="gd-c">One capsule, one trip, one tick — the wait counts from the first ask</span>
+      </div>
+    </div>
+
+    <div class="set-h" style="margin-top:30px">2 · How urgent is it</div>
+    <div class="set-sub">Three levels, and each means exactly one thing. A waiter should never have to work out which kind of thing they are looking at.</div>
+    <div class="gd-rows">
+      ${[['red','Intervene now','A guest is unhappy, or an order the kitchen has never seen','Raised a concern · Cart never placed · Last visit went wrong'],
+         ['amber','A task to do','Real work with a real cost if it slips','No order in 25 min · No drink in 20 · Table sitting unstarted · Clear and turn'],
+         ['gold','Something to say','Relational. Worth mentioning while you are there, never urgent','Welcome them back · Acknowledge the occasion · Offer the voucher']]
+        .map(([lvl,t,d,ex]) => `<div class="gd-row">
+          <span class="gd-a"><span class="tc-count ${lvl}">3</span></span>
+          <span class="gd-b"><b>${t}</b><i>${d}</i></span>
+          <span class="gd-c">${ex}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">3 · What happens to an action</div>
+    <div class="set-sub">An action gets lost two ways: nobody notices it arrive, or everybody ignores it afterwards. Both have a state you can see from across the room.</div>
+    <div class="gd-rows">
+      ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
+         ['<span class="tc-count amber">2</span>','Open','Being worked','Plain row, badge counts it'],
+         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Unattended',`${STALE_MIN} min and nobody has closed it`,'Age chip on the card, and its own group in the floor row'],
+         ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','The waiter ticked it','Moves to the done list. Reversible for five seconds'],
+         ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','The waiter said it does not apply','Removed and not raised again. Reversible for five seconds']]
+        .map(([a,t,d,e]) => `<div class="gd-row">
+          <span class="gd-a">${a}</span>
+          <span class="gd-b"><b>${t}</b><i>${d}</i></span>
+          <span class="gd-c">${e}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">4 · A table card, part by part</div>
+    <div class="set-sub">The floor is read from across a room. Every element on a card earns its place or comes off.</div>
+    <div class="gd-anat">
+      <div class="gd-demo">${(() => { const t = tables.find(x => (x.status==='seated') && signalsFor(x).open.length) || tables.find(x => x.status==='seated'); return t ? cardHtml(t) : '<div class="mg-empty">Seat a table to see a live card here.</div>'; })()}</div>
+      <ol class="gd-notes">
+        <li><b>Table number</b> — always top left, always the same place.</li>
+        <li><b>Count badge</b> — how many things to <em>do</em>, toned by the most urgent. Talking points are not counted; nine of those is not a briefing.</li>
+        <li><b>Guest name</b> — two lines if it needs them, a size smaller if it is long. Never cut. A table with no profile is <em>Guest</em>.</li>
+        <li><b>Covers and time</b> — party size and how long they have been sitting.</li>
+        <li><b>Bucket label</b> — derived, never typed: new, returning, regular, VIP, lapsed, at risk.</li>
+        <li><b>Top action</b> — the single most urgent line, with an age chip once nobody has closed it.</li>
+        <li><b>Bill</b> — green once settled, so a turnable table reads at a glance.</li>
+      </ol>
+    </div>
+
+    <div class="set-h" style="margin-top:30px">5 · Table states</div>
+    <div class="gd-states">
+      ${[['vacant','Vacant','Tap to seat a guest'],['seated','Seated','Service running'],
+         ['paid','Settled','Clear and turn it'],['blocked','Blocked','Not in service tonight']]
+        .map(([c,t,d]) => `<div class="gd-state"><span class="lg-sw ${c==='seated'?'':c}"></span><b>${t}</b><i>${d}</i></div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">6 · The screens</div>
+    <div class="gd-screens">
+      ${GUIDE_SCREENS.map(sc => `<div class="gd-screen">
+        <div class="gd-sh">${ic(sc.icon,'sm')}<b>${sc.name}</b></div>
+        <div class="gd-who">${sc.who}</div>
+        <p>${sc.what}</p>
+        <ul>${sc.has.map(h => `<li>${h}</li>`).join('')}</ul>
+      </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">7 · The three phases</div>
+    <div class="set-sub">Not how much data we hold — what Pulse does with it. Switch between them in Settings.</div>
+    <div class="gd-rows">
+      ${[1,2,3].map(pn => `<div class="gd-row">
+        <span class="gd-a"><span class="bkt ${state.phase>=pn?'gold':''}">${pn}</span></span>
+        <span class="gd-b"><b>${PHASE_META[pn].verb} — ${PHASE_META[pn].name}</b><i>${PHASE_META[pn].blurb}</i></span>
+        <span class="gd-c">${SIGNALS.filter(x=>x.phase===pn).length} actions · ${FEATURES.filter(f=>f.p===pn&&f.built).length} of ${FEATURES.filter(f=>f.p===pn).length} features built</span>
+      </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">8 · Colour</div>
+    <div class="set-sub">One accent. Red is rationed. Everything else is ink on a warm near-black.</div>
+    <div class="gd-sws">
+      ${sw('#d9b45f','Gold — the single accent')}
+      ${sw('#d8483f','Red — intervention only')}
+      ${sw('#d69a45','Amber — a task, or overdue')}
+      ${sw('#22b8a6','Teal — something to carry')}
+      ${sw('#3f9f6b','Green — settled')}
+      ${sw('#0b0b0c','Canvas')}
+      ${sw('#17181a','Card')}
+      ${sw('#f4f2ee','Ink')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">9 · Rules we hold to</div>
+    <div class="set-sub">The reasons things were taken out, not only put in.</div>
+    <div class="gd-rules">
+      ${GUIDE_RULES.map(([t,d],i) => `<div class="gd-rule"><span>${i+1}</span><div><b>${t}</b><p>${d}</p></div></div>`).join('')}
+    </div>
+  </div>`;
+}
+
 const STUBS = {
   order: ['shopping-bag','Orders','Live order tickets across the floor.'],
   menu:  ['utensils-crossed','Menu','Categories, dishes and availability.'],
@@ -2389,17 +3125,17 @@ function settingsHtml() {
         <span class="bkt ${live?'gold':''}">${live?'Live':'Off'}</span>
       </span>
       <span class="ph-body">${body}</span>
-      <span class="ph-n">${p===2?'':'+ '}${counts(p)} actions${p===3&&live?` · ${SIGNALS.length} total`:''}</span>
+      <span class="ph-n">${p===1?'':'+ '}${counts(p)} actions${p===3&&live?` · ${SIGNALS.length} in total`:''}</span>
     </button>`;
   };
   return `<div class="setwrap">
     <div class="set-h">Service intelligence</div>
     <div class="set-sub">Which layer of intelligence Pulse is running tonight. Each phase only adds actions we can genuinely ground in data.</div>
     <div class="ph-grid">
-      ${[1,2,3,4].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
+      ${[1,2,3].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
-    ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Call waiter</div>
-    <div class="set-sub">Requests arrive from the guest's QR. Trigger one to see the handoff from a guest's phone to the floor.</div>
+    ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Guest requests</div>
+    <div class="set-sub">Requests arrive from the guest's QR — five buttons on their phone, no free text. Trigger one to see the handoff to the floor.</div>
     <div class="call-sim">
       <div class="cs-row">
         <span class="fld-lbl" style="margin:0">Table</span>
@@ -2411,6 +3147,16 @@ function settingsHtml() {
         ${Object.keys(CALL_TYPES).map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
       </div>
       ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
+    </div>
+
+    <div class="set-h" style="margin-top:26px">Service clock</div>
+    <div class="set-sub">Pulse advances a minute at a time on its own. Push it forward to watch an action nobody has closed cross the ${STALE_MIN}-minute line and escalate.</div>
+    <div class="call-sim">
+      <div class="cs-btns">
+        <button class="pax" data-ff="5"  style="font-size:12.5px;padding:0 12px">+ 5 minutes</button>
+        <button class="pax" data-ff="15" style="font-size:12.5px;padding:0 12px">+ 15 minutes</button>
+      </div>
+      <div class="cs-live">${ic('timer','sm')} ${clockMin} min into service · ${unattended().length} ${unattended().length===1?'table':'tables'} unattended</div>
     </div>` : ''}
 
     <div class="set-h" style="margin-top:30px">Look</div>
@@ -2423,7 +3169,7 @@ function settingsHtml() {
     <div class="set-h" style="margin-top:30px">Roadmap</div>
     <div class="set-sub">Every feature on the plan, with the phase it lands in and who owns it. ${FEATURES.filter(f=>f.built).length} of ${FEATURES.length} are live in this prototype.</div>
     <div class="rm-tabs" id="rm-tabs">
-      ${[1,2,3,4].map(pn => `<button class="rm-tab ${state.rmPhase===pn?'on':''}" data-rm="${pn}">Phase ${pn} · ${PHASE_META[pn].verb}<span class="rm-n">${FEATURES.filter(f=>f.p===pn).length}</span></button>`).join('')}
+      ${[1,2,3].map(pn => `<button class="rm-tab ${state.rmPhase===pn?'on':''}" data-rm="${pn}">Phase ${pn} · ${PHASE_META[pn].verb}<span class="rm-n">${FEATURES.filter(f=>f.p===pn).length}</span></button>`).join('')}
     </div>
     <div class="rm-list">
       ${FEATURES.filter(f => f.p === state.rmPhase).map(f => `<div class="rm-row ${f.built?'built':''}">
@@ -2473,10 +3219,10 @@ function renderView() {
   document.getElementById('fab-edit').style.display = onTable ? '' : 'none';
   const vt = document.getElementById('view-title');
   vt.style.display = onTable ? 'none' : 'block';
-  vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings', manager:'Manager'})[state.view] || '';
+  vt.textContent = onTable ? '' : ({order:'Orders', menu:'Menu', settings:'Settings', manager:'Manager', guide:'Design guide'})[state.view] || '';
   const dot = document.getElementById('nav-mgr-dot');
   if (dot) {
-    const need = openCalls().length + tables.filter(t => (t.status==='seated'||t.status==='paid') && signalsFor(t).open.some(a=>a.who==='manager')).length;
+    const need = state.view === 'manager' ? 0 : managerQueue().rows.length;
     dot.textContent = need; dot.classList.toggle('on', need > 0);
   }
   const c = document.getElementById('content');
@@ -2498,6 +3244,8 @@ function renderView() {
     renderManager();
   } else if (state.view === 'settings') {
     c.innerHTML = settingsHtml();
+  } else if (state.view === 'guide') {
+    c.innerHTML = guideHtml();
   } else {
     const [i,t,s] = STUBS[state.view];
     c.innerHTML = `<div class="stub">${ic(i)}<b>${t}</b><span>${s}</span></div>`;
@@ -2521,6 +3269,33 @@ document.addEventListener('click', e => {
   }
 
   // bottom nav
+  const cmp = e.target.closest('[data-comp]');
+  if (cmp) { openComp(cmp.dataset.comp); return; }
+  const cpk = e.target.closest('[data-comp-pick]');
+  if (cpk) { sendComp(cpk.dataset.compPick); return; }
+  const ch = e.target.closest('[data-chase]');
+  if (ch) {
+    const t = T(ch.dataset.chase);
+    chased[t.id] = clockMin; renderManager();
+    toast(`Asked ${t.server} to pick up Table ${t.id}`, 'megaphone',
+      () => { delete chased[t.id]; renderManager(); });
+    return;
+  }
+  const tk = e.target.closest('[data-take]');
+  if (tk) {
+    const [tid, sid] = tk.dataset.take.split('|');
+    applyDone(tid, sid); repaint();
+    toast(`Table ${tid} — you took it on`, 'check-circle',
+      () => { delete doneActions[aKey(tid,sid)]; repaint(); });
+    return;
+  }
+  const mv = e.target.closest('[data-mgr-visit]');
+  if (mv) {
+    const id = mv.dataset.mgrVisit; mgrVisited[id] = true; renderManager();
+    toast(`Table ${id} — you visited`, 'user-check',
+      () => { delete mgrVisited[id]; renderManager(); });
+    return;
+  }
   const dg = e.target.closest('[data-gesture]');
   if (dg) { const [tid,gid,lbl] = dg.dataset.gesture.split('|'); doGesture(tid,gid,lbl); return; }
   const dm = e.target.closest('[data-do-mgr]');
@@ -2539,6 +3314,8 @@ document.addEventListener('click', e => {
     renderView(); toast(state.theme === 'light' ? 'Light theme on' : 'Dark theme on', state.theme === 'light' ? 'sun' : 'moon');
     return;
   }
+  const ff = e.target.closest('[data-ff]');
+  if (ff) { advanceClock(+ff.dataset.ff); return; }
   const rm = e.target.closest('[data-rm]');
   if (rm) { state.rmPhase = +rm.dataset.rm; renderView(); return; }
   const cb = e.target.closest('[data-call]');
@@ -2552,11 +3329,11 @@ document.addEventListener('click', e => {
   if (ph) {
     state.phase = +ph.dataset.phase;
     syncPhaseChip(); renderView();
-    toast(state.phase === 3 ? 'Phase 3 — live QR behaviour on' : 'Phase 2 — action layer only', 'zap');
+    toast(`Phase ${state.phase} — ${PHASE_META[state.phase].name}`, 'zap');
     return;
   }
   if (e.target.closest('#btn-phase')) {
-    state.phase = state.phase >= 4 ? 1 : state.phase + 1;
+    state.phase = state.phase >= 3 ? 1 : state.phase + 1;
     syncPhaseChip(); renderView();
     toast(`Phase ${state.phase} — ${PHASE_META[state.phase].name}`, 'zap');
     return;
@@ -2572,12 +3349,16 @@ document.addEventListener('click', e => {
   if (e.target.closest('#q-clear'))     { state.q = ''; state.searchOpen = false; renderView(); return; }
 
   // table card
-  if (e.target.closest('#cb-toggle')) { state.callsOpen = !state.callsOpen; renderCallBar(); return; }
-  const ackB = e.target.closest('[data-ack]');
-  if (ackB) { ackCall(ackB.dataset.ack); return; }
   const resB = e.target.closest('[data-resolve]');
   if (resB) { resolveCall(resB.dataset.resolve); return; }
   if (e.target.closest('#toast-undo')) { const f = undoFn; hideToast(); if (f) f(); return; }
+  if (e.target.closest('#dm-el-back')) {
+    // out to the floor rather than swapping this table for another one
+    shut('veil-detail'); state.detailId = null;
+    if (state.view !== 'table') { state.view = 'table';
+      document.querySelectorAll('#bnav button').forEach(b => b.classList.toggle('on', b.dataset.v === 'table')); }
+    renderView(); return;
+  }
   const goto = e.target.closest('[data-goto]');
   if (goto) { openDetail(goto.dataset.goto); return; }
   const card = e.target.closest('.tcard');
@@ -2608,7 +3389,11 @@ document.addEventListener('click', e => {
   const av = e.target.closest('[data-g]');
   if (av) { state.activeGuest = av.dataset.g; renderDetail(); return; }
   const doBtn = e.target.closest('[data-do]');
-  if (doBtn) { markDone(state.detailId, doBtn.dataset.do); return; }
+  if (doBtn) { closeRow(state.detailId, doBtn.dataset.do, 'done'); return; }
+  const dropBtn = e.target.closest('[data-drop]');
+  if (dropBtn) { closeRow(state.detailId, dropBtn.dataset.drop, 'drop'); return; }
+  const undoBtn = e.target.closest('[data-undo]');
+  if (undoBtn) { undoRow(state.detailId, undoBtn.dataset.undo); return; }
   if (e.target.closest('#act-more')) { state.allActions = !state.allActions; renderDetail(); return; }
   if (e.target.closest('#remember')) { openRemember(); return; }
   if (e.target.closest('#btn-paybill'))   { openPay(); return; }
@@ -2619,11 +3404,14 @@ document.addEventListener('click', e => {
   if (e.target.closest('#refresh-order')) { toast('Order refreshed from POS', 'refresh-cw'); return; }
   if (e.target.closest('#btn-closetable')) {
     const t = T(state.detailId);
-    turnTable(t.id);
-    shut('veil-detail'); renderGrid();
-    if (state.view === 'manager') renderManager();
-    toast(`Table ${t.id} closed`, 'check-circle'); return;
+    // Phase 3 asks for a note first — the moment staff know something we do not
+    if (state.phase >= 3) { openClose(t.id); return; }
+    closeTable(t.id); return;
   }
+  if (e.target.closest('#cl-skip')) { shut('veil-close'); closeTable(state.closeId); return; }
+  if (e.target.closest('#cl-save')) { saveCloseNote(); return; }
+  const cc = e.target.closest('[data-cl]');
+  if (cc) { state.clCat = state.clCat === cc.dataset.cl ? null : cc.dataset.cl; renderClCats(); return; }
   if (e.target.closest('#pay-confirm')) {
     const t = T(state.detailId);
     t.status = 'paid';
@@ -2655,6 +3443,23 @@ function syncPhaseChip() {
 }
 
 /* init */
+/* The shift did not start when this page loaded. Back-date the actions that
+   are already on screen, spread deterministically, so they do not all cross
+   the unattended line in the same minute — a floor where every table is late
+   tells a waiter nothing. One table is seeded past the line already, so the
+   escalated state is visible on arrival. */
+(function seedActionAges() {
+  const keep = state.phase;
+  state.phase = 3;                                  // age every phase's actions
+  tables.filter(t => t.status === 'seated' || t.status === 'paid').forEach(t => {
+    signalsFor(t).open.forEach((a, j) => {
+      actionSeen[aKey(t.id, a.id)] = -((+t.id * 7 + j * 5) % 13);
+    });
+    tableSeen[t.id] = 0;
+  });
+  state.phase = keep;
+})();
+actionSeen['12:recovery'] = -18;
 syncPhaseChip(); renderSecMenu(); renderGrid(); icons();
 </script>
 </body>
