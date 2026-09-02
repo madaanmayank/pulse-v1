@@ -8,9 +8,13 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 | **2 · Act** | Says what to do about it | Ticks it done, or dismisses it | The waiter acts without interpreting |
 | **3 · Anticipate** | Watches the phone and the clock | Gets there before the guest asks | Pulse spots it first, and nothing sits ignored |
 
-> The prototype carries its own **Design guide** screen, split in two: **part one** takes each phase in turn — what it puts on screen and every action it can raise, with the limit on each — and **part two** is the reference that applies to all of them. The block for the phase you are running says *Running now*. Every table on it is read out of the engine.
+> The prototype carries its own **Design guide** screen, reachable from the bottom nav and split in two.
 >
-> Older note: the Design guide screen — every element, colour, state and action rendered from the product's own code. Open it from the bottom nav.
+> **Part one** takes each phase in turn — what it puts on screen, and every action it can raise with the weight and the limit on each. The block for the phase you are running is marked *Running now*.
+>
+> **Part two** is the reference that applies to all three: urgency levels, the action lifecycle, an annotated live card, table states, the screens, the palette, and the rules.
+>
+> Every element, colour, state and limit on that page is rendered from the product's own code, so it cannot describe a rule that is no longer true.
 
 
 ## Phase 1 · Know
