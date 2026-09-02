@@ -153,23 +153,25 @@
      vertical list to scroll past, because a request that scrolls out of
      sight is a request nobody answers. */
   .needbar{
-    flex:0 0 auto;display:none;align-items:stretch;gap:0;
-    margin:0 18px 12px;border-radius:14px;
-    background:#141517;border:1px solid var(--line-soft);
-    overflow-x:auto;overflow-y:hidden;
+    flex:0 0 auto;display:none;flex-wrap:wrap;align-items:stretch;gap:8px;
+    margin:0 18px 12px;
     animation:barIn .28s cubic-bezier(.2,.7,.2,1) both;
   }
   .needbar.on{display:flex}
   @keyframes barIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-  .nb-grp{display:flex;align-items:center;gap:11px;padding:11px 15px;flex:0 0 auto}
-  .nb-grp + .nb-grp{border-left:1px solid var(--line-soft)}
+  .nb-grp{
+    display:flex;align-items:center;gap:11px;padding:10px 14px;flex:0 1 auto;min-width:0;
+    background:#141517;border:1px solid var(--line-soft);border-radius:14px;
+  }
+  .nb-grp .nb-caps{overflow-x:auto;overflow-y:hidden;min-width:0}
   .nb-lbl{
     display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap;
     font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
   }
   .nb-grp.guests .nb-lbl{color:#e8a099}
   .nb-grp.late   .nb-lbl{color:#d69a45}
-  .nb-caps{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .nb-grp.opening .nb-lbl{color:#8fd6c9}
+  .nb-caps{display:flex;align-items:center;gap:8px;flex:0 1 auto}
 
   /* a capsule: tap the body to go to the table, tick to clear it */
   .cap{
@@ -212,6 +214,12 @@
   .ci-water  {color:#4fd3c4}
   .ci-cutlery{color:#dcc39a}
   .ci.more{font-size:11px;font-weight:800;color:var(--ink-2);align-self:center}
+  /* a table that has just sat down is an opportunity, not an alarm — calm,
+     but present, because the window closes on its own */
+  .cap.opening{border-color:#2f5a54;background:rgba(34,184,166,.08)}
+  .cap.opening .cap-go{color:#a8e0d8}
+  .ci-opening{color:#5fd0c4}
+  .cap.opening.more{min-height:40px;padding:0 13px;font-size:12px;font-weight:800;color:#8fd6c9;display:inline-flex;align-items:center}
   .cap.late{border-color:#6d4f24;background:rgba(214,154,69,.13)}
   .cap.late .cap-go,.cap.late .cap-ic{color:#e8bd7d}
   .cap.late.more{min-height:40px;padding:0 13px;font-size:12px;font-weight:800;color:#e8bd7d}
@@ -223,12 +231,14 @@
   /* a concern is the manager's call — the floor is told, not tasked */
   .cap-mgr{display:inline-flex;align-items:center;margin-left:5px;color:var(--gold)}
 
-  body.light .needbar{background:#fffdf8;border-color:var(--line-soft)}
+  body.light .nb-grp{background:#fffdf8;border-color:var(--line-soft)}
   body.light .cap{background:#fff}
   body.light .cap.grave{background:rgba(184,54,46,.09);border-color:#e0b3ae}
   body.light .cap.grave .cap-go,body.light .cap.grave .cap-ic{color:#9c3a2f}
   body.light .cap.attend{background:rgba(217,180,95,.14)}
   body.light .cap.late{background:rgba(214,154,69,.14)}
+  body.light .cap.opening{background:rgba(34,184,166,.1);border-color:#9dd6cf}
+  body.light .cap.opening .cap-go{color:#12655c}
 
   /* ─────────── table grid ─────────── */
   .grid{
@@ -447,38 +457,101 @@
   body.light .dm-el:hover{color:#9c3a2f}
   body.light .dm-el-n em{background:rgba(184,54,46,.1);color:#9c3a2f}
 
-  .mg-grid{display:grid;grid-template-columns:minmax(0,1fr) 268px;gap:22px;align-items:start}
-  .mg-side{position:sticky;top:0;min-width:0}
-  .mg-sec-b{min-width:0}
+  /* ─────────── manager ───────────
+     A list, not a wall of cards. A manager reads this standing between
+     tables, so each table is one dense row: who, why, and the decisions. */
   .mg-sh{
     display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;
-    letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:20px 0 10px;
+    letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:22px 0 6px;
   }
   .mg-sh:first-child{margin-top:0}
   .mg-sh.urgent{color:var(--red)}
-  .mg-rest{
-    display:flex;align-items:center;gap:7px;padding:11px 15px;margin-top:2px;
-    font-size:12.5px;font-weight:700;color:#e8bd7d;
-    background:rgba(214,154,69,.09);border:1px dashed #6d4f24;border-radius:11px;
-  }
-  .mg-rule{
-    font-size:12px;color:var(--ink-3);line-height:1.5;margin:-4px 0 11px;max-width:74ch;
-  }
   .mg-sh b{margin-left:auto;font-size:10.5px;color:var(--ink-2);background:var(--line-soft);
     border-radius:99px;padding:2px 8px;font-weight:800;letter-spacing:0}
-  /* the manual lever sits below the suggested decisions, quieter than them */
+  .mg-rule{font-size:12px;color:var(--ink-3);line-height:1.5;margin:0 0 10px;max-width:78ch}
+
+  .mg-row{
+    display:grid;grid-template-columns:66px minmax(0,1fr) max-content;align-items:center;
+    gap:14px;padding:9px 12px 9px 0;margin-bottom:7px;min-height:62px;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;
+  }
+  .mg-row.red{border-color:#6b332c;background:linear-gradient(90deg,rgba(216,72,63,.09),transparent 40%),var(--card)}
+  .mg-row.amber{border-color:#5c4520}
+  .mg-t{
+    align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;
+    background:rgba(255,255,255,.03);border-right:1px solid var(--line-soft);
+  }
+  .mg-num{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+  .mg-sec{font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+  .mg-row.red .mg-num{color:#f0b3ab}
+  .mg-b{min-width:0}
+  .mg-top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .mg-name{font-size:14.5px;font-weight:800}
+  .mg-when{margin-left:auto;font-size:11px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .mg-why{display:flex;flex-direction:column;gap:2px;margin-top:3px}
+  .mg-why span{
+    display:flex;align-items:center;gap:6px;font-size:12.5px;color:#b4b2ac;line-height:1.4;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .mg-why svg{color:var(--ink-3);flex:0 0 auto}
+
+  /* decisions run across, not down — the row was mostly empty when they stacked */
+  .mg-act{display:flex;align-items:center;gap:7px;flex-wrap:nowrap;justify-content:flex-end}
+  .mg-btn{
+    min-height:36px;padding:0 13px;border-radius:9px;background:var(--gold-grad);color:var(--gold-ink);
+    font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+  .mg-btn svg{flex:0 0 auto}
+  .mg-btn:hover{filter:brightness(1.06)}
+  .mg-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .mg-btn.ghost:hover{background:rgba(255,255,255,.05)}
+  /* the manual lever: an icon, always there, never competing for the words */
   .mg-house{
     min-height:36px;padding:0 12px;border-radius:9px;white-space:nowrap;
-    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    display:inline-flex;align-items:center;gap:6px;
     background:none;border:1px dashed var(--gold-line);color:var(--gold-soft);
     font-size:12px;font-weight:800;
   }
-  .mg-house:hover{background:rgba(217,180,95,.1);border-style:solid}
-  .mg-sent{
-    display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
-    color:#8fe0b0;line-height:1.35;
+  .mg-house:hover{background:rgba(217,180,95,.12);border-style:solid}
+  .mg-house.nudge{border-style:solid;background:rgba(217,180,95,.08)}
+  .mg-house b{display:grid;place-items:center;min-width:16px;height:16px;border-radius:99px;
+    background:var(--gold);color:var(--gold-ink);font-size:10px;font-weight:800}
+  .mg-sent{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;color:#8fe0b0}
+
+  .mg-rest{
+    display:flex;align-items:center;gap:7px;padding:10px 14px;margin-bottom:7px;
+    font-size:12.5px;font-weight:700;color:#e8bd7d;
+    background:rgba(214,154,69,.09);border:1px dashed #6d4f24;border-radius:12px;
   }
-  .cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+  .mg-empty{
+    display:flex;align-items:center;gap:9px;padding:13px 15px;font-size:12.5px;color:var(--ink-3);
+    background:var(--card);border:1px dashed var(--line-soft);border-radius:12px;
+  }
+  .mg-empty svg{color:#5fae82}
+
+  .mg-quiet{display:flex;flex-wrap:wrap;gap:8px}
+  .mg-q{display:flex;align-items:center;gap:9px;min-height:40px;padding:0 12px 0 7px;text-align:left;
+    background:var(--card);border:1px solid var(--line-soft);border-radius:11px;color:var(--ink-2);
+    font-size:12.5px;transition:border-color .16s,color .16s}
+  .mg-q>span{flex:0 0 auto;display:grid;place-items:center;width:26px;height:26px;border-radius:8px;
+    background:var(--line-soft);color:var(--ink);font-weight:800;font-size:11.5px;font-variant-numeric:tabular-nums}
+  .mg-q>em{min-width:0;font-style:normal;font-weight:700;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mg-q>i{flex:0 0 auto;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .mg-q:hover{border-color:var(--gold-line);color:var(--ink)}
+
+  .cp-sug{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:left;margin-bottom:7px;
+    padding:11px 13px;border-radius:11px;background:rgba(217,180,95,.09);
+    border:1px solid var(--gold-line);color:var(--ink);
+  }
+  .cp-sug:hover{background:rgba(217,180,95,.18)}
+  .cp-sug > svg:first-child{color:var(--gold);flex:0 0 auto}
+  .cp-sug > svg:last-child{margin-left:auto;color:var(--gold-soft);flex:0 0 auto}
+  .cp-sug span{min-width:0;display:flex;flex-direction:column;gap:2px}
+  .cp-sug b{font-size:13px;font-weight:800}
+  .cp-sug i{font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.4}
+  .cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}
   .cp-opt{
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
     min-height:88px;padding:12px 8px;border-radius:12px;text-align:center;
@@ -487,70 +560,16 @@
   }
   .cp-opt svg{color:var(--gold)}
   .cp-opt:hover{border-color:var(--gold-line);background:rgba(217,180,95,.08)}
-  body.light .cp-opt{background:#fff}
   @media (max-width:520px){ .cp-grid{grid-template-columns:repeat(2,1fr)} }
 
-  .mg-quiet{display:flex;flex-direction:column;gap:7px}
-  .mg-q{display:flex;align-items:center;gap:9px;min-height:42px;padding:0 12px 0 8px;text-align:left;
-    background:var(--card);border:1px solid var(--line-soft);border-radius:11px;color:var(--ink-2);
-    font-size:12.5px;transition:border-color .16s,color .16s}
-  .mg-q>span{flex:0 0 auto;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;
-    background:var(--line-soft);color:var(--ink);font-weight:800;font-size:12px;font-variant-numeric:tabular-nums}
-  .mg-q>em{flex:1;min-width:0;font-style:normal;font-weight:700;color:var(--ink);
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .mg-q>i{flex:0 0 auto;font-style:normal;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-  .mg-q:hover{border-color:var(--gold-line);color:var(--ink)}
-  .mg-card{
-    display:flex;align-items:stretch;margin-bottom:9px;
-    background:var(--card);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden;
-  }
-  .mg-card.red{border-color:#6b332c;background:linear-gradient(180deg,rgba(216,72,63,.07),transparent 60%),var(--card)}
-  .mg-card.amber{border-color:#6d4f24}
-  .mg-t{
-    flex:0 0 auto;width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-    background:rgba(255,255,255,.03);border-right:1px solid var(--line-soft);
-  }
-  .mg-num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
-  .mg-sec{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
-  .mg-card.red .mg-num{color:#f0b3ab}
-  .mg-b{flex:1;min-width:0;padding:12px 14px}
-  .mg-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-  .mg-name{font-size:15px;font-weight:800}
-  .mg-why{font-size:12.5px;color:#b4b2ac;line-height:1.5;display:flex;gap:7px;align-items:flex-start}
-  .mg-why svg{color:var(--ink-3);margin-top:2px}
-  .mg-why.more{margin-top:5px;color:var(--ink-3)}
-  .mg-when{margin-left:auto;font-size:11px;color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums}
-  /* actions wrap rather than squeeze the reasons — a table can carry three
-     of them once a call, a manager signal and a gesture stack up. */
-  .mg-act{flex:0 0 auto;display:flex;flex-direction:column;align-items:stretch;justify-content:center;
-    gap:7px;padding:12px 14px 12px 4px;flex-basis:236px;max-width:236px}
-  /* a comp authorisation reads as a sentence — let it wrap rather than
-     truncate the amount off the end of the button */
-  .mg-btn{
-    min-height:40px;padding:9px 14px;border-radius:10px;background:var(--gold-grad);color:var(--gold-ink);
-    font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;
-    gap:7px;text-align:center;line-height:1.3;
-  }
-  .mg-btn svg{flex:0 0 auto}
-  .mg-btn:hover{filter:brightness(1.06)}
-  .mg-btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
-  .mg-btn.ghost:hover{background:rgba(255,255,255,.05)}
-  .mg-empty{
-    display:flex;align-items:center;gap:9px;padding:15px;font-size:12.5px;color:var(--ink-3);
-    background:var(--card);border:1px dashed var(--line-soft);border-radius:12px;
-  }
-  .mg-empty svg{color:#5fae82}
-  body.light .mg-card,body.light .mg-stat,body.light .mg-empty,body.light .mg-q{background:#fff}
+  body.light .mg-row,body.light .mg-stat,body.light .mg-empty,
+  body.light .mg-q,body.light .cp-opt{background:#fff}
   body.light .mg-t{background:rgba(0,0,0,.02)}
-  body.light .mg-why{color:#4f4b44}
+  body.light .mg-why span{color:#4f4b44}
   body.light .mg-btn.ghost:hover{background:rgba(0,0,0,.04)}
-  @media (max-width:1000px){ .mg-grid{grid-template-columns:1fr} .mg-side{position:static}
-    .mg-quiet{flex-direction:row;flex-wrap:wrap} .mg-q{flex:0 1 auto} }
-  @media (max-width:620px){
-    .mg-card{flex-wrap:wrap}
-    .mg-t{width:100%;flex-direction:row;gap:8px;padding:9px;border-right:none;border-bottom:1px solid var(--line-soft)}
-    .mg-act{width:100%;max-width:none;flex-direction:row;flex-wrap:wrap;padding:0 14px 12px}
-    .mg-btn{flex:1;justify-content:center}
+  @media (max-width:900px){
+    .mg-row{grid-template-columns:66px minmax(0,1fr);row-gap:8px;padding-bottom:11px}
+    .mg-act{grid-column:2;justify-content:flex-start;flex-wrap:wrap}
   }
 
   /* ─────────── design guide ───────────
@@ -1439,6 +1458,8 @@
     </div>
     <div class="sheet-body">
       <div class="fld-lbl" id="cp-sub"></div>
+      <div id="cp-sug"></div>
+      <div class="fld-lbl" style="margin:14px 0 0">Or choose anything</div>
       <div class="cp-grid" id="cp-grid"></div>
       <div id="cp-sent" style="margin-top:14px"></div>
     </div>
@@ -1685,8 +1706,8 @@ const FEATURES = [
     ui:'Capsule row above the floor, one per table with its kind and wait; red strip on the card; top of the checklist; and a waiting-elsewhere bar inside any open table',
     note:'Concern, question, waiter, water, cutlery. No free text on the guest side, so Pulse never shows a description' },
   { n:'Action lifecycle — new, unattended, done or dismissed', p:2, own:'Pulse', built:1, hero:1,
-    ui:'NEW flag on an action raised mid-meal, WAITING n MIN once nobody has closed it for 15, an Unattended group in the capsule row, and a dismiss × on every row',
-    note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after' },
+    ui:'New flag on an action raised mid-meal, an age chip once it passes its own limit, an Overdue group in the floor row, and a dismiss × on every row',
+    note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after. Each kind has its own patience' },
   { n:'Manager view — only what is actually a manager\u2019s job', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Manager tab: a guest is unhappy · needs you at the table · nobody has picked these up · waiting on your approval · a roster of the rest',
     note:'Water, cutlery, questions and "called the waiter" are errands and never reach this screen. Every row carries a decision, never an Open table link' },
@@ -1705,8 +1726,11 @@ const FEATURES = [
     ui:'“Welcome {name} back by name” adapts its reason for a regular or a lapsed guest; “Recommend the {dish}” falls back to their usual when there is no taste match',
     note:'Four signals saying two things is how a table ended up with nine' },
   { n:'The opening ten minutes', p:2, own:'Pulse', sup:'Data', built:1,
-    ui:'Amber row on a freshly seated table: settle them in, water and menus. Retires when they order, or hands over at ten minutes',
-    note:'Chased after 5 minutes — the first ten decide the visit' },
+    ui:'Amber row on a freshly seated table — pour water and hand them menus — plus a Just seated group in the floor row counting down the window. Retires when they order',
+    note:'Chased after 8 minutes. The first ten decide the visit' },
+  { n:'One floor row for everything time-critical', p:2, own:'Pulse', built:1, hero:1,
+    ui:'Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall',
+    note:'Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works' },
   { n:'Per-request patience', p:2, own:'Pulse', built:1, hero:1,
     ui:'Each request kind carries its own limit before Pulse says nobody picked it up — concern 3 min, question and waiter 6, water and cutlery 10',
     note:'Fifteen minutes for cutlery is defensible; fifteen for an unhappy guest is not' },
@@ -1825,24 +1849,24 @@ const SIGNALS = [
   /* ───────── PHASE 2 · from the guest profile and the POS we already have ───────── */
   { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-crack', score:96,
     on:c => c.g && c.g.prevIssue,
-    act:'Prioritise this table',
+    act:'Check on them twice as often',
     why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
-    done:'Table prioritised' },
+    done:'Table watched closely' },
 
   /* The opening. Retires the moment they order, or hands over to no-order. */
   { id:'new-table', phase:2, lvl:'amber', who:'waiter', icon:'hand-platter', score:90,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins <= 10,
-    act:'Settle them in — water and menus',
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins <= OPENING_MIN,
+    act:'Pour water and hand them menus',
     why:c => c.mins <= 1 ? 'Just sat down.' : `Seated ${dur(c.mins)}, nothing ordered yet.`,
-    done:'Table settled in', sla:8 },
+    done:'Water and menus done', sla:8 },
 
   { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
     // Phase 3 replaces this with something sharper off the guest's phone;
     // until then it is the only thing watching a table that has not ordered
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins > 10 && !(state.phase >= 3 && c.hasSw),
-    act:'Check in with the table',
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins > OPENING_MIN && !(state.phase >= 3 && c.hasSw),
+    act:'Go and take their order',
     why:c => `Seated ${dur(c.mins)}, nothing ordered.`,
-    done:'Checked in' },
+    done:'Order taken' },
 
   { id:'long-stay', phase:2, lvl:'amber', who:'waiter', icon:'hourglass', score:64,
     on:c => c.t.status === 'seated' && c.mins >= 180,
@@ -1853,7 +1877,7 @@ const SIGNALS = [
   /* One greeting, whatever the reason for it. */
   { id:'greet', phase:2, lvl:'gold', who:'waiter', icon:'star', score:74,
     on:c => c.g && c.g.visits >= 2 && c.bucket !== 'risk',
-    act:c => `Welcome ${c.g.name.split(' ')[0]} back by name`,
+    act:c => `Greet them as ${c.g.name.split(' ')[0]}`,
     why:c => c.bucket === 'lapsed'
       ? `${c.g.visits} visits, but not since ${c.g.lastVisit}.`
       : `${c.g.visits} visits, last ${c.g.lastVisit}.`,
@@ -1884,23 +1908,23 @@ const SIGNALS = [
   // they have a cart and never sent it. This is an order the kitchen has not seen.
   { id:'cart-unsent', phase:3, lvl:'red', who:'waiter', icon:'shopping-cart', score:93,
     on:c => c.sw.cartItems >= 1 && c.sw.cartMin >= 3,
-    act:'Nudge them to place the order',
+    act:'Ask them to send their order',
     why:c => `${c.sw.cartItems} items in their cart, never sent — ${c.sw.cartMin} min.`,
-    done:'Order placed' },
+    done:'Order sent' },
 
   // sitting there without even opening the menu
   { id:'idle-table', phase:3, lvl:'amber', who:'waiter', icon:'armchair', score:89,
     on:c => c.t.status === 'seated' && !c.t.dishes && c.hasSw && !c.sw.menuOpenMin && c.mins >= 8,
-    act:'Go and start them off',
+    act:'Take their order in person',
     why:c => `Sitting ${dur(c.mins)}, menu never opened.`,
-    done:'Table started' },
+    done:'Order taken in person' },
 
   // long in the menu, nothing added
   { id:'menu-stall', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:87,
     on:c => c.sw.menuOpenMin >= 6 && !c.sw.cartItems && !c.t.dishes,
-    act:'Go and help them choose',
+    act:'Talk them through the menu',
     why:c => `${c.sw.menuOpenMin} min in the menu, nothing added.`,
-    done:'Helped them choose' },
+    done:'Menu talked through' },
 
   // a long gap since anything was ordered
   { id:'course-gap', phase:3, lvl:'amber', who:'waiter', icon:'timer', score:85,
@@ -1932,9 +1956,9 @@ const SIGNALS = [
 
   { id:'occasion', phase:3, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
     on:c => c.g && c.g.occasion,
-    act:'Acknowledge the occasion',
+    act:c => `Mention the ${c.g.occasion.toLowerCase()}`,
     why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
-    done:'Occasion acknowledged' },
+    done:'Occasion mentioned' },
 
   { id:'voucher', phase:3, lvl:'gold', who:'waiter', icon:'ticket', score:62,
     on:c => c.g && c.g.voucher && c.t.status !== 'paid',
@@ -1994,7 +2018,8 @@ function staleAfter(s, c) {
   return s.sla || STALE_MIN;
 }
 const MAX_SHOW  = 5;      // rows a waiter will actually read at a glance
-const NB_CAP    = 5;      // capsules before the row stops being scannable
+const OPENING_MIN = 10;   // how long a table counts as newly seated
+const NB_CAP    = 4;      // capsules before a group stops being scannable
 const actionSeen = {};               // "table:signal" -> clockMin it appeared
 const tableSeen  = {};               // "table"        -> clockMin it first showed
 const dismissed  = {};               // "table:signal" -> true
@@ -2038,6 +2063,12 @@ function signalsFor(t) {
            liveNow:now.filter(live), stale:now.filter(x => x.isStale && live(x)) };
 }
 
+/* Tables in their opening minutes. The clock on a first impression runs
+   whether or not anyone is watching it. */
+function justSeated() {
+  return tables.filter(t => t.status === 'seated' && !t.dishes && (t.mins||0) <= OPENING_MIN)
+    .sort((a,b) => b.mins - a.mins);          // closest to losing the window first
+}
 /* Tables carrying an action nobody has closed. */
 function unattended() {
   return tables.filter(t => signalsFor(t).stale.length)
@@ -2312,6 +2343,16 @@ function callCap(t) {
 
 /* A table whose actions nobody has closed. No tick here — you have to open
    it and either do the thing or say it does not apply. */
+function freshCap(t) {
+  const left = OPENING_MIN - t.mins;
+  return `<span class="cap opening" title="${nameOf(t)} — seated ${dur(t.mins)}">
+    <button class="cap-go" data-goto="${t.id}">
+      <span class="cap-ic"><em class="ci ci-opening">${ic('hand-platter','sm')}</em></span>
+      <b>${t.id}</b><i>${t.mins}m</i>${left <= 3 ? `<em class="ci more">${left}m left</em>` : ''}
+    </button>
+  </span>`;
+}
+
 function lateCap(t) {
   const st = signalsFor(t).stale, a = st[0];
   return `<span class="cap late" title="${a.act} — open ${a.openMin} min">
@@ -2326,7 +2367,8 @@ function renderCallBar() {
   if (!bar) return;
   const calling = state.phase >= 2 ? openCalls() : [];
   const late    = state.phase >= 2 ? unattended() : [];
-  if (!calling.length && !late.length) { bar.classList.remove('on'); bar.innerHTML = ''; return; }
+  const fresh   = state.phase >= 2 ? justSeated() : [];
+  if (!calling.length && !late.length && !fresh.length) { bar.classList.remove('on'); bar.innerHTML = ''; return; }
   bar.className = 'needbar on';
   bar.innerHTML =
     (calling.length ? `<div class="nb-grp guests">
@@ -2334,10 +2376,15 @@ function renderCallBar() {
         <span class="nb-caps">${calling.map(callCap).join('')}</span>
       </div>` : '') +
     (late.length ? `<div class="nb-grp late">
-        <span class="nb-lbl">${ic('timer','sm')} Waited too long</span>
+        <span class="nb-lbl">${ic('timer','sm')} Overdue</span>
         <span class="nb-caps">${late.slice(0, NB_CAP).map(lateCap).join('')}${
           late.length > NB_CAP ? `<button class="cap late more" data-v-late="1"
-            title="Every unattended table is listed in the Manager tab">+${late.length - NB_CAP} more</button>` : ''}</span>
+            title="Every overdue table is listed in the Manager tab">+${late.length - NB_CAP} more</button>` : ''}</span>
+      </div>` : '') +
+    (fresh.length ? `<div class="nb-grp opening">
+        <span class="nb-lbl">${ic('hand-platter','sm')} Just seated</span>
+        <span class="nb-caps">${fresh.slice(0, NB_CAP).map(freshCap).join('')}${
+          fresh.length > NB_CAP ? `<span class="cap opening more">+${fresh.length - NB_CAP}</span>` : ''}</span>
       </div>` : '');
   icons();
 }
@@ -2755,6 +2802,12 @@ function openComp(id) {
   document.getElementById('cp-sub').textContent = g
     ? `${g.name.split(' ')[0]}${g.occasion ? ` · here for a ${g.occasion.toLowerCase()}` : ''}${t.call && callIsMgr(t.call) ? ' · raised a concern' : ''}`
     : 'Choose what goes to the table with your compliments.';
+  const sug = t ? gesturesFor(t) : [];
+  document.getElementById('cp-sug').innerHTML = sug.length
+    ? `<div class="fld-lbl" style="margin:14px 0 8px">${ic('sparkles','xs')} Pulse suggests</div>` +
+      sug.map(x => `<button class="cp-sug" data-gesture="${id}|${x.id}|${x.label}">
+        ${ic(x.icon,'sm')}<span><b>${x.label}</b><i>${x.why}</i></span>${ic('chevron-right','xs')}</button>`).join('')
+    : '';
   document.getElementById('cp-grid').innerHTML = COMPS.map(c =>
     `<button class="cp-opt" data-comp-pick="${c.id}">${ic(c.icon,'lg')}<span>${c.label}</span></button>`).join('');
   const sent = compsSent[id] || [];
@@ -2774,13 +2827,13 @@ function sendComp(cid) {
   });
 }
 
-/* One card per table. A manager scanning this screen should never see the
-   same table twice — every reason it needs them, and every action they can
-   take, collapses onto a single row. */
-function mgrCard(t, o) {
+/* A manager scans this screen standing up, between tables. So it is a list of
+   rows, not a wall of cards — the table, who is there, why it is on the list,
+   and the decisions, all on one line where the words allow. */
+function mgrRow(t, o) {
   const g = t.guest ? guests[t.guest] : null;
   const bkt = bucketOfTable(t);
-  return `<div class="mg-card ${o.tone||''}">
+  return `<div class="mg-row ${o.tone||''}">
     <button class="mg-t" data-goto="${t.id}">
       <span class="mg-num">${t.id}</span><span class="mg-sec">${t.sec||''}</span>
     </button>
@@ -2791,110 +2844,94 @@ function mgrCard(t, o) {
         ${g && g.score ? `<span class="bkt gold">${g.score.label}</span>` : ''}
         <span class="mg-when">${o.meta||''}</span>
       </div>
-      ${o.whys.map((w,i) => `<div class="mg-why${i?' more':''}">${ic(w.icon,'xs')}<span>${w.text}</span></div>`).join('')}
+      <div class="mg-why">${o.whys.map(w => `<span>${ic(w.icon,'xs')}${w.text}</span>`).join('')}</div>
     </div>
     <div class="mg-act">
       ${o.actions.join('')}
-      <button class="mg-house" data-comp="${t.id}">${ic('hand-heart','xs')} On the house</button>
-      ${(compsSent[t.id]||[]).length ? `<span class="mg-sent">${ic('check','xs')} ${(compsSent[t.id]||[]).join(', ')}</span>` : ''}
+      <button class="mg-house ${gesturesFor(t).length?'nudge':''}" data-comp="${t.id}"
+        title="${gesturesFor(t).length ? 'Pulse suggests something here' : 'Send something on the house'}">
+        ${ic('hand-heart','xs')} On the house${gesturesFor(t).length?`<b>${gesturesFor(t).length}</b>`:''}</button>
+      ${(compsSent[t.id]||[]).length ? `<span class="mg-sent" title="${(compsSent[t.id]||[]).join(', ')}">${ic('check','xs')} sent</span>` : ''}
     </div>
   </div>`;
 }
 
-/* Collect every manager-relevant reason for a table into one entry, then
-   file that entry under the single most urgent heading it qualifies for. */
+/* Three things a manager is for. A guest who is unhappy now and a guest who
+   was let down last time are the same job — putting it right — so they share
+   a section. Comps ride on whichever row they belong to rather than sitting
+   in a queue of their own. */
+const MG_SECTIONS = [
+  { rank:0, icon:'circle-alert', title:'Put it right', urgent:true,
+    rule:'A concern raised from their phone in the last few minutes, or a guest whose last visit went badly. Either way it is yours to fix.',
+    empty:'Nobody is unhappy.' },
+  { rank:1, icon:'crown', title:'Meet and greet',
+    rule:'Top spenders, regulars, and guests who have not been in for a while. A hello from the manager lands differently.',
+    empty:'No guest needs you personally right now.' },
+  { rank:2, icon:'timer', title:'Nobody has picked these up',
+    rule:'Past its limit with no one closing it. Push it to the section, or take it on yourself.',
+    empty:'The floor is keeping up.' },
+];
+
 function managerQueue() {
   const occupied = tables.filter(t => t.status === 'seated' || t.status === 'paid');
   const rows = [];
-  let nCalls = 0, nVisit = 0, nRisk = 0, nGest = 0, nLate = 0;
+  let nFix = 0, nGreet = 0, nLate = 0, nGest = 0;
 
   occupied.forEach(t => {
     const whys = [], actions = [];
-    let rank = 99, tone = '', meta = `${t.pax} pax · ${dur(t.mins)} in`;
+    let rank = 99, tone = '', meta = `${t.pax} pax · ${dur(t.mins)}`;
 
-    /* Water, cutlery, a question, "called the waiter" — all errands, and all
-       the floor's job. A manager is only pulled in when a guest is unhappy. */
+    // errands stay on the floor; only an unhappy guest reaches a manager
     if (t.call && callIsMgr(t.call)) {
-      nCalls++; rank = 0; tone = 'red';
-      whys.push({ icon:'circle-alert',
-        text:`Raised a concern.${callBlind(t.call)?` ${callBlind(t.call)}`:''}` });
-      meta = `waiting ${t.call.min}m`;
+      nFix++; rank = 0; tone = 'red';
+      whys.push({ icon:'circle-alert', text:`Raised a concern ${t.call.min}m ago — they could not say why.` });
       actions.push({ r:0, html:`<button class="mg-btn" data-resolve="${t.id}">Handled</button>` });
     }
 
     const mgrSig = signalsFor(t).open.filter(a => a.who === 'manager' && a.id !== 'call');
     mgrSig.forEach(a => {
-      const r = a.mgrRank != null ? a.mgrRank : 2;
-      nVisit++; rank = Math.min(rank, r); if (a.lvl === 'red') tone = tone || 'red';
+      const r = a.mgrRank != null ? a.mgrRank : 1;
+      if (r === 0) nFix++; else nGreet++;
+      rank = Math.min(rank, r); if (a.lvl === 'red') tone = tone || 'red';
       whys.push({ icon:a.icon, text:a.why });
       actions.push({ r, html:`<button class="mg-btn" data-do-mgr="${t.id}|${a.id}">${a.act}</button>` });
     });
 
     const b = bucketOfTable(t), g = guests[t.guest];
     if (g && (b === 'risk' || b === 'lapsed')) {
-      // a bad last visit is its own thing; a quiet spell is a relationship
-      const r = b === 'risk' ? 1 : 2;
-      nRisk++; rank = Math.min(rank, r); tone = tone || (b === 'risk' ? 'red' : 'amber');
+      const r = b === 'risk' ? 0 : 1;          // let down last time is putting it right
+      if (r === 0) nFix++; else nGreet++;
+      rank = Math.min(rank, r); tone = tone || (b === 'risk' ? 'red' : '');
       const line = b === 'risk' ? `Last visit went wrong — ${g.prevIssue.toLowerCase()}.`
-                                : `Has not dined here since ${g.lastVisit}.`;
+                                : `Not been in since ${g.lastVisit}.`;
       if (!whys.some(w => w.text === line)) whys.push({ icon:'heart-crack', text:line });
-      if (!mgrSig.some(a => (a.mgrRank != null ? a.mgrRank : 2) === r) && !mgrVisited[t.id])
+      if (!mgrSig.some(a => (a.mgrRank != null ? a.mgrRank : 1) === r) && !mgrVisited[t.id])
         actions.push({ r, html:`<button class="mg-btn" data-mgr-visit="${t.id}">Visit the table</button>` });
     }
 
-    /* Nothing being picked up is supervision, not an errand — that one is
-       squarely the manager's, and the decision is who they push it to. */
     const st = signalsFor(t).stale;
     if (st.length) {
-      nLate++; rank = Math.min(rank, 3); tone = tone || 'amber';
-      whys.push({ icon:'timer',
-        text:`${st[0].act} — nobody has closed it for ${st[0].openMin} min.` });
+      nLate++; rank = Math.min(rank, 2); tone = tone || 'amber';
+      whys.push({ icon:'timer', text:`${st[0].act} — open ${st[0].openMin}m, nobody has closed it.` });
       const since = chased[t.id] != null ? clockMin - chased[t.id] : null;
-      actions.push({ r:3, html: since != null
-        ? `<button class="mg-btn ghost" data-chase="${t.id}">${ic('check','xs')} ${t.server} chased ${since}m ago</button>`
+      actions.push({ r:2, html: since != null
+        ? `<button class="mg-btn ghost" data-chase="${t.id}">${ic('check','xs')} ${t.server} chased ${since}m</button>`
         : `<button class="mg-btn" data-chase="${t.id}">${ic('megaphone','xs')} Chase ${t.server}</button>` });
-      actions.push({ r:3, html:`<button class="mg-btn ghost" data-take="${t.id}|${st[0].id}">I will take it</button>` });
+      actions.push({ r:2, html:`<button class="mg-btn ghost" data-take="${t.id}|${st[0].id}">I'll take it</button>` });
     }
 
-    gesturesFor(t).forEach(x => {
-      nGest++; rank = Math.min(rank, 4);
-      if (!whys.some(w => w.text === x.why)) whys.push({ icon:'gift', text:x.why });
-      actions.push({ r:4, html:`<button class="mg-btn" data-gesture="${t.id}|${x.id}|${x.label}">${ic(x.icon,'xs')} ${x.label}</button>` });
-    });
+    nGest += gesturesFor(t).length;   // offered inside the On the house sheet
 
-    /* Show the decisions that belong to why this card is here, plus money —
-       authorising a comp is always the manager's alone. A card offering six
-       buttons is a card nobody reads. */
-    const keep = actions.filter(a => a.r === rank || a.r === 4).slice(0, 3).map(a => a.html);
-    // a row with nothing to decide is not a row
+    // only the decisions for why this row is here — two at most, so the row
+    // stays one line and the whole list can be read standing up
+    const keep = actions.filter(a => a.r === rank).slice(0, 2).map(a => a.html);
     if (rank === 99 || !keep.length) return;
-    rows.push({ t, rank, tone, whys: whys.slice(0, 3), actions: keep, meta });
+    rows.push({ t, rank, tone, whys: whys.slice(0, 2), actions: keep, meta });
   });
 
   rows.sort((a,b) => a.rank - b.rank || (b.t.call?.min||0) - (a.t.call?.min||0));
-  return { rows, occupied, counts:{ calls:nCalls, visit:nVisit, risk:nRisk, gest:nGest, late:nLate } };
+  return { rows, occupied, counts:{ fix:nFix, greet:nGreet, late:nLate, gest:nGest } };
 }
-
-/* Four things a manager is actually for: an unhappy guest, a relationship
-   worth their own attention, work the floor has dropped, and money only they
-   can give away. Errands are not on this list. */
-const MG_SECTIONS = [
-  { rank:0, icon:'circle-alert', title:'A concern, raised just now', urgent:true,
-    rule:'They pressed “raise a concern” on their phone minutes ago. There is no detail — the app has no text field — so go and ask.',
-    empty:'Nobody has raised a concern.' },
-  { rank:1, icon:'heart-crack', title:'Last visit went badly',
-    rule:'Poor feedback or a service failure the last time they came in. Tonight is the visit that fixes it.',
-    empty:'Nobody on the floor was let down last time.' },
-  { rank:2, icon:'crown', title:'Worth a word from you',
-    rule:'Top spenders, regulars, and guests who have not been in for a while. A hello from the manager lands differently.',
-    empty:'No guest needs you personally right now.' },
-  { rank:3, icon:'timer', title:'Nobody has picked these up',
-    rule:`An action has been open ${STALE_MIN} minutes or more and no one has closed it. Chase the section, or take it on yourself.`,
-    empty:'The floor is keeping up.' },
-  { rank:4, icon:'gift', title:'Waiting on your approval',
-    rule:'Comps and vouchers. Only you can authorise money off a bill.',
-    empty:'Nothing to authorise.' },
-];
 
 function renderManager() {
   const c = document.getElementById('manager-content');
@@ -2903,23 +2940,15 @@ function renderManager() {
   const covers = occupied.reduce((a,t) => a + (t.pax||0), 0);
   const quiet = occupied.filter(t => !rows.some(r => r.t.id === t.id));
 
-  /* A gesture on a table that is already listed higher up is not "nothing to
-     authorise" — say where it went instead of claiming there is no work. */
-  const elsewhereGestures = rows.filter(r => r.rank < 4 && r.actions.some(a => a.includes('data-gesture'))).length;
-
   const sec = s => {
     const mine = rows.filter(r => r.rank === s.rank);
-    let empty = s.empty;
-    if (s.rank === 4 && !mine.length && elsewhereGestures)
-      empty = `${elsewhereGestures} ${elsewhereGestures === 1 ? 'approval sits' : 'approvals sit'} on the ${elsewhereGestures === 1 ? 'table' : 'tables'} above.`;
-    const CAP = 5;
-    const shown = mine.slice(0, CAP), rest = mine.length - shown.length;
+    const CAP = 5, shown = mine.slice(0, CAP), rest = mine.length - shown.length;
     return `<div class="mg-sh ${s.urgent && mine.length ? 'urgent':''}">${ic(s.icon,'xs')} ${s.title}
         ${mine.length ? `<b>${mine.length}</b>` : ''}</div>
       <div class="mg-rule">${s.rule}</div>
-      ${mine.length ? shown.map(r => mgrCard(r.t, r)).join('') +
+      ${mine.length ? shown.map(r => mgrRow(r.t, r)).join('') +
           (rest ? `<div class="mg-rest">${ic('timer','xs')} and ${rest} more like this — the floor is behind, not one table</div>` : '')
-        : `<div class="mg-empty">${ic('check-circle','sm')} ${empty}</div>`}`;
+        : `<div class="mg-empty">${ic('check-circle','sm')} ${s.empty}</div>`}`;
   };
 
   c.innerHTML = `
@@ -2929,24 +2958,18 @@ function renderManager() {
         <div class="mg-sub">${occupied.length} tables · ${covers} covers on the floor</div>
       </div>
       <div class="mg-stats">
-        <div class="mg-stat ${counts.calls?'red':''}"><b>${counts.calls}</b><span>Concerns now</span></div>
-        <div class="mg-stat"><b>${counts.risk}</b><span>Let down before</span></div>
+        <div class="mg-stat ${counts.fix?'red':''}"><b>${counts.fix}</b><span>Put it right</span></div>
+        <div class="mg-stat"><b>${counts.greet}</b><span>Meet and greet</span></div>
         <div class="mg-stat"><b>${counts.late}</b><span>Dropped</span></div>
-        <div class="mg-stat"><b>${counts.gest}</b><span>To approve</span></div>
       </div>
     </div>
-    <div class="mg-grid">
-      <section class="mg-sec-b">${MG_SECTIONS.map(sec).join('')}</section>
-      <aside class="mg-side">
-        <div class="mg-sh">${ic('users','xs')} Rest of the floor
-          ${quiet.length ? `<b>${quiet.length}</b>` : ''}</div>
-        <div class="mg-rule">Running fine. Nothing here needs you.</div>
-        ${quiet.length
-          ? `<div class="mg-quiet">${quiet.map(t => `<button class="mg-q" data-goto="${t.id}">
-               <span>${t.id}</span><em>${firstName(t)}</em><i>${dur(t.mins)}</i></button>`).join('')}</div>`
-          : `<div class="mg-empty">${ic('check-circle','sm')} Every table needs something.</div>`}
-      </aside>
-    </div>`;
+    ${MG_SECTIONS.map(sec).join('')}
+    <div class="mg-sh">${ic('users','xs')} Rest of the floor ${quiet.length ? `<b>${quiet.length}</b>` : ''}</div>
+    <div class="mg-rule">Running fine. Nothing here needs you.</div>
+    ${quiet.length
+      ? `<div class="mg-quiet">${quiet.map(t => `<button class="mg-q" data-goto="${t.id}">
+           <span>${t.id}</span><em>${firstName(t)}</em><i>${dur(t.mins)}</i></button>`).join('')}</div>`
+      : `<div class="mg-empty">${ic('check-circle','sm')} Every table needs something.</div>`}`;
   icons();
 }
 
@@ -3062,9 +3085,9 @@ const GD_ACTION_NAMES = {
 };
 const GD_ACTION_ACTS = {
   suggest:'Recommend the closest dish to their taste, or lead with their usual',
-  greet:'Welcome them back by name', voucher:'Offer the voucher',
+  greet:'Greet them by their first name', voucher:'Offer the voucher',
   promo:'Mention the promotion', 'repeat-item':'Talk them through that dish',
-  browsing:'Offer to choose it with them',
+  browsing:'Offer to choose it with them', occasion:'Mention the occasion',
 };
 
 const GUIDE_RULES = [
@@ -3122,7 +3145,7 @@ function guideHtml() {
     <div class="gd-rows">
       ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
          ['<span class="tc-count amber">2</span>','Open','Being worked','Plain row, badge counts it'],
-         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Waited too long',`Past its own limit with nobody closing it — 3 min for a concern, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, its own group in the floor row, and a section in the Manager tab'],
+         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — 3 min for a concern, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
          ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','The waiter ticked it','Moves to the done list. Reversible for five seconds'],
          ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','The waiter said it does not apply','Removed and not raised again. Reversible for five seconds']]
         .map(([a,t,d,e]) => `<div class="gd-row">
@@ -3407,7 +3430,7 @@ document.addEventListener('click', e => {
     return;
   }
   const dg = e.target.closest('[data-gesture]');
-  if (dg) { const [tid,gid,lbl] = dg.dataset.gesture.split('|'); doGesture(tid,gid,lbl); return; }
+  if (dg) { const [tid,gid,lbl] = dg.dataset.gesture.split('|'); shut('veil-comp'); doGesture(tid,gid,lbl); return; }
   const dm = e.target.closest('[data-do-mgr]');
   if (dm) { const [tid,sid] = dm.dataset.doMgr.split('|'); markDone(tid,sid); return; }
   const nav = e.target.closest('#bnav button');
