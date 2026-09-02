@@ -2398,6 +2398,9 @@ function recoHtml(r) {
 /* The checklist. Three rows at most before it folds — beyond that the
    waiter is reading rather than acting. */
 function actionsHtml(t) {
+  // Phase 1 shows who is at the table and nothing more — no checklist to
+  // render, and no pretending the table is fine when nobody has looked.
+  if (state.phase < 2) return '';
   const sig = signalsFor(t);
   const settling = sig.open.some(a => pending[aKey(t.id, a.id)]);
   if (!sig.open.length && !settling) {
