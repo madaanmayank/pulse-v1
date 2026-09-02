@@ -573,6 +573,8 @@
   .gd-b i{font-style:normal;font-size:12.5px;color:var(--ink-2);line-height:1.45}
   .gd-b em{font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.45}
   .gd-c{font-size:12px;color:var(--ink-3);line-height:1.5;min-width:0}
+  .gd-sla{display:flex;align-items:center;gap:5px;margin-top:5px;font-style:normal;
+    font-size:11px;font-weight:800;color:#e8bd7d}
   .gd-tick{
     width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
     border:2px solid var(--line);color:var(--ink-3);
@@ -613,6 +615,31 @@
   .gd-chip{width:30px;height:30px;border-radius:8px;flex:0 0 auto;border:1px solid rgba(255,255,255,.14)}
   .gd-sw b{font-size:12.5px;font-weight:800;min-width:0}
   .gd-sw i{font-style:normal;margin-left:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+  .gd-ph{margin-bottom:14px;background:var(--card);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+  .gd-phh{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line-soft)}
+  .gd-phh svg{color:var(--gold)}
+  .gd-phh b{font-size:14.5px;font-weight:800}
+  .gd-phh span{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:700}
+  .gd-tbl{width:100%;border-collapse:collapse}
+  .gd-tbl th{
+    text-align:left;padding:9px 16px;font-size:10.5px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line-soft);
+  }
+  .gd-tbl td{padding:10px 16px;font-size:12.5px;color:var(--ink-2);border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .gd-tbl tr:last-child td{border-bottom:none}
+  .gd-tbl td b{color:var(--ink);font-weight:700}
+  .gd-lv{
+    display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    border-radius:5px;padding:2px 7px;white-space:nowrap;
+  }
+  .lv-red   .gd-lv{background:rgba(216,72,63,.18);color:#f0b3ab}
+  .lv-amber .gd-lv{background:rgba(214,154,69,.18);color:#e8bd7d}
+  .lv-gold  .gd-lv{background:rgba(217,180,95,.14);color:var(--gold-soft)}
+  .gd-slac{white-space:nowrap;font-weight:800;font-variant-numeric:tabular-nums;color:#e8bd7d}
+  .lv-gold .gd-slac{color:var(--ink-3);font-weight:700}
+  body.light .gd-ph{background:#fff}
+  @media (max-width:900px){ .gd-tbl th:nth-child(3),.gd-tbl td:nth-child(3){display:none} }
 
   .gd-rules{display:flex;flex-direction:column;gap:9px}
   .gd-rule{
@@ -1510,20 +1537,20 @@ const guests = {
 const CALL_TYPES = {
   concern: { label:'Raised a concern',  short:'Concern',  act:'Hear them out',
              icon:'circle-alert', kind:'grave', mgr:true,
-             blind:'They could not say what — go and ask.', done:'Concern heard',
+             blind:'They could not say what — go and ask.', done:'Concern heard', sla:3,
              wt:'A guest is unhappy and cannot say why — red' },
   query:   { label:'Has a question',    short:'Question', act:'Answer their question',
              icon:'message-circle-question', kind:'ask',
-             blind:'They could not say what about — go and ask.', done:'Question answered',
+             blind:'They could not say what about — go and ask.', done:'Question answered', sla:6,
              wt:'A guest is stuck and needs a person — violet' },
   waiter:  { label:'Called the waiter', short:'Waiter',   act:'Go to the table',
-             icon:'bell-ring', kind:'attend', done:'Attended',
+             icon:'bell-ring', kind:'attend', done:'Attended', sla:6,
              wt:'Someone has to go over — gold' },
   water:   { label:'Asked for water',   short:'Water',    act:'Take water over',
-             icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken',
+             icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken', sla:10,
              wt:'Something to carry — teal' },
   cutlery: { label:'Asked for cutlery', short:'Cutlery',  act:'Take cutlery over',
-             icon:'utensils', kind:'fetch', carry:'cutlery', done:'Cutlery taken',
+             icon:'utensils', kind:'fetch', carry:'cutlery', done:'Cutlery taken', sla:10,
              wt:'Something to carry — sand' },
 };
 /* Most urgent first. A table can have several outstanding at once — one trip
@@ -1544,6 +1571,9 @@ function callAct(c) {
 const callBlind = c => callTypes(c).map(k => CALL_TYPES[k].blind).filter(Boolean).join(' ');
 const callDone  = c => callTypes(c).length > 1 ? 'Table attended' : CALL_TYPES[callTypes(c)[0]].done;
 const callIsMgr = c => callTypes(c).some(k => CALL_TYPES[k].mgr);
+/* Several requests on one table inherit the tightest limit of the set — a
+   concern does not become patient because they also wanted water. */
+const callSla   = c => Math.min(...callTypes(c).map(k => CALL_TYPES[k].sla));
 
 /* Menu items carry a taste so a stated preference can become a named dish. */
 const DISH_TASTE = [
@@ -1583,7 +1613,9 @@ let tables = [
   // sat down and has not even opened the menu — probably waiting for someone
   { id:'02', sec:'Indoor', status:'seated', guest:'irf', others:true, pax:2, mins:14, bill:0, server:'Aisha', ticket:0, dishes:0,
     sw:{ menuOpenMin:0, itemsViewed:0 } },
-  { id:'03', sec:'Indoor', status:'vacant' },
+  // just sat down — the first ten minutes, and a name the waiter typed in
+  { id:'03', sec:'Indoor', status:'seated', guest:null, walkInName:'Priya Rajan', others:true,
+    pax:2, mins:3, bill:0, server:'Aisha', ticket:0, dishes:0 },
   { id:'04', sec:'Indoor', status:'seated', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:5 },
   // deep in the menu, nothing added
   { id:'05', sec:'Indoor', status:'seated', guest:null, others:true, pax:3, mins:19, bill:0, server:'Tom', ticket:0, dishes:0,
@@ -1669,10 +1701,16 @@ const FEATURES = [
     ui:'Red checklist row: prioritise this table' },
   { n:'Table taking no action — seated without ordering', p:2, own:'Data', sup:'Pulse', built:1,
     ui:'Amber checklist row at 20 minutes', note:'Timing computed in Pulse. Phase 3 replaces it with something sharper once we can see the phone' },
-  { n:'Recommend a dish for a stated preference', p:2, own:'Data', sup:'Pulse', built:1,
-    ui:'Checklist row naming the dish and the reason' },
-  { n:'Recommended next-visit voucher', p:2, own:'CRM', sup:'Data, Pulse', built:1, hero:1,
-    ui:'Checklist row: offer the voucher' },
+  { n:'One greeting and one suggestion, not four rows', p:2, own:'Pulse', sup:'Data', built:1,
+    ui:'“Welcome {name} back by name” adapts its reason for a regular or a lapsed guest; “Recommend the {dish}” falls back to their usual when there is no taste match',
+    note:'Four signals saying two things is how a table ended up with nine' },
+  { n:'The opening ten minutes', p:2, own:'Pulse', sup:'Data', built:1,
+    ui:'Amber row on a freshly seated table: settle them in, water and menus. Retires when they order, or hands over at ten minutes',
+    note:'Chased after 5 minutes — the first ten decide the visit' },
+  { n:'Per-request patience', p:2, own:'Pulse', built:1, hero:1,
+    ui:'Each request kind carries its own limit before Pulse says nobody picked it up — concern 3 min, question and waiter 6, water and cutlery 10',
+    note:'Fifteen minutes for cutlery is defensible; fifteen for an unhappy guest is not' },
+
   { n:'Remember this — staff teach the profile', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Two taps and a line on the guest card' },
   { n:'Section-wise table selection', p:2, own:'Pulse', built:1,
@@ -1706,6 +1744,8 @@ const FEATURES = [
   { n:'Managerial touchpoints', p:3, own:'Pulse', sup:'Data', built:1,
     ui:'Visit the table — on the manager card and as a Manager row in the checklist',
     note:'Judgement, not errands, so it only appears once the live layer is on' },
+  { n:'Recommended next-visit voucher', p:3, own:'CRM', sup:'Data, Pulse', built:1, hero:1,
+    ui:'Checklist row: offer the voucher', note:'A next-visit play, not a tonight play' },
   { n:'Available promotions', p:3, own:'CRM', sup:'Data, Pulse', built:1,
     ui:'Promotions card on the guest column, plus a checklist row to mention it',
     note:'Staff informs the guest — Pulse cannot apply it' },
@@ -1789,10 +1829,17 @@ const SIGNALS = [
     why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
     done:'Table prioritised' },
 
+  /* The opening. Retires the moment they order, or hands over to no-order. */
+  { id:'new-table', phase:2, lvl:'amber', who:'waiter', icon:'hand-platter', score:90,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins <= 10,
+    act:'Settle them in — water and menus',
+    why:c => c.mins <= 1 ? 'Just sat down.' : `Seated ${dur(c.mins)}, nothing ordered yet.`,
+    done:'Table settled in', sla:8 },
+
   { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
     // Phase 3 replaces this with something sharper off the guest's phone;
     // until then it is the only thing watching a table that has not ordered
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 12 && !(state.phase >= 3 && c.hasSw),
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins > 10 && !(state.phase >= 3 && c.hasSw),
     act:'Check in with the table',
     why:c => `Seated ${dur(c.mins)}, nothing ordered.`,
     done:'Checked in' },
@@ -1801,43 +1848,26 @@ const SIGNALS = [
     on:c => c.t.status === 'seated' && c.mins >= 180,
     act:'Offer the check',
     why:c => `On the table ${dur(c.mins)}.`,
-    done:'Check offered' },
+    done:'Check offered', sla:25 },
 
-  { id:'lapsed', phase:2, lvl:'gold', who:'waiter', icon:'calendar-clock', score:74,
-    on:c => c.bucket === 'lapsed',
-    act:'Make them feel remembered',
-    why:c => `${c.g.name.split(' ')[0]} last dined here ${c.g.lastVisit}.`,
-    done:'Guest welcomed back' },
-
-  { id:'regular', phase:2, lvl:'gold', who:'waiter', icon:'star', score:72,
-    on:c => c.g && c.g.visits >= 3 && c.bucket !== 'lapsed' && c.bucket !== 'risk',
-    act:'Welcome them back by name',
-    why:c => `${c.g.visits} visits, last ${c.g.lastVisit}.`,
+  /* One greeting, whatever the reason for it. */
+  { id:'greet', phase:2, lvl:'gold', who:'waiter', icon:'star', score:74,
+    on:c => c.g && c.g.visits >= 2 && c.bucket !== 'risk',
+    act:c => `Welcome ${c.g.name.split(' ')[0]} back by name`,
+    why:c => c.bucket === 'lapsed'
+      ? `${c.g.visits} visits, but not since ${c.g.lastVisit}.`
+      : `${c.g.visits} visits, last ${c.g.lastVisit}.`,
     done:'Welcomed back' },
 
-  { id:'usual', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:68,
-    on:c => c.g && c.g.summary && !c.t.dishes && c.g.visits >= 2,
-    act:'Lead with their usual',
-    why:c => c.g.summary,
-    done:'Usual suggested' },
-
-  { id:'recommend', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:76,
-    on:c => c.g && (c.g.tastes||[]).length && !c.t.dishes && dishForTaste(c.g.tastes),
-    act:c => { const d = dishForTaste(c.g.tastes); return `Recommend the ${d.name}`; },
-    why:c => { const d = dishForTaste(c.g.tastes); return `${c.g.name.split(' ')[0]} prefers ${d.taste}.`; },
-    done:'Dish recommended' },
-
-  { id:'voucher', phase:2, lvl:'gold', who:'waiter', icon:'ticket', score:62,
-    on:c => c.g && c.g.voucher && c.t.status !== 'paid',
-    act:c => `Offer ${c.g.voucher.label}`,
-    why:c => c.g.voucher.why + '.',
-    done:'Voucher offered' },
-
-  { id:'turn', phase:2, lvl:'amber', who:'waiter', icon:'badge-check', score:58,
-    on:c => c.t.status === 'paid',
-    act:'Clear and turn the table',
-    why:'Settled — every minute costs a cover.',
-    done:'Table cleared' },
+  /* One suggestion: the closest dish to their taste if we have one, their
+     usual if we do not. Never both. */
+  { id:'suggest', phase:2, lvl:'gold', who:'waiter', icon:'utensils', score:70,
+    on:c => c.g && !c.t.dishes && (dishForTaste(c.g.tastes) || c.g.summary),
+    act:c => { const d = dishForTaste(c.g.tastes);
+               return d ? `Recommend the ${d.name}` : 'Lead with their usual'; },
+    why:c => { const d = dishForTaste(c.g.tastes);
+               return d ? `${c.g.name.split(' ')[0]} prefers ${d.taste}.` : c.g.summary; },
+    done:'Dish suggested' },
 
   { id:'call', phase:2, lvl:'red', icon:'bell-ring', score:100,
     who:c => c.call && callIsMgr(c.call) ? 'manager' : 'waiter',
@@ -1906,6 +1936,12 @@ const SIGNALS = [
     why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
     done:'Occasion acknowledged' },
 
+  { id:'voucher', phase:3, lvl:'gold', who:'waiter', icon:'ticket', score:62,
+    on:c => c.g && c.g.voucher && c.t.status !== 'paid',
+    act:c => `Offer ${c.g.voucher.label}`,
+    why:c => c.g.voucher.why + '.',
+    done:'Voucher offered' },
+
   { id:'promo', phase:3, lvl:'gold', who:'waiter', icon:'megaphone', score:54,
     on:c => c.g && (c.g.promos||[]).length && !c.t.dishes,
     act:c => `Mention: ${c.g.promos[0]}`,
@@ -1951,7 +1987,12 @@ const val = (v,c) => typeof v === 'function' ? v(c) : v;
    Two ways out, because "not applicable" is a real answer: complete it, or
    dismiss it. Both are reversible.                                        */
 let clockMin = 0;                    // minutes of service, advanced by the tick
-const STALE_MIN = 15;
+const STALE_MIN = 15;     // Pulse's own actions. Guest requests set their own
+/* How long a thing may sit before Pulse says nobody has picked it up. */
+function staleAfter(s, c) {
+  if (s.id === 'call' && c.call) return callSla(c.call);
+  return s.sla || STALE_MIN;
+}
 const MAX_SHOW  = 5;      // rows a waiter will actually read at a glance
 const NB_CAP    = 5;      // capsules before the row stops being scannable
 const actionSeen = {};               // "table:signal" -> clockMin it appeared
@@ -1971,13 +2012,16 @@ function signalsFor(t) {
       const mgrRank = s.mgrRank;
       // first time Pulse can know this action exists is the moment it computes it
       if (actionSeen[k] === undefined) actionSeen[k] = clockMin;
-      const openMin = clockMin - actionSeen[k];
+      // A guest request is timed from the moment they pressed the button.
+      // Everything else is timed from when Pulse first raised it.
+      const openMin = (s.id === 'call' && c.call) ? c.call.min : clockMin - actionSeen[k];
       const isWork = s.lvl !== 'gold';     // gold is something to say, not a task
+      const limit  = staleAfter(s, c);
       return { id:s.id, lvl:s.lvl, who:val(s.who,c), mgrRank, icon:s.icon, score:s.score, phase:s.phase,
                why:val(s.why,c), act:val(s.act,c), done:val(s.done,c),
-               openMin,
-               isNew:   isWork && actionSeen[k] > tableSeen[t.id] && openMin < STALE_MIN,
-               isStale: isWork && openMin >= STALE_MIN,
+               openMin, limit,
+               isNew:   isWork && actionSeen[k] > tableSeen[t.id] && openMin < limit,
+               isStale: isWork && openMin >= limit,
                isDone:  !!doneActions[k], isDropped: !!dismissed[k] };
     })
     .filter(x => !x.isDropped);
@@ -2290,7 +2334,7 @@ function renderCallBar() {
         <span class="nb-caps">${calling.map(callCap).join('')}</span>
       </div>` : '') +
     (late.length ? `<div class="nb-grp late">
-        <span class="nb-lbl">${ic('timer','sm')} Unattended ${STALE_MIN}m+</span>
+        <span class="nb-lbl">${ic('timer','sm')} Waited too long</span>
         <span class="nb-caps">${late.slice(0, NB_CAP).map(lateCap).join('')}${
           late.length > NB_CAP ? `<button class="cap late more" data-v-late="1"
             title="Every unattended table is listed in the Manager tab">+${late.length - NB_CAP} more</button>` : ''}</span>
@@ -2678,7 +2722,8 @@ function gesturesFor(t) {
   const out = [];
   if (g.prevIssue) out.push({ id:'comp-recovery', icon:'wine',
     label:'Comp a round of drinks', why:`Last visit went wrong — ${g.prevIssue.toLowerCase()}.` });
-  if (g.voucher) out.push({ id:'comp-voucher', icon:'ticket',
+  // the voucher offer itself is Phase 3, so authorising one is too
+  if (g.voucher && state.phase >= 3) out.push({ id:'comp-voucher', icon:'ticket',
     label:`Authorise ${g.voucher.label}`, why:g.voucher.why + '.' });
   if (g.occasion && state.phase >= 3) out.push({ id:'comp-occasion', icon:'cake',
     label:'Send a complimentary dessert', why:`${g.name.split(' ')[0]} is here for a ${g.occasion.toLowerCase()}.` });
@@ -3002,6 +3047,26 @@ const GUIDE_SCREENS = [
     has:['Phase switch','Guest request simulator','Service clock','Theme','Full feature roadmap'] },
 ];
 
+/* Plain names for the engine's ids, and a plain phrasing for the actions
+   whose text is computed per table. */
+const GD_ACTION_NAMES = {
+  call:'A guest request', recovery:'Last visit went wrong', 'new-table':'The opening ten minutes',
+  'no-order':'Seated, nothing ordered', 'long-stay':'On the table a long time',
+  greet:'A returning guest', suggest:'A taste we know about',
+  'cart-unsent':'Cart built, order never placed', 'idle-table':'Menu never opened',
+  'menu-stall':'Long in the menu, nothing added', 'course-gap':'A long gap since anything was ordered',
+  'drink-refill':'A long gap since a drink was ordered', 'repeat-item':'One dish opened again and again',
+  browsing:'Lingering in one part of the menu', occasion:'An occasion', promo:'A promotion they qualify for',
+  voucher:'A next-visit voucher', 'mgr-recovery':'High-value guest let down last time',
+  'concern-mgr':'A concern, for the manager', 'vip-welcome':'A top spender',
+};
+const GD_ACTION_ACTS = {
+  suggest:'Recommend the closest dish to their taste, or lead with their usual',
+  greet:'Welcome them back by name', voucher:'Offer the voucher',
+  promo:'Mention the promotion', 'repeat-item':'Talk them through that dish',
+  browsing:'Offer to choose it with them',
+};
+
 const GUIDE_RULES = [
   ['Never make the waiter read', 'Every action is one line of what to do and one line of why. If a screen needs a paragraph, the screen is wrong.'],
   ['One indicator per card', 'A floor card carries a single count badge. No second glyph competing with it — that is why the crown and the gold "just seated" treatment were removed.'],
@@ -3009,7 +3074,7 @@ const GUIDE_RULES = [
   ['Five rows, then stop', 'Nine true things about a table is a to-do list, not a briefing. Work takes the slots first.'],
   ['Never invent what we cannot measure', 'The guest has five buttons and no free-text field, so Pulse never describes their problem — it says it does not know. Timing comes from order data, so it says "last ordered 34 min ago", never "the plates are sitting".'],
   ['Every action has a way out', 'Done or dismissed. "Not applicable" is a real answer, and both are reversible.'],
-  ['Nothing may sit ignored', `An action nobody closes for ${STALE_MIN} minutes escalates to the floor row by name.`],
+  ['Nothing may sit ignored', `Everything has a limit and escalates to the floor row by name once it passes. A concern gets three minutes; cutlery gets ten; something Pulse raised itself gets ${STALE_MIN}. Patience is not one number.`],
 ];
 
 function guideHtml() {
@@ -3024,12 +3089,13 @@ function guideHtml() {
     </div>
 
     <div class="set-h">1 · What a guest can send</div>
-    <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem — where it does not know, it says so.</div>
+    <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem — where it does not know, it says so.
+      Each kind has its own patience: the clock beside it is how long it may sit before Pulse says nobody has picked it up.</div>
     <div class="gd-rows">
       ${CALL_ORDER.map(k => { const c = CALL_TYPES[k]; return `<div class="gd-row">
         <span class="gd-a">${demoCall([k], k==='concern'?6:k==='waiter'?3:0)}</span>
         <span class="gd-b"><b>${c.label}</b><i>${c.act}</i>${c.blind?`<em>Pulse adds: “${c.blind}”</em>`:''}</span>
-        <span class="gd-c">${c.wt}</span>
+        <span class="gd-c">${c.wt}<em class="gd-sla">${ic('timer','xs')} chased after ${c.sla} min</em></span>
       </div>`; }).join('')}
       <div class="gd-row">
         <span class="gd-a">${demoCall(['concern','water','cutlery'], 4)}</span>
@@ -3042,7 +3108,7 @@ function guideHtml() {
     <div class="set-sub">Three levels, and each means exactly one thing. A waiter should never have to work out which kind of thing they are looking at.</div>
     <div class="gd-rows">
       ${[['red','Intervene now','A guest is unhappy, or an order the kitchen has never seen','Raised a concern · Cart never placed · Last visit went wrong'],
-         ['amber','A task to do','Real work with a real cost if it slips','No order in 25 min · No drink in 20 · Table sitting unstarted · Clear and turn'],
+         ['amber','A task to do','Real work with a real cost if it slips','The opening ten minutes · Seated with no order · No order in 25 min · No drink in 20'],
          ['gold','Something to say','Relational. Worth mentioning while you are there, never urgent','Welcome them back · Acknowledge the occasion · Offer the voucher']]
         .map(([lvl,t,d,ex]) => `<div class="gd-row">
           <span class="gd-a"><span class="tc-count ${lvl}">3</span></span>
@@ -3056,7 +3122,7 @@ function guideHtml() {
     <div class="gd-rows">
       ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
          ['<span class="tc-count amber">2</span>','Open','Being worked','Plain row, badge counts it'],
-         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Unattended',`${STALE_MIN} min and nobody has closed it`,'Age chip on the card, and its own group in the floor row'],
+         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Waited too long',`Past its own limit with nobody closing it — 3 min for a concern, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, its own group in the floor row, and a section in the Manager tab'],
          ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','The waiter ticked it','Moves to the done list. Reversible for five seconds'],
          ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','The waiter said it does not apply','Removed and not raised again. Reversible for five seconds']]
         .map(([a,t,d,e]) => `<div class="gd-row">
@@ -3066,7 +3132,33 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">4 · A table card, part by part</div>
+    <div class="set-h" style="margin-top:30px">4 · Every action, and when Pulse chases it</div>
+    <div class="set-sub">Each phase adds actions, and each action carries its own patience — how long it may sit
+      before Pulse says nobody has picked it up. Gold is something to say, so it never goes overdue.
+      A guest request is timed from the moment they pressed the button; everything else from when Pulse raised it.</div>
+    ${[2,3].map(pn => {
+      const rows = SIGNALS.filter(x => x.phase === pn);
+      const rank = { red:0, amber:1, gold:2 };
+      rows.sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
+      return `<div class="gd-ph">
+        <div class="gd-phh">${ic(pn===2?'list-checks':'radar','sm')}
+          <b>Phase ${pn} · ${PHASE_META[pn].verb}</b>
+          <span>${rows.length} actions${pn===3?` · on top of Phase 2's ${SIGNALS.filter(x=>x.phase===2).length}`:''}</span></div>
+        <table class="gd-tbl">
+          <tr><th>What it is</th><th>What the waiter does</th><th>Weight</th><th>Chased after</th></tr>
+          ${rows.map(x => {
+            const isCall = x.id === 'call';
+            const sla = isCall ? `${Math.min(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))}–${Math.max(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))} min`
+                     : x.lvl === 'gold' ? 'never' : `${x.sla || STALE_MIN} min`;
+            return `<tr class="lv-${x.lvl}">
+              <td><b>${GD_ACTION_NAMES[x.id] || x.id}</b></td>
+              <td>${isCall ? 'Depends on the request — see above' : (typeof x.act === 'function' ? GD_ACTION_ACTS[x.id] || '—' : x.act)}</td>
+              <td><span class="gd-lv">${x.lvl === 'red' ? 'Intervene' : x.lvl === 'amber' ? 'A task' : 'Say it'}</span></td>
+              <td class="gd-slac">${sla}</td></tr>`; }).join('')}
+        </table>
+      </div>`; }).join('')}
+
+    <div class="set-h" style="margin-top:30px">5 · A table card, part by part</div>
     <div class="set-sub">The floor is read from across a room. Every element on a card earns its place or comes off.</div>
     <div class="gd-anat">
       <div class="gd-demo">${(() => { const t = tables.find(x => (x.status==='seated') && signalsFor(x).open.length) || tables.find(x => x.status==='seated'); return t ? cardHtml(t) : '<div class="mg-empty">Seat a table to see a live card here.</div>'; })()}</div>
@@ -3081,14 +3173,14 @@ function guideHtml() {
       </ol>
     </div>
 
-    <div class="set-h" style="margin-top:30px">5 · Table states</div>
+    <div class="set-h" style="margin-top:30px">6 · Table states</div>
     <div class="gd-states">
       ${[['vacant','Vacant','Tap to seat a guest'],['seated','Seated','Service running'],
-         ['paid','Settled','Clear and turn it'],['blocked','Blocked','Not in service tonight']]
+         ['paid','Settled','Bill paid — free to clear'],['blocked','Blocked','Not in service tonight']]
         .map(([c,t,d]) => `<div class="gd-state"><span class="lg-sw ${c==='seated'?'':c}"></span><b>${t}</b><i>${d}</i></div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">6 · The screens</div>
+    <div class="set-h" style="margin-top:30px">7 · The screens</div>
     <div class="gd-screens">
       ${GUIDE_SCREENS.map(sc => `<div class="gd-screen">
         <div class="gd-sh">${ic(sc.icon,'sm')}<b>${sc.name}</b></div>
@@ -3098,7 +3190,7 @@ function guideHtml() {
       </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">7 · The three phases</div>
+    <div class="set-h" style="margin-top:30px">8 · The three phases</div>
     <div class="set-sub">Not how much data we hold — what Pulse does with it. Switch between them in Settings.</div>
     <div class="gd-rows">
       ${[1,2,3].map(pn => `<div class="gd-row">
@@ -3108,7 +3200,7 @@ function guideHtml() {
       </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">8 · Colour</div>
+    <div class="set-h" style="margin-top:30px">9 · Colour</div>
     <div class="set-sub">One accent. Red is rationed. Everything else is ink on a warm near-black.</div>
     <div class="gd-sws">
       ${sw('#d9b45f','Gold — the single accent')}
@@ -3121,7 +3213,7 @@ function guideHtml() {
       ${sw('#f4f2ee','Ink')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">9 · Rules we hold to</div>
+    <div class="set-h" style="margin-top:30px">10 · Rules we hold to</div>
     <div class="set-sub">The reasons things were taken out, not only put in.</div>
     <div class="gd-rules">
       ${GUIDE_RULES.map(([t,d],i) => `<div class="gd-rule"><span>${i+1}</span><div><b>${t}</b><p>${d}</p></div></div>`).join('')}
