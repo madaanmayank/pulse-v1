@@ -635,11 +635,68 @@
   .gd-sw b{font-size:12.5px;font-weight:800;min-width:0}
   .gd-sw i{font-style:normal;margin-left:auto;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
 
-  .gd-ph{margin-bottom:14px;background:var(--card);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
-  .gd-phh{display:flex;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--line-soft)}
-  .gd-phh svg{color:var(--gold)}
-  .gd-phh b{font-size:14.5px;font-weight:800}
-  .gd-phh span{margin-left:auto;font-size:11.5px;color:var(--ink-3);font-weight:700}
+  /* a part divider, so the phase-by-phase half and the reference half do not
+     read as one long undifferentiated list */
+  .gd-part{
+    display:flex;align-items:center;gap:9px;margin:0 0 6px;padding-bottom:11px;
+    border-bottom:1px solid var(--line);
+    font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-soft);
+  }
+  .gd-part svg{color:var(--gold)}
+
+  /* one block per phase */
+  .gd-pblock{
+    margin-bottom:14px;border-radius:14px;overflow:hidden;
+    background:var(--card);border:1px solid var(--line-soft);
+  }
+  .gd-pblock.live{border-color:var(--gold-line)}
+  .gd-pbh{display:flex;align-items:center;gap:13px;padding:14px 16px;border-bottom:1px solid var(--line-soft)}
+  .gd-pblock.live .gd-pbh{background:rgba(217,180,95,.07)}
+  .gd-pbn{
+    flex:0 0 auto;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    background:var(--line-soft);color:var(--ink-2);font-size:14px;font-weight:800;
+  }
+  .gd-pblock.live .gd-pbn{background:var(--gold-grad);color:var(--gold-ink)}
+  .gd-pbh > div{min-width:0}
+  .gd-pbh b{display:block;font-size:15px;font-weight:800}
+  .gd-pbh i{display:block;font-style:normal;font-size:12px;color:var(--ink-3);margin-top:2px}
+  .gd-pbs{
+    margin-left:auto;flex:0 0 auto;font-size:10.5px;font-weight:800;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink-3);border:1px solid var(--line);
+    border-radius:99px;padding:4px 10px;white-space:nowrap;
+  }
+  .gd-pblock.live .gd-pbs{color:var(--gold-soft);border-color:var(--gold-line);background:rgba(217,180,95,.1)}
+  .gd-pbb{padding:15px 16px 16px}
+  .gd-pblede{font-size:13px;color:var(--ink-2);line-height:1.6;max-width:82ch}
+  .gd-sub2{
+    display:flex;align-items:center;gap:7px;margin:18px 0 9px;
+    font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  }
+  .gd-sub2 svg{color:var(--gold)}
+  .gd-sub2 span{
+    margin-left:6px;font-size:10px;background:var(--line-soft);color:var(--ink-2);
+    border-radius:99px;padding:2px 7px;letter-spacing:0;
+  }
+  .gd-surf{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:8px}
+  .gd-s{
+    padding:11px 13px;border-radius:10px;
+    background:rgba(255,255,255,.025);border:1px solid var(--line-soft);
+  }
+  .gd-s b{display:block;font-size:12.5px;font-weight:800;margin-bottom:3px}
+  .gd-s i{font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.5}
+  .gd-pbnote{
+    display:flex;gap:8px;margin-top:12px;padding:11px 13px;border-radius:10px;
+    background:rgba(217,180,95,.07);border:1px dashed var(--gold-line);
+    font-size:12px;color:var(--ink-2);line-height:1.55;
+  }
+  .gd-pbnote svg{color:var(--gold-soft);flex:0 0 auto;margin-top:2px}
+  .gd-pbfoot{margin-top:13px;font-size:11.5px;color:var(--ink-3);font-weight:700}
+  .gd-ph3{
+    font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    background:rgba(217,180,95,.16);border:1px solid var(--gold-line);color:var(--gold-soft);
+    border-radius:5px;padding:1px 5px;margin-left:5px;vertical-align:1px;
+  }
+  body.light .gd-pblock,body.light .gd-s{background:#fff}
   .gd-tbl{width:100%;border-collapse:collapse}
   .gd-tbl th{
     text-align:left;padding:9px 16px;font-size:10.5px;font-weight:800;letter-spacing:.08em;
@@ -1802,7 +1859,7 @@ const PHASE_META = {
   1:{ verb:'Know', name:'Guest intelligence', blurb:'Who is at the table. Everything here is display — Pulse shows what it knows and the waiter decides what it means.' },
   2:{ verb:'Act',  name:'Action layer',       blurb:'The same information turned into a checklist. Scores, buckets, recovery, guest requests and a table sitting without ordering all become one thing to do.' },
   3:{ verb:'Anticipate', name:'Live behaviour and timing',
-      blurb:'The guest\u2019s phone and the clock. A cart built but never sent, a menu open too long, a table nobody has touched, mains going cold, glasses empty — and the calls that are the manager\u2019s to make.' },
+      blurb:'The guest\u2019s phone and the clock. A cart built but never sent, a menu open with nothing added, a table nobody has started, a long gap since anything was ordered — and the calls that are the manager\u2019s to make.' },
 };
 
 
@@ -3100,39 +3157,128 @@ const GUIDE_RULES = [
   ['Nothing may sit ignored', `Everything has a limit and escalates to the floor row by name once it passes. A concern gets three minutes; cutlery gets ten; something Pulse raised itself gets ${STALE_MIN}. Patience is not one number.`],
 ];
 
+/* What each phase actually puts on screen, in the order a reader needs it:
+   the frame, then each phase on its own, then the reference that applies to
+   all of them. Every list below is either declared here or read straight out
+   of the engine. */
+const GUIDE_PHASES = {
+  1: { icon:'eye', adds:'Nothing to do — only what we know',
+       surfaces:[
+         ['Guest card','Name, visit count, days since the last visit, usual spend'],
+         ['Stat row','Rating, taste tags, network customer score'],
+         ['Pulse Summary','A paragraph a captain would brief a waiter with'],
+         ['Dish recommendations','Known favourites and reorders in one strip'],
+       ],
+       note:'No checklist at all. Phase 1 is display, and a checklist with nothing in it would read as “this table is fine” rather than “Pulse is not advising yet”.' },
+  2: { icon:'list-checks', adds:'The same information becomes work',
+       surfaces:[
+         ['The checklist','Do now, then Worth mentioning. Five rows at most, work first'],
+         ['The floor row','Guests waiting · Overdue · Just seated, as capsules above the grid'],
+         ['Guest requests','Five buttons on the guest\'s phone arrive here — see below'],
+         ['The action lifecycle','New · Overdue · Done · Dismissed, each visible from across the room'],
+         ['Count badge on the card','How many things to do, toned by the most urgent'],
+         ['Score and bucket chips','Top 5% of your guests · Regular · At risk — derived, never typed'],
+         ['The Manager tab','Put it right · Meet and greet · Nobody has picked these up'],
+       ] },
+  3: { icon:'radar', adds:'The phone and the clock',
+       surfaces:[
+         ['Live QR behaviour','A cart built and never sent, a menu open with nothing added, a table nobody has started, one dish opened over and over'],
+         ['Timing from order data','A long gap since anything was ordered, or since a drink was'],
+         ['Managerial touchpoints','Visit the table — judgement, not errands, so it waits for this phase'],
+         ['Occasion and promotions','The occasion chip, the promotions card, and a next-visit voucher to offer'],
+         ['Bucket label on the floor card','At risk · Lapsed · VIP, visible without opening the table'],
+         ['A note when a table closes','Optional, one line, the moment staff know something Pulse does not'],
+       ] },
+};
+
 function guideHtml() {
   const sw = (v, label) => `<div class="gd-sw"><span class="gd-chip" style="background:${v}"></span><b>${label}</b><i>${v}</i></div>`;
   const demoCall = (types, min) => callCap({ id:'00', sec:'Indoor', call:{ types, min, seq:0 } });
+  const rank = { red:0, amber:1, gold:2 };
+
+  /* the action table for one phase, straight out of the engine */
+  const actionTable = pn => {
+    const rows = SIGNALS.filter(x => x.phase === pn).slice()
+      .sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
+    if (!rows.length) return `<div class="mg-empty">${ic('check-circle','sm')} This phase raises no actions — it only shows what we know.</div>`;
+    return `<table class="gd-tbl">
+      <tr><th>What it is</th><th>What the waiter does</th><th>Weight</th><th>Chased after</th></tr>
+      ${rows.map(x => {
+        const isCall = x.id === 'call';
+        const sla = isCall ? `${Math.min(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))}–${Math.max(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))} min`
+                 : x.lvl === 'gold' ? 'never' : `${x.sla || STALE_MIN} min`;
+        return `<tr class="lv-${x.lvl}">
+          <td><b>${GD_ACTION_NAMES[x.id] || x.id}</b></td>
+          <td>${isCall ? 'Depends on the request' : (typeof x.act === 'function' ? GD_ACTION_ACTS[x.id] || '—' : x.act)}</td>
+          <td><span class="gd-lv">${x.lvl === 'red' ? 'Intervene' : x.lvl === 'amber' ? 'A task' : 'Say it'}</span></td>
+          <td class="gd-slac">${sla}</td></tr>`; }).join('')}
+    </table>`;
+  };
+
+  const phaseBlock = pn => {
+    const g = GUIDE_PHASES[pn], m = PHASE_META[pn];
+    const built = FEATURES.filter(f => f.p === pn && f.built).length;
+    const total = FEATURES.filter(f => f.p === pn).length;
+    return `<section class="gd-pblock p${pn} ${state.phase >= pn ? 'live' : ''}">
+      <header class="gd-pbh">
+        <span class="gd-pbn">${pn}</span>
+        <div>
+          <b>Phase ${pn} · ${m.verb}</b>
+          <i>${g.adds}</i>
+        </div>
+        <span class="gd-pbs">${state.phase >= pn ? 'Running now' : 'Switch on in Settings'}</span>
+      </header>
+      <div class="gd-pbb">
+        <p class="gd-pblede">${m.blurb}</p>
+        <div class="gd-sub2">${ic('layout-dashboard','xs')} What it puts on screen</div>
+        <div class="gd-surf">
+          ${g.surfaces.map(([n,d]) => `<div class="gd-s"><b>${n}</b><i>${d}</i></div>`).join('')}
+        </div>
+        <div class="gd-sub2">${ic('list-checks','xs')} The actions it can raise
+          <span>${SIGNALS.filter(x=>x.phase===pn).length}</span></div>
+        ${actionTable(pn)}
+        ${g.note ? `<p class="gd-pbnote">${ic('info','xs')} ${g.note}</p>` : ''}
+        <div class="gd-pbfoot">${built} of ${total} planned features for this phase are live in the prototype</div>
+      </div>
+    </section>`;
+  };
 
   return `<div class="setwrap gd">
     <div class="gd-lede">
       <h2>How to read Pulse</h2>
-      <p>Everything below is rendered by the product's own code. If a colour or a label changes,
-         this page changes with it — it cannot go out of date.</p>
+      <p>Everything below is rendered by the product's own code. If a colour, a label or a limit
+         changes, this page changes with it — it cannot go out of date.</p>
     </div>
 
-    <div class="set-h">1 · What a guest can send</div>
-    <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem — where it does not know, it says so.
-      Each kind has its own patience: the clock beside it is how long it may sit before Pulse says nobody has picked it up.</div>
+    <div class="gd-part">${ic('layers','sm')} Part one — what each phase gives you</div>
+    <div class="set-sub" style="margin-bottom:16px">Three phases. The difference is not how much data we hold, it is what Pulse does with it.
+      Switch between them in Settings; the block that is running says so.</div>
+    ${[1,2,3].map(phaseBlock).join('')}
+
+    <div class="set-h" style="margin-top:34px">Phase 2 · what a guest can send</div>
+    <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem —
+      where it does not know, it says so. The clock beside each is how long it may sit before Pulse calls it overdue.</div>
     <div class="gd-rows">
       ${CALL_ORDER.map(k => { const c = CALL_TYPES[k]; return `<div class="gd-row">
         <span class="gd-a">${demoCall([k], k==='concern'?6:k==='waiter'?3:0)}</span>
         <span class="gd-b"><b>${c.label}</b><i>${c.act}</i>${c.blind?`<em>Pulse adds: “${c.blind}”</em>`:''}</span>
-        <span class="gd-c">${c.wt}<em class="gd-sla">${ic('timer','xs')} chased after ${c.sla} min</em></span>
+        <span class="gd-c">${c.wt}<em class="gd-sla">${ic('timer','xs')} overdue after ${c.sla} min</em></span>
       </div>`; }).join('')}
       <div class="gd-row">
         <span class="gd-a">${demoCall(['concern','water','cutlery'], 4)}</span>
         <span class="gd-b"><b>Several at once</b><i>${callAct({types:['concern','water','cutlery']})}</i></span>
-        <span class="gd-c">One capsule, one trip, one tick — the wait counts from the first ask</span>
+        <span class="gd-c">One capsule, one trip, one tick — the wait counts from the first ask, and the set takes the tightest limit on it</span>
       </div>
     </div>
 
-    <div class="set-h" style="margin-top:30px">2 · How urgent is it</div>
-    <div class="set-sub">Three levels, and each means exactly one thing. A waiter should never have to work out which kind of thing they are looking at.</div>
+    <div class="gd-part" style="margin-top:38px">${ic('book-open-text','sm')} Part two — how to read any of it</div>
+
+    <div class="set-h">How urgent is it</div>
+    <div class="set-sub">Three levels, and each means exactly one thing.</div>
     <div class="gd-rows">
-      ${[['red','Intervene now','A guest is unhappy, or an order the kitchen has never seen','Raised a concern · Cart never placed · Last visit went wrong'],
-         ['amber','A task to do','Real work with a real cost if it slips','The opening ten minutes · Seated with no order · No order in 25 min · No drink in 20'],
-         ['gold','Something to say','Relational. Worth mentioning while you are there, never urgent','Welcome them back · Acknowledge the occasion · Offer the voucher']]
+      ${[['red','Intervene now','A guest is unhappy, or an order the kitchen has never seen','A concern · Cart never placed · Last visit went wrong'],
+         ['amber','A task to do','Real work with a real cost if it slips','The opening ten minutes · Seated with no order · No order in 25 min'],
+         ['gold','Something to say','Relational. Worth mentioning while you are there, never urgent','Greet them by name · Mention the occasion · Offer the voucher']]
         .map(([lvl,t,d,ex]) => `<div class="gd-row">
           <span class="gd-a"><span class="tc-count ${lvl}">3</span></span>
           <span class="gd-b"><b>${t}</b><i>${d}</i></span>
@@ -3140,14 +3286,14 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">3 · What happens to an action</div>
-    <div class="set-sub">An action gets lost two ways: nobody notices it arrive, or everybody ignores it afterwards. Both have a state you can see from across the room.</div>
+    <div class="set-h" style="margin-top:30px">What happens to an action</div>
+    <div class="set-sub">An action gets lost two ways: nobody notices it arrive, or everybody ignores it afterwards. Both have a state.</div>
     <div class="gd-rows">
       ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
          ['<span class="tc-count amber">2</span>','Open','Being worked','Plain row, badge counts it'],
          [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — 3 min for a concern, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
-         ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','The waiter ticked it','Moves to the done list. Reversible for five seconds'],
-         ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','The waiter said it does not apply','Removed and not raised again. Reversible for five seconds']]
+         ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','Ticked, right-hand side of the row','Strikes through and holds three seconds with Undo in place'],
+         ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','Dismissed, left-hand side of the row','Same grace period, then gone and not raised again']]
         .map(([a,t,d,e]) => `<div class="gd-row">
           <span class="gd-a">${a}</span>
           <span class="gd-b"><b>${t}</b><i>${d}</i></span>
@@ -3155,55 +3301,29 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">4 · Every action, and when Pulse chases it</div>
-    <div class="set-sub">Each phase adds actions, and each action carries its own patience — how long it may sit
-      before Pulse says nobody has picked it up. Gold is something to say, so it never goes overdue.
-      A guest request is timed from the moment they pressed the button; everything else from when Pulse raised it.</div>
-    ${[2,3].map(pn => {
-      const rows = SIGNALS.filter(x => x.phase === pn);
-      const rank = { red:0, amber:1, gold:2 };
-      rows.sort((a,b) => rank[a.lvl]-rank[b.lvl] || b.score-a.score);
-      return `<div class="gd-ph">
-        <div class="gd-phh">${ic(pn===2?'list-checks':'radar','sm')}
-          <b>Phase ${pn} · ${PHASE_META[pn].verb}</b>
-          <span>${rows.length} actions${pn===3?` · on top of Phase 2's ${SIGNALS.filter(x=>x.phase===2).length}`:''}</span></div>
-        <table class="gd-tbl">
-          <tr><th>What it is</th><th>What the waiter does</th><th>Weight</th><th>Chased after</th></tr>
-          ${rows.map(x => {
-            const isCall = x.id === 'call';
-            const sla = isCall ? `${Math.min(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))}–${Math.max(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))} min`
-                     : x.lvl === 'gold' ? 'never' : `${x.sla || STALE_MIN} min`;
-            return `<tr class="lv-${x.lvl}">
-              <td><b>${GD_ACTION_NAMES[x.id] || x.id}</b></td>
-              <td>${isCall ? 'Depends on the request — see above' : (typeof x.act === 'function' ? GD_ACTION_ACTS[x.id] || '—' : x.act)}</td>
-              <td><span class="gd-lv">${x.lvl === 'red' ? 'Intervene' : x.lvl === 'amber' ? 'A task' : 'Say it'}</span></td>
-              <td class="gd-slac">${sla}</td></tr>`; }).join('')}
-        </table>
-      </div>`; }).join('')}
-
-    <div class="set-h" style="margin-top:30px">5 · A table card, part by part</div>
+    <div class="set-h" style="margin-top:30px">A table card, part by part</div>
     <div class="set-sub">The floor is read from across a room. Every element on a card earns its place or comes off.</div>
     <div class="gd-anat">
-      <div class="gd-demo">${(() => { const t = tables.find(x => (x.status==='seated') && signalsFor(x).open.length) || tables.find(x => x.status==='seated'); return t ? cardHtml(t) : '<div class="mg-empty">Seat a table to see a live card here.</div>'; })()}</div>
+      <div class="gd-demo">${(() => { const t = tables.find(x => (x.status==='seated') && signalsFor(x).open.length) || tables.find(x => x.status==='seated'); return t ? cardHtml(t) : `<div class="mg-empty">Seat a table to see a live card here.</div>`; })()}</div>
       <ol class="gd-notes">
         <li><b>Table number</b> — always top left, always the same place.</li>
-        <li><b>Count badge</b> — how many things to <em>do</em>, toned by the most urgent. Talking points are not counted; nine of those is not a briefing.</li>
+        <li><b>Count badge</b> — how many things to <em>do</em>, toned by the most urgent, ringed once something is overdue. Talking points are not counted.</li>
         <li><b>Guest name</b> — two lines if it needs them, a size smaller if it is long. Never cut. A table with no profile is <em>Guest</em>.</li>
         <li><b>Covers and time</b> — party size and how long they have been sitting.</li>
-        <li><b>Bucket label</b> — derived, never typed: new, returning, regular, VIP, lapsed, at risk.</li>
+        <li><b>Bucket label</b> <span class="gd-ph3">Phase 3</span> — derived, never typed: new, returning, regular, VIP, lapsed, at risk.</li>
         <li><b>Top action</b> — the single most urgent line, with an age chip once nobody has closed it.</li>
         <li><b>Bill</b> — green once settled, so a turnable table reads at a glance.</li>
       </ol>
     </div>
 
-    <div class="set-h" style="margin-top:30px">6 · Table states</div>
+    <div class="set-h" style="margin-top:30px">Table states</div>
     <div class="gd-states">
       ${[['vacant','Vacant','Tap to seat a guest'],['seated','Seated','Service running'],
          ['paid','Settled','Bill paid — free to clear'],['blocked','Blocked','Not in service tonight']]
         .map(([c,t,d]) => `<div class="gd-state"><span class="lg-sw ${c==='seated'?'':c}"></span><b>${t}</b><i>${d}</i></div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">7 · The screens</div>
+    <div class="set-h" style="margin-top:30px">The screens</div>
     <div class="gd-screens">
       ${GUIDE_SCREENS.map(sc => `<div class="gd-screen">
         <div class="gd-sh">${ic(sc.icon,'sm')}<b>${sc.name}</b></div>
@@ -3213,30 +3333,20 @@ function guideHtml() {
       </div>`).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">8 · The three phases</div>
-    <div class="set-sub">Not how much data we hold — what Pulse does with it. Switch between them in Settings.</div>
-    <div class="gd-rows">
-      ${[1,2,3].map(pn => `<div class="gd-row">
-        <span class="gd-a"><span class="bkt ${state.phase>=pn?'gold':''}">${pn}</span></span>
-        <span class="gd-b"><b>${PHASE_META[pn].verb} — ${PHASE_META[pn].name}</b><i>${PHASE_META[pn].blurb}</i></span>
-        <span class="gd-c">${SIGNALS.filter(x=>x.phase===pn).length} actions · ${FEATURES.filter(f=>f.p===pn&&f.built).length} of ${FEATURES.filter(f=>f.p===pn).length} features built</span>
-      </div>`).join('')}
-    </div>
-
-    <div class="set-h" style="margin-top:30px">9 · Colour</div>
+    <div class="set-h" style="margin-top:30px">Colour</div>
     <div class="set-sub">One accent. Red is rationed. Everything else is ink on a warm near-black.</div>
     <div class="gd-sws">
       ${sw('#d9b45f','Gold — the single accent')}
       ${sw('#d8483f','Red — intervention only')}
       ${sw('#d69a45','Amber — a task, or overdue')}
-      ${sw('#22b8a6','Teal — something to carry')}
+      ${sw('#7d5cf6','Violet — a guest has a question')}
+      ${sw('#22b8a6','Teal — something to carry, or just seated')}
       ${sw('#3f9f6b','Green — settled')}
       ${sw('#0b0b0c','Canvas')}
-      ${sw('#17181a','Card')}
       ${sw('#f4f2ee','Ink')}
     </div>
 
-    <div class="set-h" style="margin-top:30px">10 · Rules we hold to</div>
+    <div class="set-h" style="margin-top:30px">Rules we hold to</div>
     <div class="set-sub">The reasons things were taken out, not only put in.</div>
     <div class="gd-rules">
       ${GUIDE_RULES.map(([t,d],i) => `<div class="gd-rule"><span>${i+1}</span><div><b>${t}</b><p>${d}</p></div></div>`).join('')}

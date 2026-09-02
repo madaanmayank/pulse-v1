@@ -8,7 +8,9 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 | **2 · Act** | Says what to do about it | Ticks it done, or dismisses it | The waiter acts without interpreting |
 | **3 · Anticipate** | Watches the phone and the clock | Gets there before the guest asks | Pulse spots it first, and nothing sits ignored |
 
-> The prototype carries its own **Design guide** screen — every element, colour, state and action rendered from the product's own code. Open it from the bottom nav.
+> The prototype carries its own **Design guide** screen, split in two: **part one** takes each phase in turn — what it puts on screen and every action it can raise, with the limit on each — and **part two** is the reference that applies to all of them. The block for the phase you are running says *Running now*. Every table on it is read out of the engine.
+>
+> Older note: the Design guide screen — every element, colour, state and action rendered from the product's own code. Open it from the bottom nav.
 
 
 ## Phase 1 · Know
@@ -60,7 +62,7 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 
 ## Phase 3 · Anticipate
 
-**Live behaviour and timing.** The guest’s phone and the clock. A cart built but never sent, a menu open too long, a table nobody has touched, mains going cold, glasses empty — and the calls that are the manager’s to make.
+**Live behaviour and timing.** The guest’s phone and the clock. A cart built but never sent, a menu open with nothing added, a table nobody has started, a long gap since anything was ordered — and the calls that are the manager’s to make.
 
 *26 features · 13 live in the prototype · 13 actions the engine can raise*
 
