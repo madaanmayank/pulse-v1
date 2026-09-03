@@ -3919,6 +3919,14 @@ function settingsHtml() {
     <div class="ph-grid">
       ${[1,2,3].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
+
+    <div class="set-h" style="margin-top:28px">Floor layout</div>
+    <div class="set-sub">Two ways to read the same floor, and the one most worth trying. Detailed shows everything Pulse knows; Focus shows one thing to do per table and counts the rest. The cards are the same size either way — it is what goes in them that changes, on the floor and inside an open table.</div>
+    <div class="ly-opts">
+      ${LAYOUTS.map(([id,name,desc]) => `<button class="ly-opt ${state.layout===id?'on':''}" data-layout="${id}">
+        <b>${name}${state.layout===id?' · running now':''}</b><i>${desc}</i>
+      </button>`).join('')}
+    </div>
     ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Guest requests</div>
     <div class="set-sub">${state.phase >= 3
       ? 'Five buttons on the guest\'s phone, no free text. Trigger one to see the handoff to the floor.'
@@ -3935,14 +3943,6 @@ function settingsHtml() {
             .map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
       </div>
       ${anyCalls() ? `<div class="cs-live">${ic('hand','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
-    </div>
-
-    <div class="set-h">Floor layout</div>
-    <div class="set-sub">Two ways to read the same floor. Detailed shows everything Pulse knows; Focus shows one thing to do per table and counts the rest. The cards are the same size either way — it is what goes in them that changes, on the floor and inside an open table.</div>
-    <div class="ly-opts">
-      ${LAYOUTS.map(([id,name,desc]) => `<button class="ly-opt ${state.layout===id?'on':''}" data-layout="${id}">
-        <b>${name}${state.layout===id?' · running now':''}</b><i>${desc}</i>
-      </button>`).join('')}
     </div>
 
     <div class="set-h" style="margin-top:26px">How a request marks its card</div>
