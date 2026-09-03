@@ -174,6 +174,18 @@ A **concern** is the exception on ownership: it is the manager's to handle. The 
 At most **5 rows** show at once, work first. When nothing is open the section closes quietly to *All good here*.
 
 
+## When an order arrives
+
+Everything else Pulse reports is something that has *not* happened. This is the one piece of good news, and it changes what a waiter does next — stop walking over, start watching the pass.
+
+| What happens | Why |
+|---|---|
+| A toast names the table, the item count and the value | Once, not repeatedly |
+| An **ORDER IN** chip sits on the card | Until a waiter opens that table, or 6 minutes pass — whichever is first |
+| The unsent cart clears | It went through, so nothing is sitting in it |
+| Actions chasing that table for not ordering retire | The order is in; the nudge did its job |
+| The order-gap clock restarts at zero | The next nudge is measured from this order, not the one before |
+
 ## What the manager sees, and why
 
 Three sections, not five. Errands never reach this screen — water, cutlery, a question and "called the waiter" are the floor's job. A guest unhappy *now* and a guest let down *last time* are the same job, so they share a section.

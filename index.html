@@ -326,6 +326,17 @@
     border-radius:5px;padding:2px 6px;text-transform:uppercase;
   }
   .tc-late{background:rgba(214,154,69,.2);color:#e8bd7d}
+  /* the one bit of good news on a floor — green, brief, and it clears itself
+     the moment the waiter opens the table */
+  .tc-new-order{
+    display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    border-radius:6px;padding:3px 7px;
+    background:rgba(63,159,107,.18);border:1px solid var(--green-line);color:#8fe0b0;
+    animation:orderIn .5s cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes orderIn{from{opacity:0;transform:translateY(-3px) scale(.94)}to{opacity:1;transform:none}}
+  body.light .tc-new-order{background:rgba(63,159,107,.14);color:#1d6b45}
   .tc-new{background:rgba(217,180,95,.18);color:var(--gold-soft)}
   .tc-act{
     display:flex;align-items:flex-start;gap:6px;margin-top:9px;
@@ -1785,6 +1796,9 @@ const FEATURES = [
   { n:'The opening ten minutes', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Amber row on a freshly seated table — pour water and hand them menus — plus a Just seated group in the floor row counting down the window. Retires when they order',
     note:'Chased after 8 minutes. The first ten decide the visit' },
+  { n:'A new order announces itself', p:2, own:'SW', sup:'Pulse', built:1,
+    ui:'A toast naming the table, the item count and the value; an ORDER IN chip on the card until a waiter opens it, or six minutes, whichever comes first',
+    note:'The only good news Pulse gets. It also clears the unsent cart and retires the actions chasing that table for not ordering' },
   { n:'One floor row for everything time-critical', p:2, own:'Pulse', built:1, hero:1,
     ui:'Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall',
     note:'Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works' },
@@ -2134,8 +2148,33 @@ function unattended() {
 /* The waiter has looked at this table, so anything already showing is not new. */
 function markTableSeen(tid) {
   tableSeen[tid] = clockMin;
+  const t = T(tid); if (t) t.ordered = null;      // the news has been read
   signalsFor(T(tid)).open.forEach(a => { actionSeen[aKey(tid,a.id)] = Math.min(actionSeen[aKey(tid,a.id)], clockMin); });
 }
+const ORDER_NEWS_MIN = 6;    // how long an order stays "news" if nobody looks
+
+/* An order arriving from a table's QR. In the real product this comes over the
+   wire from the POS; here it can be triggered so the handoff is demonstrable. */
+function orderArrived(tableId, items, total) {
+  const t = T(tableId);
+  if (!t || t.status === 'vacant' || t.status === 'blocked') return;
+  t.dishes = (t.dishes || 0) + items;
+  t.ticket = (t.ticket || 0) + 1;
+  t.bill   = +((t.bill || 0) + total).toFixed(2);
+  t.lastOrderMin = 0;                       // the order-gap clock restarts
+  if (t.sw) { t.sw.cartItems = 0; t.sw.cartMin = 0; }   // the cart went through
+  t.ordered = clockMin;                     // news until someone looks
+  renderGrid(); if (state.view === 'manager') renderManager();
+  if (state.detailId === tableId) renderDetail();
+  toast(`Table ${t.id} sent an order — ${items} ${items===1?'item':'items'}, ${money(total)}`,
+        'utensils-crossed');
+}
+/* Fresh news, and only until the waiter has been to the table. Opening a
+   table clears the flag outright, so its presence is the whole test — an
+   extra comparison against tableSeen only broke an order that arrived in the
+   same minute the floor first rendered. */
+const justOrdered = t => t.ordered != null && (clockMin - t.ordered) <= ORDER_NEWS_MIN;
+
 /* Closing a row is not instant. It strikes through, holds for three seconds
    with Undo where the waiter's thumb already is, then commits and collapses. */
 const chased     = {};     // table -> clockMin the section was chased
@@ -2204,7 +2243,7 @@ function markDone(tid, sid) {
 function turnTable(id) {
   const t = T(id); if (!t) return;
   Object.assign(t, { status:'vacant', guest:null, others:false, pax:0, mins:0,
-    bill:0, ticket:0, dishes:0, fresh:false, walkInName:null, call:null, sw:null });
+    bill:0, ticket:0, dishes:0, fresh:false, walkInName:null, call:null, sw:null, ordered:null, lastOrderMin:null, lastDrinkMin:null });
   const pre = id + ':';
   [doneActions, gestureDone, dismissed, actionSeen].forEach(m =>
     Object.keys(m).forEach(k => { if (k.startsWith(pre)) delete m[k]; }));
@@ -2252,6 +2291,7 @@ function advanceClock(mins = 1) {
       if (t.status === 'seated' || t.status === 'paid') t.mins += 1;
       if (t.call) t.call.min += 1;
       if (t.lastOrderMin != null) t.lastOrderMin += 1;
+    if (t.ordered != null && clockMin - t.ordered > ORDER_NEWS_MIN) t.ordered = null;
       if (t.lastDrinkMin != null) t.lastDrinkMin += 1;
     });
   }
@@ -2354,6 +2394,7 @@ function cardHtml(t) {
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
+      ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
     ${t.call && state.phase >= 2
@@ -2405,7 +2446,8 @@ function freshCap(t) {
   return `<span class="cap opening" title="${nameOf(t)} — seated ${dur(t.mins)}">
     <button class="cap-go" data-goto="${t.id}">
       <span class="cap-ic"><em class="ci ci-opening">${ic('hand-platter','sm')}</em></span>
-      <b>${t.id}</b><i>${t.mins}m</i>${left <= 3 ? `<em class="ci more">${left}m left</em>` : ''}
+      <b>${t.id}</b><i>${t.mins}m</i>${left >= 1 && left <= 3 ? `<em class="ci more">${left}m left</em>`
+        : (left <= 0 ? `<em class="ci more">last minute</em>` : '')}
     </button>
   </span>`;
 }
@@ -3176,6 +3218,7 @@ const GUIDE_PHASES = {
          ['The floor row','Guests waiting · Overdue · Just seated, as capsules above the grid'],
          ['Guest requests','Five buttons on the guest\'s phone arrive here — see below'],
          ['The action lifecycle','New · Overdue · Done · Dismissed, each visible from across the room'],
+         ['An order arriving','Announces itself once, marks the table green until someone looks, and retires whatever was chasing that table for not having ordered'],
          ['Count badge on the card','How many things to do, toned by the most urgent'],
          ['Score and bucket chips','Top 5% of your guests · Regular · At risk — derived, never typed'],
          ['The Manager tab','Put it right · Meet and greet · Nobody has picked these up'],
@@ -3301,6 +3344,22 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
+    <div class="set-h" style="margin-top:30px">When an order arrives</div>
+    <div class="set-sub">Everything else on this page is Pulse reporting that something has <em>not</em> happened. This is the one piece of good news, and it changes what a waiter does next — stop walking over, start watching the pass.</div>
+    <div class="gd-rows">
+      ${[[`<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>`,'It says so once, then marks the table',
+          `A toast names the table, the item count and the value. The card keeps a green chip until a waiter opens that table, or ${ORDER_NEWS_MIN} minutes pass — whichever is first`],
+         ['<span class="gd-tick done">'+ic('check','sm')+'</span>','It retires what was chasing them',
+          'The unsent cart clears, and the actions telling a waiter to go and take an order disappear, because the order is in'],
+         [`<span class="todo-age">${ic('timer','xs')} 0m</span>`,'It restarts the order clock',
+          'The gap since anything was last ordered goes back to zero, so the next nudge is measured from this order and not the one before it']]
+        .map(([a,t,d]) => `<div class="gd-row">
+          <span class="gd-a">${a}</span>
+          <span class="gd-b"><b>${t}</b><i>${d}</i></span>
+          <span class="gd-c"></span>
+        </div>`).join('')}
+    </div>
+
     <div class="set-h" style="margin-top:30px">A table card, part by part</div>
     <div class="set-sub">The floor is read from across a room. Every element on a card earns its place or comes off.</div>
     <div class="gd-anat">
@@ -3390,6 +3449,23 @@ function settingsHtml() {
         ${Object.keys(CALL_TYPES).map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
       </div>
       ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
+    </div>
+
+    <div class="set-h" style="margin-top:26px">An order arrives</div>
+    <div class="set-sub">The one piece of good news Pulse gets. It announces itself once, marks the table until someone looks, and retires whatever action was chasing that table for not having ordered.</div>
+    <div class="call-sim">
+      <div class="cs-row">
+        <span class="fld-lbl" style="margin:0">Table</span>
+        <select class="inp" id="os-table" style="height:42px;max-width:150px">
+          ${tables.filter(t => t.status === 'seated').map(t => `<option value="${t.id}">Table ${t.id}</option>`).join('')}
+        </select>
+      </div>
+      <div class="cs-btns">
+        ${[[2,46.50,'Two courses'],[4,88.00,'A full order'],[1,14.00,'One more dish']].map(([nItems,tot,lbl]) =>
+          `<button class="pax" data-order="${nItems}|${tot}" style="font-size:12.5px;padding:0 12px">${lbl} · ${money(tot)}</button>`).join('')}
+      </div>
+      ${(() => { const news = tables.filter(justOrdered);
+        return news.length ? `<div class="cs-live">${ic('utensils-crossed','sm')} ${news.length} ${news.length===1?'order':'orders'} not yet seen — ${news.map(t=>'Table '+t.id).join(', ')}</div>` : ''; })()}
     </div>
 
     <div class="set-h" style="margin-top:26px">Service clock</div>
@@ -3560,6 +3636,13 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-v-late]')) {
     state.view = 'manager';
     document.querySelectorAll('#bnav button').forEach(b => b.classList.toggle('on', b.dataset.v === 'manager'));
+    renderView(); return;
+  }
+  const od = e.target.closest('[data-order]');
+  if (od) {
+    const [items, total] = od.dataset.order.split('|');
+    const sel = document.getElementById('os-table');
+    if (sel && sel.value) orderArrived(sel.value, +items, +total);
     renderView(); return;
   }
   const ff = e.target.closest('[data-ff]');
