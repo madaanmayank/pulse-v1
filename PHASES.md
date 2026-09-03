@@ -107,7 +107,7 @@ Three groups above the grid, read left to right, each capped at 4 capsules. It w
 
 | Group | What is in it |
 |---|---|
-| **Guests waiting** | They pressed a button on their phone. Coloured by kind, with a crown where the manager owns it. **A request past its own limit wears the delay here** — an `8m over` pill on its own capsule |
+| **Guests waiting** | They pressed a button on their phone. Coloured by kind, with a crown where the manager owns it. **The capsule is just the table number.** Past 5 minutes a small badge appears on its corner with the wait — an overlay, so the capsule never widens |
 | **Overdue** | Work *Pulse* raised and nobody closed, on tables where no guest is already waiting. Longest first, then **+N more** into the Manager tab |
 | **Just seated** | Sat down within the last 10 minutes and has not ordered. Counts down the window |
 
@@ -148,18 +148,19 @@ Each phase adds actions, and each carries its own patience. **Gold is something 
 
 ## What the guest can send
 
-Five buttons on their phone and no free-text field — so Pulse never shows a description the guest could not type. A table can have several outstanding at once; they collect on one capsule, because one trip handles them all, and the wait counts from the first ask.
+**At Phase 2 the guest has one button**, and Pulse knows only that it was pressed — not what for. That is honest about the data, and it is one thing for a waiter to learn. **Phase 3 is where the kind arrives.**
 
-| Request | What the waiter does | Chased after | Weight |
+No free-text field on the guest side at any phase, so Pulse never shows a description of the problem. Any request is chased after **5 minutes** — one number, whatever they asked for. A concern is set apart by whose job it is, not by a second clock.
+
+| Request | What the waiter does | Phase | Weight |
 |---|---|---|---|
-| Raised a concern | Hear them out | **3 min** | A guest is unhappy and cannot say why — red |
-| Has a question | Answer their question | **6 min** | A guest is stuck and needs a person — violet |
-| Called the waiter | Go to the table | **6 min** | Someone has to go over — gold |
-| Asked for water | Take water over | **10 min** | Something to carry — teal |
-| Asked for cutlery | Take cutlery over | **10 min** | Something to carry — sand |
+| Raised a concern | Hear them out | 3 | A guest is unhappy and cannot say why — red |
+| Has a question | Answer their question | 3 | A guest is stuck and needs a person — violet |
+| Called the waiter | Go to the table | 2 | Someone has to go over — gold |
+| Asked for water | Take water over | 3 | Something to carry — teal |
+| Asked for cutlery | Take cutlery over | 3 | Something to carry — sand |
 
-A **concern** is the exception on ownership: it is the manager's to handle. The floor capsule and the card both say *manager*, and the waiter's own action is to go and get them.
-
+A table can have several outstanding at once; they collect on one capsule, because one trip handles them all, and the wait counts from the first ask. A **concern** is the manager's to handle — the capsule and the card both say *manager*, and the waiter's own action is to go and get them.
 
 ## What happens to an action
 
@@ -233,7 +234,9 @@ Each table is one dense row — who, why, and at most **two** decisions, on one 
 | "Prioritise this table" / "Check in" / "Settle them in" | Instructions to think, not to act. Now: check on them twice as often · go and take their order · pour water and hand them menus |
 | "Waited too long" as a label | Overdue says it in one word |
 | The same table in both Guests waiting and Overdue | One table, one group. A guest sitting there waiting is the more urgent fact, and the request capsule carries its own delay |
-| One fixed 5-minute "hot" rule on a request | Each kind has its own limit, and the capsule counts from that |
+| Eight different escalation limits | Two: five minutes for a guest request, fifteen for something Pulse raised itself. A rule you cannot recall is a rule nobody follows |
+| The wait printed inside every request capsule | Just the table number. The wait appears as a corner badge only once it is past five minutes |
+| All five request kinds at Phase 2 | One button at Phase 2 — Pulse knows it was pressed, not what for. The kinds arrive with Phase 3 |
 | Five manager sections | Three. A concern now and a bad last visit are the same job |
 | Three comp buttons on a manager row | One "On the house" control. The row was mostly empty space and the buttons all said "give something away" |
 | Manager cards 150px tall | Dense rows at 62px. A manager reads this standing between tables |

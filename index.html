@@ -175,19 +175,22 @@
 
   /* a capsule: tap the body to go to the table, tick to clear it */
   .cap{
-    display:inline-flex;align-items:center;gap:0;flex:0 0 auto;
-    border-radius:999px;border:1px solid var(--line);background:#1b1c1f;overflow:hidden;
+    position:relative;display:inline-flex;align-items:center;gap:0;flex:0 0 auto;
+    border-radius:999px;border:1px solid var(--line);background:#1b1c1f;
   }
   .cap-go{
     display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 12px;
     font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;
+    border-radius:999px 0 0 999px;
   }
+  .cap-go:only-child{border-radius:999px}
   .cap-go b{font-variant-numeric:tabular-nums;font-weight:800}
   .cap-go i{font-style:normal;font-weight:700;font-size:11.5px;opacity:.7;font-variant-numeric:tabular-nums}
   .cap-ic{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
   .cap-x{
     flex:0 0 auto;width:40px;min-height:40px;display:grid;place-items:center;
     border-left:1px solid var(--line);color:var(--ink-2);
+    border-radius:0 999px 999px 0;
   }
   .cap-x:hover{background:rgba(255,255,255,.07);color:var(--ink)}
   .cap-go:hover{background:rgba(255,255,255,.05)}
@@ -224,21 +227,20 @@
   .cap.late .cap-go,.cap.late .cap-ic{color:#e8bd7d}
   .cap.late.more{min-height:40px;padding:0 13px;font-size:12px;font-weight:800;color:#e8bd7d}
   .cap.late.more:hover{background:rgba(214,154,69,.22)}
-  /* a request past its own limit — the delay lives on the request, never as
-     a second entry in another group */
+  /* past its own limit: the minutes turn red, and how far past sits on the
+     corner as a badge rather than widening the capsule */
   .cap.over{animation:capThrob 1.6s ease-in-out infinite}
-  .cap-go i.late{
-    opacity:1;font-weight:800;border-radius:99px;padding:1px 6px;
-    background:rgba(216,72,63,.3);color:#ffb3a8;
-  }
-  .cap-over{
-    display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:2px 7px;
-    border-radius:99px;background:var(--red);color:#fff;
-    font-size:10.5px;font-weight:800;letter-spacing:.03em;font-style:normal;white-space:nowrap;
-  }
-  .cap-over svg{width:11px;height:11px}
   .cap.fetch.over{border-color:#7a352d}
-  body.light .cap-go i.late{background:rgba(184,54,46,.22);color:#8e2a23}
+  .cap-flag{
+    position:absolute;top:-7px;right:-5px;z-index:2;
+    min-width:19px;height:19px;padding:0 5px;border-radius:99px;
+    display:grid;place-items:center;font-style:normal;
+    background:var(--red);color:#fff;font-size:10.5px;font-weight:800;
+    font-variant-numeric:tabular-nums;line-height:1;
+    box-shadow:0 0 0 2px #141517;
+  }
+  body.light .cap-flag{box-shadow:0 0 0 2px #fffdf8}
+  body.light .cap.over .cap-go i.late{color:#b8362e}
   @keyframes capThrob{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.5)}50%{box-shadow:0 0 0 5px rgba(216,72,63,0)}}
   .cap-blind{font-style:normal;font-weight:700;font-size:11.5px;opacity:.8}
   /* a concern is the manager's call — the floor is told, not tasked */
@@ -385,7 +387,7 @@
   .tc-call svg{width:13px;height:13px;margin-top:1px;flex:0 0 auto}
   .tc-call b{flex:0 0 auto;display:inline-flex;color:var(--gold);margin-left:1px}
   .tc-call u{text-decoration:none;font-weight:800;opacity:.65;flex:0 0 auto;margin-left:auto;font-variant-numeric:tabular-nums}
-  .tc-call u.late{opacity:1;background:var(--red);color:#fff;border-radius:99px;padding:1px 6px}
+  .tc-call u.late{opacity:1;color:#ff9a8e;font-weight:800}
   .tc-call.over{border-color:var(--red)}
   .tc-call .ci{flex:0 0 auto}
   @keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.45)}50%{box-shadow:0 0 0 6px rgba(216,72,63,0)}}
@@ -1641,27 +1643,32 @@ const guests = {
 const CALL_TYPES = {
   concern: { label:'Raised a concern',  short:'Concern',  act:'Hear them out',
              icon:'circle-alert', kind:'grave', mgr:true,
-             blind:'They could not say what — go and ask.', done:'Concern heard', sla:3,
+             blind:'They could not say what — go and ask.', done:'Concern heard', phase:3,
              wt:'A guest is unhappy and cannot say why — red' },
   query:   { label:'Has a question',    short:'Question', act:'Answer their question',
              icon:'message-circle-question', kind:'ask',
-             blind:'They could not say what about — go and ask.', done:'Question answered', sla:6,
+             blind:'They could not say what about — go and ask.', done:'Question answered', phase:3,
              wt:'A guest is stuck and needs a person — violet' },
   waiter:  { label:'Called the waiter', short:'Waiter',   act:'Go to the table',
-             icon:'bell-ring', kind:'attend', done:'Attended', sla:6,
+             icon:'bell-ring', kind:'attend', done:'Attended', phase:2,
              wt:'Someone has to go over — gold' },
   water:   { label:'Asked for water',   short:'Water',    act:'Take water over',
-             icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken', sla:10,
+             icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken', phase:3,
              wt:'Something to carry — teal' },
   cutlery: { label:'Asked for cutlery', short:'Cutlery',  act:'Take cutlery over',
-             icon:'utensils', kind:'fetch', carry:'cutlery', done:'Cutlery taken', sla:10,
+             icon:'utensils', kind:'fetch', carry:'cutlery', done:'Cutlery taken', phase:3,
              wt:'Something to carry — sand' },
 };
 /* Most urgent first. A table can have several outstanding at once — one trip
    handles them all, so they collect on one entry instead of replacing each
    other. */
 const CALL_ORDER = ['concern','query','waiter','water','cutlery'];
-const callTypes = c => CALL_ORDER.filter(k => c.types.includes(k));
+/* What Pulse can say about a request right now. Phase 2 gets one button and
+   no detail; Phase 3 gets the kind. Every helper below reads through this, so
+   the whole vocabulary phases in at one place. */
+const callTypes = c => state.phase >= 3
+  ? CALL_ORDER.filter(k => c.types.includes(k))
+  : ['waiter'];
 const callMain  = c => CALL_TYPES[callTypes(c)[0]];
 const callKind  = c => callMain(c).kind;
 const callLabel = c => callTypes(c).map(k => CALL_TYPES[k].label).join(' · ');
@@ -1677,7 +1684,9 @@ const callDone  = c => callTypes(c).length > 1 ? 'Table attended' : CALL_TYPES[c
 const callIsMgr = c => callTypes(c).some(k => CALL_TYPES[k].mgr);
 /* Several requests on one table inherit the tightest limit of the set — a
    concern does not become patient because they also wanted water. */
-const callSla   = c => Math.min(...callTypes(c).map(k => CALL_TYPES[k].sla));
+/* One number for every request. A concern is set apart by whose job it is,
+   not by a second clock — eight limits was a rule nobody could recall. */
+const callSla   = () => REQUEST_SLA;
 
 /* Menu items carry a taste so a stated preference can become a named dish. */
 const DISH_TASTE = [
@@ -1785,12 +1794,15 @@ const FEATURES = [
   /* ══ PHASE 2 · ACT — turn what we know into a checklist ══ */
   { n:'Action framework — signal, why it matters, what to do, done', p:2, own:'Pulse', built:1,
     ui:'WHAT TO DO checklist at the top of the table view' },
-  { n:'Guest requests — five fixed kinds', p:2, own:'SW', sup:'Pulse', built:1,
-    ui:'Capsule row above the floor, one per table with its kind and wait; red strip on the card; top of the checklist; and a waiting-elsewhere bar inside any open table',
-    note:'Concern, question, waiter, water, cutlery. No free text on the guest side, so Pulse never shows a description' },
+  { n:'Guest requests — one button', p:2, own:'SW', sup:'Pulse', built:1,
+    ui:'Capsule row above the floor showing the table number, a strip on the card, the top of the checklist, and a waiting-elsewhere bar inside any open table',
+    note:'Phase 2 knows only that the button was pressed. The five kinds arrive with Phase 3' },
+  { n:'Guest requests — the five kinds', p:3, own:'SW', sup:'Pulse', built:1,
+    ui:'The capsule, card chip and checklist all name what was asked for, in its own colour: concern, question, waiter, water, cutlery',
+    note:'No free text on the guest side, so Pulse never shows a description of the problem. A concern becomes the manager\u2019s' },
   { n:'Action lifecycle — new, unattended, done or dismissed', p:2, own:'Pulse', built:1, hero:1,
     ui:'New flag on an action raised mid-meal, an age chip once it passes its own limit, an Overdue group in the floor row, and a dismiss × on every row',
-    note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after. Each kind has its own patience' },
+    note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after' },
   { n:'Manager view — only what is actually a manager\u2019s job', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Manager tab: a guest is unhappy · needs you at the table · nobody has picked these up · waiting on your approval · a roster of the rest',
     note:'Water, cutlery, questions and "called the waiter" are errands and never reach this screen. Every row carries a decision, never an Open table link' },
@@ -1817,9 +1829,9 @@ const FEATURES = [
   { n:'One floor row for everything time-critical', p:2, own:'Pulse', built:1, hero:1,
     ui:'Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall',
     note:'Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works' },
-  { n:'Per-request patience', p:2, own:'Pulse', built:1, hero:1,
-    ui:'Each request kind carries its own limit before Pulse says nobody picked it up — concern 3 min, question and waiter 6, water and cutlery 10',
-    note:'Fifteen minutes for cutlery is defensible; fifteen for an unhappy guest is not' },
+  { n:'Two limits, and only two', p:2, own:'Pulse', built:1,
+    ui:'A guest request is chased after 5 minutes; something Pulse raised itself after 15. The capsule shows the table number, and the wait only once it is past',
+    note:'Eight different limits was a rule nobody could recall. A concern is set apart by whose job it is, not by a second clock' },
 
   { n:'Remember this — staff teach the profile', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Two taps and a line on the guest card' },
@@ -2097,10 +2109,11 @@ const val = (v,c) => typeof v === 'function' ? v(c) : v;
    Two ways out, because "not applicable" is a real answer: complete it, or
    dismiss it. Both are reversible.                                        */
 let clockMin = 0;                    // minutes of service, advanced by the tick
-const STALE_MIN = 15;     // Pulse's own actions. Guest requests set their own
+const STALE_MIN = 15;     // Pulse's own actions
+const REQUEST_SLA = 5;    // any guest request, whatever they asked for
 /* How long a thing may sit before Pulse says nobody has picked it up. */
 function staleAfter(s, c) {
-  if (s.id === 'call' && c.call) return callSla(c.call);
+  if (s.id === 'call' && c.call) return REQUEST_SLA;
   return s.sla || STALE_MIN;
 }
 const MAX_SHOW  = 5;      // rows a waiter will actually read at a glance
@@ -2448,16 +2461,16 @@ function renderSecMenu() {
    a waiter who is walking over does not stop to tell the tablet. */
 function callCap(t) {
   const c = t.call, ks = callTypes(c), blind = callBlind(c);
-  const limit = callSla(c), over = c.min - limit;
+  const limit = REQUEST_SLA, over = c.min - limit;
   return `<span class="cap ${callKind(c)} ${over >= 0 ? 'over' : ''}"
       title="${callLabel(c)}${blind?' — '+blind:''} · waited ${c.min}m of ${limit}m">
     <button class="cap-go" data-goto="${t.id}">
       <span class="cap-ic">${ks.slice(0,3).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'sm')}</em>`).join('')}${
         ks.length > 3 ? `<em class="ci more">+${ks.length-3}</em>` : ''}</span>
-      <b>${t.id}</b><i class="${over >= 0 ? 'late' : ''}">${c.min}m</i>${
-      over >= 0 ? `<em class="cap-over" title="Past its ${limit}-minute limit">${ic('timer','xs')} ${over === 0 ? 'due now' : `${over}m over`}</em>` : ''}${
+      <b>${t.id}</b>${
       callIsMgr(c) ? `<span class="cap-mgr" title="The manager handles this">${ic('crown','sm')}</span>` : ''}
     </button>
+    ${over >= 0 ? `<em class="cap-flag" title="Waiting ${c.min} minutes — past the ${limit}-minute mark">${c.min}m</em>` : ''}
     <button class="cap-x" data-resolve="${t.id}" title="Handled">${ic('check','sm')}</button>
   </span>`;
 }
@@ -3219,7 +3232,7 @@ const GUIDE_RULES = [
   ['Five rows, then stop', 'Nine true things about a table is a to-do list, not a briefing. Work takes the slots first.'],
   ['Never invent what we cannot measure', 'The guest has five buttons and no free-text field, so Pulse never describes their problem — it says it does not know. Timing comes from order data, so it says "last ordered 34 min ago", never "the plates are sitting".'],
   ['Every action has a way out', 'Done or dismissed. "Not applicable" is a real answer, and both are reversible.'],
-  ['Nothing may sit ignored', `Everything has a limit and escalates to the floor row by name once it passes. A concern gets three minutes; cutlery gets ten; something Pulse raised itself gets ${STALE_MIN}. Patience is not one number.`],
+  ['Nothing may sit ignored', `Everything has a limit and escalates by name once it passes: ${REQUEST_SLA} minutes for a guest request, ${STALE_MIN} for something Pulse raised itself. Two numbers, not eight — a rule you cannot recall is a rule nobody follows.`],
 ];
 
 /* What each phase actually puts on screen, in the order a reader needs it:
@@ -3239,7 +3252,7 @@ const GUIDE_PHASES = {
        surfaces:[
          ['The checklist','Do now, then Worth mentioning. Five rows at most, work first'],
          ['The floor row','Guests waiting · Overdue · Just seated, as capsules above the grid'],
-         ['Guest requests','Five buttons on the guest\'s phone arrive here — see below'],
+         ['Guest requests','One button on the guest\'s phone. Pulse knows it was pressed, not what for'],
          ['The action lifecycle','New · Overdue · Done · Dismissed, each visible from across the room'],
          ['An order arriving','Announces itself once, marks the table green until someone looks, and retires whatever was chasing that table for not having ordered'],
          ['Count badge on the card','How many things to do, toned by the most urgent'],
@@ -3248,6 +3261,7 @@ const GUIDE_PHASES = {
        ] },
   3: { icon:'radar', adds:'The phone and the clock',
        surfaces:[
+         ['What the request was for','The five kinds, each in its own colour: a concern, a question, the waiter, water, cutlery — and a concern becomes the manager\'s'],
          ['Live QR behaviour','A cart built and never sent, a menu open with nothing added, a table nobody has started, one dish opened over and over'],
          ['Timing from order data','A long gap since anything was ordered, or since a drink was'],
          ['Managerial touchpoints','Visit the table — judgement, not errands, so it waits for this phase'],
@@ -3271,7 +3285,7 @@ function guideHtml() {
       <tr><th>What it is</th><th>What the waiter does</th><th>Weight</th><th>Chased after</th></tr>
       ${rows.map(x => {
         const isCall = x.id === 'call';
-        const sla = isCall ? `${Math.min(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))}–${Math.max(...CALL_ORDER.map(k=>CALL_TYPES[k].sla))} min`
+        const sla = isCall ? `${REQUEST_SLA} min`
                  : x.lvl === 'gold' ? 'never' : `${x.sla || STALE_MIN} min`;
         return `<tr class="lv-${x.lvl}">
           <td><b>${GD_ACTION_NAMES[x.id] || x.id}</b></td>
@@ -3323,12 +3337,14 @@ function guideHtml() {
 
     <div class="set-h" style="margin-top:34px">Phase 2 · what a guest can send</div>
     <div class="set-sub">Five buttons on their phone. No free-text field, so Pulse never shows a description of the problem —
-      where it does not know, it says so. The clock beside each is how long it may sit before Pulse calls it overdue.</div>
+      where it does not know, it says so. Any request is chased after ${REQUEST_SLA} minutes — one number, whatever they asked for.
+      A concern is still set apart, but by whose job it is rather than by a second clock.
+      <strong>At Phase 2 the guest has one button and Pulse knows only that it was pressed;</strong> the kinds below arrive with Phase 3.</div>
     <div class="gd-rows">
       ${CALL_ORDER.map(k => { const c = CALL_TYPES[k]; return `<div class="gd-row">
         <span class="gd-a">${demoCall([k], k==='concern'?6:k==='waiter'?3:0)}</span>
         <span class="gd-b"><b>${c.label}</b><i>${c.act}</i>${c.blind?`<em>Pulse adds: “${c.blind}”</em>`:''}</span>
-        <span class="gd-c">${c.wt}<em class="gd-sla">${ic('timer','xs')} overdue after ${c.sla} min</em></span>
+        <span class="gd-c">${c.wt}${c.phase===3?`<em class="gd-sla">${ic('radar','xs')} arrives with Phase 3</em>`:''}</span>
       </div>`; }).join('')}
       <div class="gd-row">
         <span class="gd-a">${demoCall(['concern','water','cutlery'], 4)}</span>
@@ -3357,7 +3373,7 @@ function guideHtml() {
     <div class="gd-rows">
       ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
          ['<span class="tc-count amber">2</span>','Open','Being worked','Plain row, badge counts it'],
-         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — 3 min for a concern, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
+         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — ${REQUEST_SLA} min for a guest request, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
          ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','Ticked, right-hand side of the row','Strikes through and holds three seconds with Undo in place'],
          ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','Dismissed, left-hand side of the row','Same grace period, then gone and not raised again']]
         .map(([a,t,d,e]) => `<div class="gd-row">
@@ -3460,7 +3476,9 @@ function settingsHtml() {
       ${[1,2,3].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
     ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Guest requests</div>
-    <div class="set-sub">Requests arrive from the guest's QR — five buttons on their phone, no free text. Trigger one to see the handoff to the floor.</div>
+    <div class="set-sub">${state.phase >= 3
+      ? 'Five buttons on the guest\'s phone, no free text. Trigger one to see the handoff to the floor.'
+      : 'At Phase 2 the guest has one button and Pulse knows only that it was pressed. Turn on Phase 3 to see what they actually wanted.'}</div>
     <div class="call-sim">
       <div class="cs-row">
         <span class="fld-lbl" style="margin:0">Table</span>
@@ -3469,7 +3487,8 @@ function settingsHtml() {
         </select>
       </div>
       <div class="cs-btns">
-        ${Object.keys(CALL_TYPES).map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
+        ${CALL_ORDER.filter(k => CALL_TYPES[k].phase <= state.phase)
+            .map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
       </div>
       ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
     </div>
