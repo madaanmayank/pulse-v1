@@ -101,6 +101,24 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 
 ---
 
+## Two ways to read the floor
+
+Switchable in **Settings → Floor layout**. The cards are the same size either way; what goes in them changes, on the floor and inside an open table.
+
+| | Detailed | Focus |
+|---|---|---|
+| The question it answers | What does Pulse know about this table | What do I do next here |
+| On the card | Count badge, request pin, bucket label, order chip, age chip, action line | Table, name, covers, **one thing in words**, and *and N more* |
+| Urgency shown by | Badge tone, pin colour, chips | A single coloured left edge |
+| An open table | *Do now* and *Worth mentioning*, with owner tags and age chips | **A numbered sequence** — 1, 2, 3 — no sections, no tags |
+| Manager's own calls | Listed alongside the waiter's | Left to the Manager tab |
+
+**Several things at one table** is the case Focus exists for. Table 09 carries nine actions at Phase 3; Detailed shows a badge of 3 and one line, Focus shows *Get the manager to this table* and *and 6 more*, and opening it gives the whole sequence in order.
+
+The request stays in the floor's list even though a concern is the manager's to own — its action is *fetch them*, which is the waiter's job. Filtering purely on ownership made a concern invisible to the waiter, which is the opposite of the point.
+
+---
+
 ## Built for landscape
 
 A tablet held in landscape is wide and short, so the scarce axis is **height** — and the fixed bands were taking too much of it. At 1024×768 the top bar, floor row and nav together came to 38% of the screen.
