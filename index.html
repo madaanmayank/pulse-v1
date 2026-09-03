@@ -1516,11 +1516,41 @@
     .dm-cols{grid-template-columns:1fr}
     .dm-col + .dm-col{border-left:none;border-top:1px solid #202225}
   }
-  /* landscape tablet — the device this actually runs on */
-  @media (min-width:1024px) and (orientation:landscape){
+  /* ─────────── landscape tablet — the device this actually runs on ───────────
+     Held in landscape, the scarce axis is height, not width. At 1024×768 the
+     chrome was taking 38% of the screen and a waiter could see nine of
+     twenty-one tables. So: every fixed band gets shorter, the cards get
+     narrower rather than taller, and the floor row stays on one line.
+     This is not a special case — landscape is what Pulse runs on, so it is
+     the default for any wide viewport. A 12.9" iPad is 1366×1024, so gating
+     on height excluded the very device the product is aimed at. */
+  @media (orientation:landscape) and (min-width:1000px){
+    /* the cards are left exactly as they are — width, height, type and
+       spacing all unchanged. Only the bands around them give ground. */
     .grid{grid-template-columns:repeat(auto-fill,minmax(206px,1fr));gap:20px}
-    .content{padding:6px 22px 26px}
-    .callbar{margin:0 22px 12px}
+    .content{padding:4px 22px 20px}
+    .needbar{margin:0 22px 10px}
+
+    /* the fixed bands, tightened. 80 + 74 of chrome became 64 + 60 */
+    .topbar{padding:9px 20px;gap:10px}
+    .seg button{min-height:38px}
+    .top-btn{width:38px;height:38px}
+    .phase-chip{height:38px}
+    .sec-btn{height:38px}
+    .bnav{height:60px}
+    .bnav button{gap:3px;font-size:10.5px}
+    .bnav svg{width:17px;height:17px}
+
+    .nb-grp{padding:8px 12px}
+    .cap-go,.cap-x{min-height:38px}
+    .cap-x{width:38px}
+  }
+  /* below ~1150 the three group labels cannot share a line with their
+     capsules, and a wrapped row costs more height than the words are worth */
+  @media (orientation:landscape) and (min-width:1000px) and (max-width:1150px){
+    .nb-lbl span,.nb-lbl{font-size:0}
+    .nb-lbl svg{width:17px;height:17px}
+    .nb-grp{gap:8px}
   }
   @media (max-width:1120px){
     .seg button{padding:0 17px}

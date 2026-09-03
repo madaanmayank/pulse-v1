@@ -101,6 +101,25 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 
 ---
 
+## Built for landscape
+
+A tablet held in landscape is wide and short, so the scarce axis is **height** — and the fixed bands were taking too much of it. At 1024×768 the top bar, floor row and nav together came to 38% of the screen.
+
+| | Chrome | Tables visible | Left to scroll |
+|---|---|---|---|
+| 1024×768 | 38% → **24%** | 9 → **12** of 21 | 754px → **640px** |
+| 1194×834 · iPad Pro 11" | 26% → **22%** | 11 → **20** of 21 | 420px → **378px** |
+| 1366×1024 · iPad Pro 12.9" | 21% → **18%** | 16 → **20** of 21 | 216px → **174px** |
+
+The cards are untouched — same width, height, type and spacing at every size. All of the gain is the bands around them:
+
+- top bar 80 → 68px, nav 74 → 60px, tighter content padding
+- below ~1150px the floor row's group labels collapse to their icons, so *Guests waiting · Overdue · Just seated* stay on **one line** instead of wrapping to two. That alone is the single biggest saving at 1024: the row goes 136px → 58px
+
+Keyed on `orientation: landscape` and a minimum width rather than on height — a 12.9" iPad is 1366×1024, so a height gate would have excluded the very device this is aimed at.
+
+---
+
 ## The floor row
 
 Three groups above the grid, read left to right, each capped at 4 capsules. It wraps rather than scrolling a group off the edge — a group you cannot see is a group nobody works.
