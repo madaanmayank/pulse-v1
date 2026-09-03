@@ -107,7 +107,7 @@ Three groups above the grid, read left to right, each capped at 4 capsules. It w
 
 | Group | What is in it |
 |---|---|
-| **Guests waiting** | They pressed a button on their phone. Coloured by kind, with a crown where the manager owns it. **The capsule is just the table number.** Past 5 minutes a small badge appears on its corner with the wait — an overlay, so the capsule never widens |
+| **Guests waiting** | They raised a hand on their phone. Coloured by kind, with a crown where the manager owns it. **The capsule is just the table number.** Past 5 minutes a small badge appears on its corner with the wait — an overlay, so the capsule never widens |
 | **Overdue** | Work *Pulse* raised and nobody closed, on tables where no guest is already waiting. Longest first, then **+N more** into the Manager tab |
 | **Just seated** | Sat down within the last 10 minutes and has not ordered. Counts down the window |
 
@@ -174,6 +174,22 @@ A table can have several outstanding at once; they collect on one capsule, becau
 
 At most **5 rows** show at once, work first. When nothing is open the section closes quietly to *All good here*.
 
+
+## How a request marks its card
+
+A raised hand on the card's own corner, in the colour of what was asked for — **azure** for the plain call, so it is never confused with the app's gold accent, and never with the sand of a cutlery request.
+
+It lands with a pop and keeps a slow ring breathing out of it while the guest waits. Past 5 minutes the mark goes red, the ring quickens, and the card breathes with it. All motion is off under `prefers-reduced-motion`.
+
+Three treatments, switchable in **Settings → How a request marks its card**, because this is the most-looked-at element on the floor:
+
+| Treatment | What it is |
+|---|---|
+| **Corner pin** | A round mark riding the card's top edge. Quietest — the icon carries it |
+| **Corner tab** | A squarer tab dropped from the top-right edge, with the wait once it is late |
+| **Edge and pin** | The pin plus a coloured rule along the top. Loudest, reads from furthest |
+
+The request used to be a full-width block in the card body. That cost more height than the fact deserved, and it said the same thing twice — the corner mark now carries the request, which frees the body line for the *next* thing to do.
 
 ## When an order arrives
 

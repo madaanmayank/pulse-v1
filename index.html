@@ -204,16 +204,18 @@
   .cap.ask{border-color:#4c3f8a;background:rgba(125,92,246,.15)}
   .cap.ask .cap-go{color:#c4b6ff}
   .cap.ask .cap-x{border-left-color:#4c3f8a;color:#b3a2ff}
-  .cap.attend{border-color:var(--gold-line);background:rgba(217,180,95,.13)}
-  .cap.attend .cap-go{color:var(--gold-soft)}
-  .cap.attend .cap-x{border-left-color:var(--gold-line);color:var(--gold-soft)}
+  /* a raised hand is not the same thing as the app's accent — azure keeps it
+     distinct from gold, and from the sand of a cutlery request */
+  .cap.attend{border-color:#2d4d78;background:rgba(111,178,255,.13)}
+  .cap.attend .cap-go{color:#a8cfff}
+  .cap.attend .cap-x{border-left-color:#2d4d78;color:#8dbdf7}
   .cap.fetch{border-color:#1f5c56;background:rgba(34,184,166,.12)}
   .cap.fetch .cap-go{color:#7fe0d5}
   .cap.fetch .cap-x{border-left-color:#1f5c56;color:#5fd0c4}
   .ci{display:inline-flex;font-style:normal}
   .ci-concern{color:#ff9a8e}
   .ci-query  {color:#b3a2ff}
-  .ci-waiter {color:var(--gold)}
+  .ci-waiter {color:#6fb2ff}
   .ci-water  {color:#4fd3c4}
   .ci-cutlery{color:#dcc39a}
   .ci.more{font-size:11px;font-weight:800;color:var(--ink-2);align-self:center}
@@ -250,7 +252,8 @@
   body.light .cap{background:#fff}
   body.light .cap.grave{background:rgba(184,54,46,.09);border-color:#e0b3ae}
   body.light .cap.grave .cap-go,body.light .cap.grave .cap-ic{color:#9c3a2f}
-  body.light .cap.attend{background:rgba(217,180,95,.14)}
+  body.light .cap.attend{background:rgba(111,178,255,.13);border-color:#a8c8ec}
+  body.light .cap.attend .cap-go{color:#1d4b7a}
   body.light .cap.late{background:rgba(214,154,69,.14)}
   body.light .cap.opening{background:rgba(34,184,166,.1);border-color:#9dd6cf}
   body.light .cap.opening .cap-go{color:#12655c}
@@ -372,6 +375,95 @@
   .tc-act.gold{color:var(--ink-2)}
 
   /* a guest calling is the one thing that must be unmistakable */
+  /* ── a table that has raised its hand: a corner mark, not a block ──
+     The card clips its children, so the mark sits inside the corner rather
+     than hanging off it. Three weights, switchable in Settings. */
+  .tcard.has-req{overflow:visible}
+  @media (prefers-reduced-motion:reduce){
+    .rq,.rq::after,.ci-waiter svg,.ci-concern svg,
+    .tcard.has-req:has(.rq.late),.cap.over{animation:none!important}
+  }
+  .rq{
+    position:absolute;z-index:3;display:inline-flex;align-items:center;gap:4px;
+    animation:rqIn .55s cubic-bezier(.2,.9,.25,1) both;
+    font-size:11px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;
+  }
+  .rq i{font-style:normal;font-size:10.5px;font-weight:800}
+  .rq svg{width:12px;height:12px}
+
+  /* ── movement, because a raised hand is the one thing on this screen a
+        waiter must not scan past ──
+     It lands with a pop, then a ring keeps breathing out of it for as long as
+     the guest is waiting — slow while they are in time, quick and red once
+     they are not. The hand itself waves every few seconds. */
+  @keyframes rqIn{
+    0%{opacity:0;transform:scale(.45)}
+    55%{opacity:1;transform:scale(1.18)}
+    75%{transform:scale(.96)}
+    100%{opacity:1;transform:scale(1)}
+  }
+  .rq::after{
+    content:'';position:absolute;inset:-1px;border-radius:inherit;
+    border:2px solid currentColor;opacity:0;pointer-events:none;
+    animation:rqRing 2.8s .45s ease-out infinite;
+  }
+  @keyframes rqRing{0%{opacity:.5;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.95)}}
+  .rq.late::after{animation-duration:1.35s;animation-delay:0s}
+  @keyframes handWave{
+    0%,70%,100%{transform:rotate(0)}
+    77%{transform:rotate(-17deg)}
+    85%{transform:rotate(13deg)}
+    93%{transform:rotate(-6deg)}
+  }
+  .ci-waiter svg{animation:handWave 3.6s ease-in-out infinite;transform-origin:58% 88%}
+  /* a concern does not wave — it just insists */
+  .ci-concern svg{animation:rqNudge 2.2s ease-in-out infinite}
+  @keyframes rqNudge{0%,84%,100%{transform:none}90%{transform:scale(1.16)}}
+
+  /* ① pin — rides the card's own top edge, inset from the left so it can only
+        belong to this card. Hanging it off the corner put it in the grid gap,
+        equidistant from two cards, which is no place for an indicator. */
+  .rq-p{
+    top:-11px;left:13px;min-height:24px;padding:0 8px;border-radius:99px;
+    border:1.5px solid var(--bg);
+  }
+  .tcard.rq-pin.has-req,.tcard.rq-edge.has-req{padding-top:18px}
+  /* ② tab — a squarer tab dropped from the top edge, with the wait when late */
+  .rq-t{
+    top:-1.5px;right:13px;min-height:23px;padding:0 10px;
+    border-radius:0 0 11px 11px;
+  }
+  /* ③ edge — the pin, plus a rule along the top so it reads from further off */
+  .tcard.rq-edge.has-req::before{
+    content:'';position:absolute;left:-1.5px;right:-1.5px;top:-1.5px;height:4px;
+    border-radius:var(--r-card) var(--r-card) 0 0;background:currentColor;z-index:2;
+  }
+  .tcard.rq-edge.has-req{color:var(--line)}
+
+  .rq.k-attend  {background:#1c3a5e;color:#a8cfff}
+  .rq.k-grave   {background:#5e2620;color:#ffb3a8}
+  .rq.k-ask     {background:#312a63;color:#c4b6ff}
+  .rq.k-fetch   {background:#14453f;color:#7fe0d5}
+  .tcard.rq-edge.has-req:has(.k-attend){color:#3d7ec9}
+  .tcard.rq-edge.has-req:has(.k-grave){color:var(--red)}
+  .tcard.rq-edge.has-req:has(.k-ask){color:#7d5cf6}
+  .tcard.rq-edge.has-req:has(.k-fetch){color:var(--teal)}
+
+  /* waited too long — the mark goes red and keeps a soft pulse, on every
+     treatment, so the card says it as loudly as the floor row does */
+  .rq.late{background:var(--red);color:#fff}
+  /* and the card itself breathes once a request is past its limit, so the
+     table reads as late from across the room and not only up close */
+  .tcard.has-req:has(.rq.late){animation:cardLate 2s ease-in-out infinite}
+  @keyframes cardLate{
+    0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,0)}
+    50%{box-shadow:0 0 0 3px rgba(216,72,63,.22)}
+  }
+  .rq.late .ci{color:#fff}
+  .tcard.has-req:has(.rq.late){border-color:#8e3a31}
+  .tcard.rq-edge.has-req:has(.rq.late){color:var(--red)}
+  body.light .rq-p{border-color:#fff}
+
   /* the request chip on a card wears the colour of the kind of request it is,
      and only a concern is urgent enough to pulse */
   .tc-call{
@@ -382,7 +474,7 @@
   .tc-call.k-grave{background:rgba(216,72,63,.16);border-color:#6b332c;color:#f0b3ab;
     animation:callPulse 1.8s ease-in-out infinite}
   .tc-call.k-ask{background:rgba(125,92,246,.14);border-color:#4c3f8a;color:#c4b6ff}
-  .tc-call.k-attend{background:rgba(217,180,95,.13);border-color:var(--gold-line);color:var(--gold-soft)}
+  .tc-call.k-attend{background:rgba(111,178,255,.13);border-color:#2d4d78;color:#a8cfff}
   .tc-call.k-fetch{background:rgba(34,184,166,.12);border-color:#1f5c56;color:#7fe0d5}
   .tc-call svg{width:13px;height:13px;margin-top:1px;flex:0 0 auto}
   .tc-call b{flex:0 0 auto;display:inline-flex;color:var(--gold);margin-left:1px}
@@ -579,6 +671,18 @@
   .cp-sug span{min-width:0;display:flex;flex-direction:column;gap:2px}
   .cp-sug b{font-size:13px;font-weight:800}
   .cp-sug i{font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.4}
+  .rq-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(216px,1fr));gap:10px;margin-top:12px}
+  .rq-opt{
+    display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:12px;text-align:left;
+    background:var(--card);border:1px solid var(--line-soft);color:var(--ink);
+  }
+  .rq-opt.on{border-color:var(--gold-line);background:rgba(217,180,95,.07)}
+  .rq-opt:hover{border-color:var(--gold-line)}
+  .rq-demo{display:block;margin:2px 0 10px;padding:10px 4px 4px 10px}
+  .rq-opt b{font-size:13px;font-weight:800}
+  .rq-opt i{font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.5}
+  body.light .rq-opt{background:#fff}
+
   .cp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:10px}
   .cp-opt{
     display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
@@ -1327,7 +1431,7 @@
   body.light .tc-call{background:rgba(0,0,0,.04);border-color:var(--line);color:#4f4b44}
   body.light .tc-call.k-grave{background:rgba(184,54,46,.09);border-color:#e0b3ae;color:#8e2a23}
   body.light .tc-call.k-ask{background:rgba(125,92,246,.1);border-color:#c3b6ee;color:#5140a0}
-  body.light .tc-call.k-attend{background:rgba(217,180,95,.16);border-color:#d9c79a;color:#6d5518}
+  body.light .tc-call.k-attend{background:rgba(111,178,255,.14);border-color:#a8c8ec;color:#1d4b7a}
   body.light .tc-call.k-fetch{background:rgba(34,184,166,.12);border-color:#9dd6cf;color:#12655c}
 
   body.light .legend,
@@ -1650,7 +1754,7 @@ const CALL_TYPES = {
              blind:'They could not say what about — go and ask.', done:'Question answered', phase:3,
              wt:'A guest is stuck and needs a person — violet' },
   waiter:  { label:'Called the waiter', short:'Waiter',   act:'Go to the table',
-             icon:'bell-ring', kind:'attend', done:'Attended', phase:2,
+             icon:'hand', kind:'attend', done:'Attended', phase:2,
              wt:'Someone has to go over — gold' },
   water:   { label:'Asked for water',   short:'Water',    act:'Take water over',
              icon:'glass-water', kind:'fetch', carry:'water', done:'Water taken', phase:3,
@@ -1795,7 +1899,7 @@ const FEATURES = [
   { n:'Action framework — signal, why it matters, what to do, done', p:2, own:'Pulse', built:1,
     ui:'WHAT TO DO checklist at the top of the table view' },
   { n:'Guest requests — one button', p:2, own:'SW', sup:'Pulse', built:1,
-    ui:'Capsule row above the floor showing the table number, a strip on the card, the top of the checklist, and a waiting-elsewhere bar inside any open table',
+    ui:'Capsule row above the floor showing the table number, a raised-hand mark on the card corner, the top of the checklist, and a waiting-elsewhere bar inside any open table',
     note:'Phase 2 knows only that the button was pressed. The five kinds arrive with Phase 3' },
   { n:'Guest requests — the five kinds', p:3, own:'SW', sup:'Pulse', built:1,
     ui:'The capsule, card chip and checklist all name what was asked for, in its own colour: concern, question, waiter, water, cutlery',
@@ -1826,6 +1930,9 @@ const FEATURES = [
   { n:'A new order announces itself', p:2, own:'SW', sup:'Pulse', built:1,
     ui:'A toast naming the table, the item count and the value; an ORDER IN chip on the card until a waiter opens it, or six minutes, whichever comes first',
     note:'The only good news Pulse gets. It also clears the unsent cart and retires the actions chasing that table for not ordering' },
+  { n:'The request mark on a card — three treatments', p:2, own:'Pulse', built:1,
+    ui:'A corner pin, a corner tab, or a pin plus a coloured top edge. Switchable in Settings; all three go red and pulse once a request is past its limit',
+    note:'A raised hand, in azure so it is not the app accent. It was a full-width block in the card body, which cost more height than the fact deserved' },
   { n:'One floor row for everything time-critical', p:2, own:'Pulse', built:1, hero:1,
     ui:'Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall',
     note:'Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works' },
@@ -1991,7 +2098,7 @@ const SIGNALS = [
                return d ? `${c.g.name.split(' ')[0]} prefers ${d.taste}.` : c.g.summary; },
     done:'Dish suggested' },
 
-  { id:'call', phase:2, lvl:'red', icon:'bell-ring', score:100,
+  { id:'call', phase:2, lvl:'red', icon:'hand', score:100,
     who:c => c.call && callIsMgr(c.call) ? 'manager' : 'waiter',
     on:c => !!c.call,
     act:c => callIsMgr(c.call) ? 'Get the manager to this table' : callAct(c.call),
@@ -2297,7 +2404,7 @@ function raiseCall(tableId, type) {
   renderGrid();
   if (state.view === 'manager') renderManager();
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
-  toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, 'bell-ring');
+  toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, callMain(t.call).icon);
 }
 let callSeq = 3;   // the seeded requests already used 0-3
 /* oldest first — a guest who has waited longest is served first */
@@ -2344,7 +2451,7 @@ function attentionCount() {
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, 
+                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, reqStyle:'pin', 
                 theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
@@ -2399,6 +2506,28 @@ function visibleTables() {
   return list;
 }
 
+/* Three ways to mark a table that has raised its hand. The request used to be
+   a full-width block in the card body, which cost more vertical space than the
+   fact deserved — this is a corner overlay in three weights, switchable in
+   Settings, because it is the most-looked-at element on the floor. */
+const REQ_STYLES = [
+  ['pin',  'Corner pin',  'A single dot on the corner. Quietest — the icon carries it.'],
+  ['tab',  'Corner tab',  'A small tab over the top edge, with the wait once it is late.'],
+  ['edge', 'Edge and pin','The pin, plus a coloured top edge. Loudest, reads furthest.'],
+];
+function reqMark(t) {
+  const c = t.call, ks = callTypes(c), over = c.min - REQUEST_SLA;
+  const late = over >= 0, mgr = callIsMgr(c);
+  const label = `${callLabel(c)}${late ? ` · waiting ${c.min}m` : ''}`;
+  const icons = ks.slice(0,2).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'xs')}</em>`).join('');
+  if (state.reqStyle === 'tab')
+    return `<span class="rq rq-t k-${callKind(c)} ${late?'late':''}" title="${label}">
+      ${icons}${late ? `<i>${c.min}m</i>` : ''}${mgr ? ic('crown','xs') : ''}</span>`;
+  // pin, and edge which is the pin plus a rule along the top
+  return `<span class="rq rq-p k-${callKind(c)} ${late?'late':''}" title="${label}">
+    ${icons}${late ? `<i>${c.min}m</i>` : ''}${mgr ? ic('crown','xs') : ''}</span>`;
+}
+
 function cardHtml(t) {
   if (t.status === 'vacant')
     return `<div class="tcard vacant" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
@@ -2413,7 +2542,8 @@ function cardHtml(t) {
   const tone = sig.liveNow[0] ? sig.liveNow[0].lvl : '';
   const isLate = sig.stale.length > 0;
   const isNew = !isLate && sig.liveNow.some(a => a.isNew);
-  return `<div class="tcard ${cls}" data-id="${t.id}">
+  return `<div class="tcard ${cls}${t.call && state.phase >= 2 ? ' has-req rq-'+state.reqStyle : ''}" data-id="${t.id}">
+    ${t.call && state.phase >= 2 ? reqMark(t) : ''}
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
       <span class="tc-right">
@@ -2429,15 +2559,16 @@ function cardHtml(t) {
       ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
-    ${t.call && state.phase >= 2
-        ? `<div class="tc-call k-${callKind(t.call)} ${t.call.min >= callSla(t.call) ? 'over' : ''}">
-             ${callTypes(t.call).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'xs')}</em>`).join('')}
-             <span>${callTypes(t.call).map(k => CALL_TYPES[k].short).join(' · ')}</span>${
-             callIsMgr(t.call)?`<b title="The manager handles this">${ic('crown','xs')}</b>`:''}${
-             t.call.min ? `<u class="${t.call.min >= callSla(t.call) ? 'late' : ''}">${t.call.min}m</u>` : ''}</div>`
-        : (sig.top ? `<div class="tc-act ${sig.top.isStale?'late':sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${
-             sig.top.isStale ? `<span class="tc-late">${sig.top.openMin}m</span>` : (sig.top.isNew ? `<span class="tc-new">New</span>` : '')
-           }</div>` : '')}
+    ${(() => {
+       // the corner mark already says a request is waiting — show the next thing
+       const line = t.call && state.phase >= 2
+         ? (sig.now.find(a => a.id !== 'call') || sig.soft[0])
+         : sig.top;
+       if (!line) return '';
+       return `<div class="tc-act ${line.isStale?'late':line.lvl}">${ic(line.icon,'xs')} <span>${line.act}</span>${
+         line.isStale ? `<span class="tc-late">${line.openMin}m</span>` : (line.isNew ? `<span class="tc-new">New</span>` : '')
+       }</div>`;
+     })()}
     ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
   </div>`;
 }
@@ -2507,7 +2638,7 @@ function renderCallBar() {
   bar.className = 'needbar on';
   bar.innerHTML =
     (calling.length ? `<div class="nb-grp guests">
-        <span class="nb-lbl">${ic('bell-ring','sm')} ${calling.length===1?'Guest waiting':'Guests waiting'}</span>
+        <span class="nb-lbl">${ic('hand','sm')} ${calling.length===1?'Guest waiting':'Guests waiting'}</span>
         <span class="nb-caps">${calling.map(callCap).join('')}</span>
       </div>` : '') +
     (late.length ? `<div class="nb-grp late">
@@ -2710,7 +2841,7 @@ function renderElsewhere() {
   if (!others.length) { el.innerHTML = ''; return; }
   el.innerHTML = `<button class="dm-el" id="dm-el-back"
       title="Back to the floor — these tables are waiting">
-    ${ic('bell-ring','xs')}
+    ${ic('hand','xs')}
     <span class="dm-el-l">${others.length === 1 ? '1 table waiting' : `${others.length} tables waiting`}</span>
     <span class="dm-el-n">${others.slice(0,4).map(x =>
       `<em class="${x.call.min >= callSla(x.call) ? 'hot' : ''}">${x.id}<i>${x.call.min}m</i></em>`).join('')}${
@@ -3252,7 +3383,7 @@ const GUIDE_PHASES = {
        surfaces:[
          ['The checklist','Do now, then Worth mentioning. Five rows at most, work first'],
          ['The floor row','Guests waiting · Overdue · Just seated, as capsules above the grid'],
-         ['Guest requests','One button on the guest\'s phone. Pulse knows it was pressed, not what for'],
+         ['Guest requests','One button on the guest\'s phone. Pulse knows it was pressed, not what for — a raised hand on the card corner and a capsule in the floor row'],
          ['The action lifecycle','New · Overdue · Done · Dismissed, each visible from across the room'],
          ['An order arriving','Announces itself once, marks the table green until someone looks, and retires whatever was chasing that table for not having ordered'],
          ['Count badge on the card','How many things to do, toned by the most urgent'],
@@ -3383,6 +3514,22 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
+    <div class="set-h" style="margin-top:30px">How a request marks its card</div>
+    <div class="set-sub">A raised hand on the card's own corner, in the colour of what was asked for — azure for the plain call, so it is never confused with the app's gold accent.
+      It lands with a pop and keeps a slow ring breathing out of it while the guest waits. Past ${REQUEST_SLA} minutes the mark goes red, the ring quickens and the card breathes with it.
+      Three treatments, switchable in Settings — this is the most-looked-at element on the floor.</div>
+    <div class="gd-rows">
+      ${REQ_STYLES.map(([id,name,desc]) => `<div class="gd-row">
+        <span class="gd-a"><span class="rq-demo" style="padding:12px 4px 4px 12px">
+          <span class="tcard seated has-req rq-${id}" style="min-height:0;padding:12px 14px;pointer-events:none;display:inline-block">
+            <span class="rq ${id==='tab'?'rq-t':'rq-p'} k-attend"><em class="ci ci-waiter">${ic('hand','xs')}</em></span>
+            <b style="font-size:11.5px;color:var(--ink-3);font-weight:700">Table 17</b>
+          </span></span></span>
+        <span class="gd-b"><b>${name}</b><i>${desc}</i></span>
+        <span class="gd-c">${state.reqStyle===id?'Running now':'Switch to it in Settings'}</span>
+      </div>`).join('')}
+    </div>
+
     <div class="set-h" style="margin-top:30px">When an order arrives</div>
     <div class="set-sub">Everything else on this page is Pulse reporting that something has <em>not</em> happened. This is the one piece of good news, and it changes what a waiter does next — stop walking over, start watching the pass.</div>
     <div class="gd-rows">
@@ -3490,7 +3637,21 @@ function settingsHtml() {
         ${CALL_ORDER.filter(k => CALL_TYPES[k].phase <= state.phase)
             .map(k => `<button class="pax" data-call="${k}" style="font-size:12.5px;padding:0 12px">${CALL_TYPES[k].label}</button>`).join('')}
       </div>
-      ${anyCalls() ? `<div class="cs-live">${ic('bell-ring','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
+      ${anyCalls() ? `<div class="cs-live">${ic('hand','sm')} ${anyCalls()} open ${anyCalls()===1?'request':'requests'} on the floor</div>` : ''}
+    </div>
+
+    <div class="set-h" style="margin-top:26px">How a request marks its card</div>
+    <div class="set-sub">The most-looked-at element on the floor, so it is worth trying properly. All three cover Phase 2's single request and Phase 3's five kinds, and all three turn red once a request passes ${REQUEST_SLA} minutes.</div>
+    <div class="rq-opts">
+      ${REQ_STYLES.map(([id,name,desc]) => `<button class="rq-opt ${state.reqStyle===id?'on':''}" data-rqstyle="${id}">
+        <span class="rq-demo rq-${id}">
+          <span class="tcard seated has-req rq-${id}" style="min-height:0;padding:10px 12px;pointer-events:none">
+            <span class="rq ${id==='tab'?'rq-t':'rq-p'} k-attend"><em class="ci ci-waiter">${ic('hand','xs')}</em></span>
+            <b style="font-size:12px;color:var(--ink-3);font-weight:700">Table 17</b>
+          </span>
+        </span>
+        <b>${name}</b><i>${desc}</i>
+      </button>`).join('')}
     </div>
 
     <div class="set-h" style="margin-top:26px">An order arrives</div>
@@ -3687,6 +3848,8 @@ document.addEventListener('click', e => {
     if (sel && sel.value) orderArrived(sel.value, +items, +total);
     renderView(); return;
   }
+  const rs = e.target.closest('[data-rqstyle]');
+  if (rs) { state.reqStyle = rs.dataset.rqstyle; renderView(); toast(`Request mark: ${REQ_STYLES.find(x=>x[0]===state.reqStyle)[1]}`, 'hand'); return; }
   const ff = e.target.closest('[data-ff]');
   if (ff) { advanceClock(+ff.dataset.ff); return; }
   const rm = e.target.closest('[data-rm]');
