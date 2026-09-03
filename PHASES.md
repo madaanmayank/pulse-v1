@@ -1,15 +1,15 @@
 # Pulse — what each phase does
 
 Generated from the running registry in `index.html` — every table below is read out of
-`PHASE_META`, `SIGNALS`, `CALL_TYPES`, `MG_SECTIONS`, `LEVELS` and `CFG_DEF`, so this file cannot
-drift from the app. The same content is on the **Design guide** screen inside the product.
+`PHASE_META`, `SIGNALS`, `CALL_TYPES`, `MG_SECTIONS`, `LEVELS`, `SETUP` and `CFG_DEF`, so this file
+cannot drift from the app. The same content is on the **Design guide** screen inside the product.
 
 Two rules hold everywhere. **Every action names a physical act** a waiter can perform — never an
 instruction to think or to pay closer attention. And **Pulse never says what the data cannot
 support**: the card says *last ordered 34 min ago*, not *the plates are sitting*.
 
-Every number in this document is a shipped **default**. All of them are the merchant's to change
-in **Settings → Setup** — see [What a merchant can change](#what-a-merchant-can-change).
+Every number here is a shipped **default**, and all of them are the merchant's to change in
+**Settings → Setup**.
 
 ---
 
@@ -28,6 +28,16 @@ level was already there — a red concern never turns amber because it aged.
 
 Counts as shipped: 7 red, 8 teal, 4 gold.
 
+## Two clocks, and only two
+
+| | limit | what happens past it |
+|---|---|---|
+| **A guest request** | per kind, 5 min as shipped | Pulse names the table; several requests from one table take the tightest of them |
+| **Anything Pulse raised itself** | **15 min, shared by every action** | Pulse calls the table out by name on the card, in the strip above the floor, and in the Manager tab |
+
+Every action shares the one chase — there is no per-action chase to remember. A gold action never
+chases at all, because a greeting cannot be late.
+
 ---
 
 ## Phase 1 · Know — display only
@@ -44,41 +54,41 @@ figures: covers, dishes, tickets, bill, minutes seated. All derived, never typed
 
 6 actions.
 
-| id | what it is | raised when | chased after | whose job |
+| id | what it is | what it does, and when | its number | whose job |
 |---|---|---|---|---|
-| `call` | A guest request | The moment they press it | per kind | Whoever is closest |
-| `long-stay` | On the table a long time | On the table 180 min | 25 min | Waiter |
-| `no-order` | Seated and has not ordered | Seated 1 min with nothing ordered | 10 min | Waiter |
-| `recovery` | Last visit went wrong | At once, then every 12 min until they leave | 15 min | Waiter |
-| `suggest` | A taste we know about | A taste or a usual on file, nothing ordered | 15 min | Waiter |
-| `greet` | A returning guest | From visit 2 | never | Waiter |
+| `call` | Waiter called | "Go to the table" — the moment they press it. How long the floor has to answer is set per kind, above. | — | Whoever is closest |
+| `long-stay` | On the table a long time | "Offer the check" — once they have been on the table this long. | **180** — show it after | Waiter |
+| `no-order` | Seated and has not ordered | "Go and take their order" — once they have been seated this long with nothing ordered. | **10** — show it after | Waiter |
+| `recovery` | Last visit went wrong | "Go and check on them" — at once, then again this often for as long as they are in. | **20** — go back every | Waiter |
+| `suggest` | A taste we know about | "Recommend the Wagyu Ribeye" — whenever a taste or a usual is on file and nothing is ordered. | — | Waiter |
+| `greet` | A returning guest | "Greet them as Jessica" — from this visit number onward. | **2** — from visit | Waiter |
 
 ## Phase 3 · Anticipate — the guest's phone and the manager
 
 13 more actions, plus the request kinds and every manager touchpoint.
 
-| id | what it is | raised when | chased after | whose job |
+| id | what it is | what it does, and when | its number | whose job |
 |---|---|---|---|---|
-| `cart-unsent` | Cart built, order never placed | Items in the cart for 3 min, never sent | 15 min | Waiter |
-| `concern-mgr` | A concern, for the manager | The moment a concern is raised | 15 min | Manager |
-| `mgr-recovery` | High-value guest let down last time | A let-down guest averaging 60+ | 15 min | Manager |
-| `browsing` | Lingering in one part of the menu | 3 min inside one part of the menu | 15 min | Waiter |
-| `course-gap` | A long gap since anything was ordered | 25 min since anything was ordered | 15 min | Waiter |
-| `drink-refill` | A long gap since a drink was ordered | 20 min since a drink was ordered | 15 min | Waiter |
-| `menu-stall` | Long in the menu, nothing added | 6 min in the menu, nothing added | 15 min | Waiter |
-| `promo` | A promotion they qualify for | A live promotion applies, nothing ordered | 15 min | Waiter |
-| `repeat-item` | One dish opened again and again | One dish opened 3×, never added | 15 min | Waiter |
-| `voucher` | A next-visit voucher | The CRM has one they qualify for | 15 min | Waiter |
-| `mgr-occasion` | An occasion, for the manager to mark | An occasion on the booking or the profile | never | Manager |
-| `occasion` | An occasion | An occasion on the booking or the profile | never | Waiter |
-| `vip-welcome` | A top spender | The guest resolves to high value | never | Manager |
+| `cart-unsent` | Cart built, order never placed | "Ask them to send their order" — once items have sat in their cart this long, unsent. | **3** — show it after | Waiter |
+| `concern-mgr` | A concern, for the manager | "Visit the table" — the moment a concern is raised from the table. | — | Manager |
+| `mgr-recovery` | High-value guest let down last time | "Visit the table" — for a guest whose last visit fell short, and only above this average spend. | **60** — only above | Manager |
+| `browsing` | Lingering in one part of the menu | "Offer to choose a wine with them" — once they have been in one part of the menu this long. | **3** — show it after | Waiter |
+| `course-gap` | A long gap since anything was ordered | "Offer the next course" — once nothing at all has been ordered for this long. | **25** — show it after | Waiter |
+| `drink-refill` | A long gap since a drink was ordered | "Offer another round" — once no drink has been ordered for this long. | **20** — show it after | Waiter |
+| `menu-stall` | Long in the menu, nothing added | "Talk them through the menu" — once the menu has been open this long with nothing added. | **6** — show it after | Waiter |
+| `promo` | A promotion they qualify for | "Mention the promotion" — whenever a live promotion applies and nothing is ordered. | — | Waiter |
+| `repeat-item` | One dish opened again and again | "Talk them through the Wagyu Ribeye" — once one dish has been opened this many times without being added. | **3** — show it after | Waiter |
+| `voucher` | A next-visit voucher | "Offer the voucher" — whenever the CRM has one they qualify for. | — | Waiter |
+| `mgr-occasion` | An occasion, for the manager to mark | "Mark the occasion" — whenever an occasion is on the booking or the profile. | — | Manager |
+| `occasion` | An occasion | "Mention the anniversary" — whenever an occasion is on the booking or the profile. | — | Waiter |
+| `vip-welcome` | A top spender | "Visit the table" — whenever the guest resolves to high value. | — | Manager |
 
 ---
 
 ## What the guest can send
 
 Five buttons on their phone and no free-text field — so Pulse never describes a problem it cannot
-see. Where it does not know, it says so: a concern reads *“They could not say what — go and ask.”*
+see. Where it does not know, it says so: a concern reads *"They could not say what — go and ask."*
 
 | kind | label | the action | arrives | answer within |
 |---|---|---|---|---|
@@ -90,9 +100,9 @@ see. Where it does not know, it says so: a concern reads *“They could not say 
 
 At **Phase 2 the guest has one button** and Pulse knows only that it was pressed; the kinds arrive
 with Phase 3. Several requests from one table become one capsule, one trip, one tick — the wait
-counts from the first ask and the set takes the **tightest** answer time in it. The basic request
-cannot be switched off, so a table that pressed a kind the merchant has since disabled still
-degrades to *go to the table* rather than vanishing.
+counts from the first ask and the set takes the **tightest** answer time in it. Each kind but the
+basic request can also be switched off; a table that pressed a kind since disabled degrades to
+*go to the table* rather than vanishing.
 
 ## A table you have to keep close
 
@@ -108,7 +118,7 @@ So **the state stays and the action recurs.**
 - **The check is the action.** *Go and check on them* → *Go back and check on them*. A real trip
   to a real table, so it can be honestly ticked.
 - **Ticking it records the visit** instead of closing anything: it logs that someone went and
-  re-arms the clock. The action returns every 12 min and flags as **New** each time — even to a
+  re-arms the clock. The action returns every 20 min and flags as **New** each time — even to a
   waiter who has already looked at this table.
 - **Between checks the card reads `Checked 2× · next in 7m`**, so the table looks held rather than
   forgotten.
@@ -122,45 +132,40 @@ So **the state stays and the action recurs.**
 |---|---|---|
 | New | raised after the waiter had already looked at this table | ring on the card badge, flag on the row |
 | Open | being worked | plain row, badge counts it |
-| Overdue | past its own limit with nobody closing it | amber age chip on the card, an Overdue group in the floor row, a section in the Manager tab |
-| Done | ticked, right-hand side of the row | strikes through and holds 3 seconds with Undo in place |
+| Overdue | 15 min with nobody closing it | amber age chip on the card, an Overdue group in the strip above the floor, a section in the Manager tab |
+| Done | ticked, right-hand side of the row | strikes through and holds 2 seconds with Undo in place |
 | Dismissed | dismissed, left-hand side of the row | same grace period, then gone and not raised again |
-
-A gold action never goes overdue — a greeting cannot be late.
 
 ## What a merchant can change
 
 Every number Pulse acts on ships with a considered default and is a merchant's to change in
 **Settings → Setup**, one screen, no engineering. Nothing in the engine carries a hard-coded
 number, so what Setup says is always what the floor sees. What cannot be changed is the *shape*:
-three levels, two limits, five rows.
+three levels, two clocks, five rows.
 
-**Per action** — a switch, and at most two numbers, always the same two:
-
-- **Raise** — when Pulse puts it on the card.
-- **Chase** — when it counts as nobody having picked it up. An action with no chase of its own
-  inherits the floor rule; a gold one never chases.
-
-Turn an action off and it stops existing: not on a card, not in the floor row, not in the Manager
-tab.
+**Per action** — a switch, and **one number: how long before it appears.** The sentence beside it
+says what that time is measured from, so a stepper never has to be guessed at. Turn an action off
+and it stops existing: not on a card, not in the strip above the floor, not in the Manager tab.
 
 **Per request kind** — each of the five buttons gets its own answer time, so a concern can be
-tighter than a request for cutlery. Every kind except the basic request can also be switched off.
+tighter than a request for cutlery.
 
-**Floor rules** — not about any one action, but about how much a person can hold at once:
+**Floor rules** — how long anything may sit ignored, and how much a person can hold at once:
 
 | rule | default | what it decides |
 |---|---|---|
-| Chase anything Pulse raised | 15 min | The default limit. Past it, an action is called out by name. |
-| Actions shown on one table | 5 rows | Beyond this the rest sit behind one tap. |
-| Tables in the floor row | 4 | After this a group collapses to *+N more*. |
-| The just-seated window | 10 min | How long a new table gets its own group and softer wording. |
-| A new order stays news | 6 min | How long the table stays marked, and the gap actions stay quiet. |
-| Undo window | 3 sec | How long a ticked action stays on screen with Undo in place. |
+| One chase, for everything Pulse raises | 15 min | Every action above shares this one limit. |
+| Actions shown on one table | 5 rows | Open a table and this many actions are listed, most urgent first; anything beyond sits behind one tap. |
+| Tables named in the strip above the floor | 4 tables | The strip across the top of the Table screen names every table waiting on staff. |
+| The just-seated window | 10 min | A table this new gets its own group in the strip and softer wording, so arriving never reads as a failure. |
+| A new order stays news | 5 min | How long a table stays marked after an order lands, and how long the gap-since-last-order actions stay quiet. |
 
 A changed number shows the default it left, one button restores the lot, Settings names how far
 from standard the room has drifted before you open Setup at all, and the whole thing persists in
 the browser.
+
+Two numbers are deliberately **not** here: the undo window (2 seconds — a feel, not a policy) and
+the number of levels.
 
 ## The manager's tab
 
@@ -198,12 +203,14 @@ and controls give back vertical space. The cards themselves are untouched at eve
 
 | dropped | why |
 |---|---|
+| A chase per action | Nineteen limits is nineteen things to remember and nobody remembers any of them. One shared chase, one number, one place. |
+| The undo window as a setting | A feel, not a policy. Fixed at two seconds. |
 | Amber as a severity | It covered "a task to do", which is two different things: something is wrong, and something is worth offering. A colour that covers two ideas covers neither. Amber now means one thing — nobody has closed this. |
 | *"Check on them twice as often"* | A stance for the whole visit dressed up as a checkbox. It could not be performed, so ticking it meant nothing — and once ticked, the table stopped being flagged at all. Replaced by a persistent mark plus a recurring check. |
 | Hard-coded thresholds | Every one of them was a guess about somebody else's dining room. They are defaults now, and the merchant owns them. |
 | Free-text guest descriptions | The guest's phone has five buttons and no text field, so Pulse cannot know what is wrong. It says so instead of guessing. |
 | *"The plates are sitting"* / *"the meal has staled"* | Only order data exists. |
-| A second clock for concerns | One limit per kind, set once in Setup, instead of eight rules nobody could recall. |
+| A second clock for concerns | One answer time per kind, set once in Setup. |
 | Focus / easy-to-consume layout toggle | A second layout to maintain for the same screen. The one layout was simplified instead. |
 | A crown *and* a gold card for the same guest | One indicator per card. |
 | The sentiment chip | Nothing in the data supports it. |
