@@ -107,8 +107,8 @@ Three groups above the grid, read left to right, each capped at 4 capsules. It w
 
 | Group | What is in it |
 |---|---|
-| **Guests waiting** | They pressed a button on their phone. Coloured by kind, with a crown where the manager owns it |
-| **Overdue** | Past its limit with nobody closing it. Longest first, then **+N more** into the Manager tab |
+| **Guests waiting** | They pressed a button on their phone. Coloured by kind, with a crown where the manager owns it. **A request past its own limit wears the delay here** — an `8m over` pill on its own capsule |
+| **Overdue** | Work *Pulse* raised and nobody closed, on tables where no guest is already waiting. Longest first, then **+N more** into the Manager tab |
 | **Just seated** | Sat down within the last 10 minutes and has not ordered. Counts down the window |
 
 ## Every action, and when Pulse chases it
@@ -232,6 +232,8 @@ Each table is one dense row — who, why, and at most **two** decisions, on one 
 | One shared 15-minute limit for everything | Fifteen for cutlery is defensible; fifteen for an unhappy guest is not |
 | "Prioritise this table" / "Check in" / "Settle them in" | Instructions to think, not to act. Now: check on them twice as often · go and take their order · pour water and hand them menus |
 | "Waited too long" as a label | Overdue says it in one word |
+| The same table in both Guests waiting and Overdue | One table, one group. A guest sitting there waiting is the more urgent fact, and the request capsule carries its own delay |
+| One fixed 5-minute "hot" rule on a request | Each kind has its own limit, and the capsule counts from that |
 | Five manager sections | Three. A concern now and a bad last visit are the same job |
 | Three comp buttons on a manager row | One "On the house" control. The row was mostly empty space and the buttons all said "give something away" |
 | Manager cards 150px tall | Dense rows at 62px. A manager reads this standing between tables |

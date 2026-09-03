@@ -224,8 +224,21 @@
   .cap.late .cap-go,.cap.late .cap-ic{color:#e8bd7d}
   .cap.late.more{min-height:40px;padding:0 13px;font-size:12px;font-weight:800;color:#e8bd7d}
   .cap.late.more:hover{background:rgba(214,154,69,.22)}
-  /* waited long enough that it should catch the eye from across the room */
-  .cap.hot{animation:capThrob 1.6s ease-in-out infinite}
+  /* a request past its own limit — the delay lives on the request, never as
+     a second entry in another group */
+  .cap.over{animation:capThrob 1.6s ease-in-out infinite}
+  .cap-go i.late{
+    opacity:1;font-weight:800;border-radius:99px;padding:1px 6px;
+    background:rgba(216,72,63,.3);color:#ffb3a8;
+  }
+  .cap-over{
+    display:inline-flex;align-items:center;gap:4px;margin-left:6px;padding:2px 7px;
+    border-radius:99px;background:var(--red);color:#fff;
+    font-size:10.5px;font-weight:800;letter-spacing:.03em;font-style:normal;white-space:nowrap;
+  }
+  .cap-over svg{width:11px;height:11px}
+  .cap.fetch.over{border-color:#7a352d}
+  body.light .cap-go i.late{background:rgba(184,54,46,.22);color:#8e2a23}
   @keyframes capThrob{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.5)}50%{box-shadow:0 0 0 5px rgba(216,72,63,0)}}
   .cap-blind{font-style:normal;font-weight:700;font-size:11.5px;opacity:.8}
   /* a concern is the manager's call — the floor is told, not tasked */
@@ -372,6 +385,8 @@
   .tc-call svg{width:13px;height:13px;margin-top:1px;flex:0 0 auto}
   .tc-call b{flex:0 0 auto;display:inline-flex;color:var(--gold);margin-left:1px}
   .tc-call u{text-decoration:none;font-weight:800;opacity:.65;flex:0 0 auto;margin-left:auto;font-variant-numeric:tabular-nums}
+  .tc-call u.late{opacity:1;background:var(--red);color:#fff;border-radius:99px;padding:1px 6px}
+  .tc-call.over{border-color:var(--red)}
   .tc-call .ci{flex:0 0 auto}
   @keyframes callPulse{0%,100%{box-shadow:0 0 0 0 rgba(216,72,63,.45)}50%{box-shadow:0 0 0 6px rgba(216,72,63,0)}}
   .seg button .cnt{
@@ -2131,7 +2146,9 @@ function signalsFor(t) {
   return { open, now, soft, done:all.filter(x => x.isDone),
            top:now[0] || soft[0] || null,
            lvl:open[0] ? open[0].lvl : null, all,
-           liveNow:now.filter(live), stale:now.filter(x => x.isStale && live(x)) };
+           liveNow:now.filter(live),
+           // a request wears its own delay on its capsule; this is Pulse's work
+           stale:now.filter(x => x.isStale && live(x) && x.id !== 'call') };
 }
 
 /* Tables in their opening minutes. The clock on a first impression runs
@@ -2140,9 +2157,13 @@ function justSeated() {
   return tables.filter(t => t.status === 'seated' && !t.dishes && (t.mins||0) <= OPENING_MIN)
     .sort((a,b) => b.mins - a.mins);          // closest to losing the window first
 }
-/* Tables carrying an action nobody has closed. */
+/* Tables carrying work nobody has closed — and only those without a guest
+   already waiting on them. A table belongs in one group: if a guest is sat
+   there waiting, that is the more urgent fact and its capsule carries its own
+   delay. Seeing the same table number in two groups reads as a bug even when
+   both entries are true. */
 function unattended() {
-  return tables.filter(t => signalsFor(t).stale.length)
+  return tables.filter(t => !t.call && signalsFor(t).stale.length)
     .sort((a,b) => signalsFor(b).stale[0].openMin - signalsFor(a).stale[0].openMin);
 }
 /* The waiter has looked at this table, so anything already showing is not new. */
@@ -2272,8 +2293,6 @@ function openCalls() {
     .sort((a,b) => (b.call.min - a.call.min) || ((a.call.seq||0) - (b.call.seq||0)));
 }
 function anyCalls() { return openCalls().length; }
-/* how urgent a wait has become — the one place the escalation rule lives */
-function callHeat(c) { return c.min >= 5 ? 'hot' : c.min >= 3 ? 'warm' : ''; }
 function resolveCall(tableId) {
   const t = T(tableId); if (!t || !t.call) return;
   const label = callDone(t.call);
@@ -2398,11 +2417,11 @@ function cardHtml(t) {
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
     ${t.call && state.phase >= 2
-        ? `<div class="tc-call k-${callKind(t.call)}">
+        ? `<div class="tc-call k-${callKind(t.call)} ${t.call.min >= callSla(t.call) ? 'over' : ''}">
              ${callTypes(t.call).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'xs')}</em>`).join('')}
              <span>${callTypes(t.call).map(k => CALL_TYPES[k].short).join(' · ')}</span>${
              callIsMgr(t.call)?`<b title="The manager handles this">${ic('crown','xs')}</b>`:''}${
-             t.call.min?`<u>${t.call.min}m</u>`:''}</div>`
+             t.call.min ? `<u class="${t.call.min >= callSla(t.call) ? 'late' : ''}">${t.call.min}m</u>` : ''}</div>`
         : (sig.top ? `<div class="tc-act ${sig.top.isStale?'late':sig.top.lvl}">${ic(sig.top.icon,'xs')} <span>${sig.top.act}</span>${
              sig.top.isStale ? `<span class="tc-late">${sig.top.openMin}m</span>` : (sig.top.isNew ? `<span class="tc-new">New</span>` : '')
            }</div>` : '')}
@@ -2429,11 +2448,15 @@ function renderSecMenu() {
    a waiter who is walking over does not stop to tell the tablet. */
 function callCap(t) {
   const c = t.call, ks = callTypes(c), blind = callBlind(c);
-  return `<span class="cap ${callKind(c)} ${callHeat(c)==='hot'?'hot':''}" title="${callLabel(c)}${blind?' — '+blind:''}">
+  const limit = callSla(c), over = c.min - limit;
+  return `<span class="cap ${callKind(c)} ${over >= 0 ? 'over' : ''}"
+      title="${callLabel(c)}${blind?' — '+blind:''} · waited ${c.min}m of ${limit}m">
     <button class="cap-go" data-goto="${t.id}">
       <span class="cap-ic">${ks.slice(0,3).map(k => `<em class="ci ci-${k}">${ic(CALL_TYPES[k].icon,'sm')}</em>`).join('')}${
         ks.length > 3 ? `<em class="ci more">+${ks.length-3}</em>` : ''}</span>
-      <b>${t.id}</b><i>${c.min}m</i>${callIsMgr(c) ? `<span class="cap-mgr" title="The manager handles this">${ic('crown','sm')}</span>` : ''}
+      <b>${t.id}</b><i class="${over >= 0 ? 'late' : ''}">${c.min}m</i>${
+      over >= 0 ? `<em class="cap-over" title="Past its ${limit}-minute limit">${ic('timer','xs')} ${over === 0 ? 'due now' : `${over}m over`}</em>` : ''}${
+      callIsMgr(c) ? `<span class="cap-mgr" title="The manager handles this">${ic('crown','sm')}</span>` : ''}
     </button>
     <button class="cap-x" data-resolve="${t.id}" title="Handled">${ic('check','sm')}</button>
   </span>`;
@@ -2677,7 +2700,7 @@ function renderElsewhere() {
     ${ic('bell-ring','xs')}
     <span class="dm-el-l">${others.length === 1 ? '1 table waiting' : `${others.length} tables waiting`}</span>
     <span class="dm-el-n">${others.slice(0,4).map(x =>
-      `<em class="${callHeat(x.call)==='hot'?'hot':''}">${x.id}<i>${x.call.min}m</i></em>`).join('')}${
+      `<em class="${x.call.min >= callSla(x.call) ? 'hot' : ''}">${x.id}<i>${x.call.min}m</i></em>`).join('')}${
       others.length > 4 ? `<em class="more">+${others.length-4}</em>` : ''}</span>
     ${ic('chevron-right','xs')}
   </button>`;
