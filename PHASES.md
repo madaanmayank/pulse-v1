@@ -101,24 +101,6 @@ Three phases. The difference is not how much data we hold — it is what Pulse d
 
 ---
 
-## Two ways to read the floor
-
-Switchable in **Settings → Floor layout**. The cards are the same size either way; what goes in them changes, on the floor and inside an open table.
-
-| | Detailed | Focus |
-|---|---|---|
-| The question it answers | What does Pulse know about this table | What do I do next here |
-| On the card | Count badge, request pin, bucket label, order chip, age chip, action line | Table, name, covers, **one thing in words**, and *and N more* |
-| Urgency shown by | Badge tone, pin colour, chips | A single coloured left edge |
-| An open table | *Do now* and *Worth mentioning*, with owner tags and age chips | **A numbered sequence** — 1, 2, 3 — no sections, no tags |
-| Manager's own calls | Listed alongside the waiter's | Left to the Manager tab |
-
-**Several things at one table** is the case Focus exists for. Table 09 carries nine actions at Phase 3; Detailed shows a badge of 3 and one line, Focus shows *Get the manager to this table* and *and 6 more*, and opening it gives the whole sequence in order.
-
-The request stays in the floor's list even though a concern is the manager's to own — its action is *fetch them*, which is the waiter's job. Filtering purely on ownership made a concern invisible to the waiter, which is the opposite of the point.
-
----
-
 ## Built for landscape
 
 A tablet held in landscape is wide and short, so the scarce axis is **height** — and the fixed bands were taking too much of it. At 1024×768 the top bar, floor row and nav together came to 38% of the screen.
@@ -228,6 +210,42 @@ Each occasion offers two different decisions — one for tonight, one for the ne
 
 All of it sits behind the single **On the house** control on the manager's row, badged with how many suggestions are waiting. The sheet names the occasion, and any concern, so the call is an informed one — and the manager can still ignore every suggestion and pick anything from the full list.
 
+## How many things a table still needs
+
+The number on a card's top right is **every** pending action, greetings included. Counting only the urgent ones made it smaller but unanswerable — a waiter could not tell how much the table still needed. Its colour comes from the most urgent one, so the number says *how much* and the colour says *how hard it presses*.
+
+**No instruction is ever listed twice.** Two signals can land on the same words — a live concern and a poor last visit both ask a manager to visit the table — and a list that repeats itself reads as broken however true both entries are. The higher-priority one survives and carries the reason.
+
+**One action for a table that has not ordered**, whatever the reason. The job never changes, so only the reason does:
+
+| When | Go and take their order — because |
+|---|---|
+| Just seated | Just sat down. |
+| Within ten minutes | Seated 4m, nothing ordered yet. |
+| Longer | Seated 22m, still nothing ordered. |
+| Phase 3, menu never opened | Sitting 14m and the menu has not been opened once. |
+
+This replaced three separately worded actions — *pour water and hand them menus*, *go and take their order* and *take their order in person* — which were the same job described three ways, and which one you saw depended on the phase and on whether the guest had opened the QR.
+
+## Table 01 — see everything at once
+
+Every field the engine reads is filled in on Table 01's guest, so at Phase 3 it raises **ten actions** — nearly the whole vocabulary in one place:
+
+| | Action | Weight |
+|---|---|---|
+| 1 | Get the manager to this table | Intervene |
+| 2 | Visit the table | Intervene · the manager's |
+| 3 | Check on them twice as often | Intervene |
+| 4 | Ask them to send their order | Intervene |
+| 5 | Offer the next course | A task |
+| 6 | Offer another round | A task |
+| 7 | Talk them through the Wagyu Ribeye | A task |
+| 8 | Mention the anniversary | Say it |
+| 9 | Mark the occasion | Say it · the manager's |
+| 10 | Offer SGD40 off the next visit | Say it |
+
+It is deliberately the busiest table the product can produce, so the volume can be judged in one look. The card shows the count and the top action; opening it shows the first five in order with the rest one tap away. The **Guide** lists all ten with their reasons, under *See everything at once*.
+
 ## How a request marks its card
 
 A raised hand on the card's own corner, in the colour of what was asked for — **azure** for the plain call, so it is never confused with the app's gold accent, and never with the sand of a cutlery request.
@@ -307,6 +325,9 @@ Each table is one dense row — who, why, and at most **two** decisions, on one 
 | The wait printed inside every request capsule | Just the table number. The wait appears as a corner badge only once it is past five minutes |
 | All five request kinds at Phase 2 | One button at Phase 2 — Pulse knows it was pressed, not what for. The kinds arrive with Phase 3 |
 | Five manager sections | Three. A concern now and a bad last visit are the same job |
+| The Focus layout | Removed. Two layouts to maintain and explain, for a decluttering that belonged in the one layout |
+| Three ways to say "take their order" | One action, four reasons |
+| A count that ignored greetings | Every pending action counts. The colour carries urgency instead |
 | Three comp buttons on a manager row | One "On the house" control. The row was mostly empty space and the buttons all said "give something away" |
 | Manager cards 150px tall | Dense rows at 62px. A manager reads this standing between tables |
 

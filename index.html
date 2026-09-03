@@ -704,74 +704,6 @@
     .mg-act{grid-column:2;justify-content:flex-start;flex-wrap:wrap}
   }
 
-  /* ─────────── focus layout ───────────
-     One thing to do per table. The urgency lives in a single left edge, so
-     the card needs no pin, no bucket chip, no age chip and no order chip. */
-  .tcard.fc{gap:0}
-  .tcard.fc::before{
-    content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-    background:var(--line);border-radius:var(--r-card) 0 0 var(--r-card);
-  }
-  .tcard.fc.lv-red::before{background:var(--red)}
-  .tcard.fc.lv-amber::before{background:#d69a45}
-  .tcard.fc.lv-gold::before{background:var(--gold)}
-  .tcard.fc.is-late::before{animation:fcEdge 1.9s ease-in-out infinite}
-  @keyframes fcEdge{0%,100%{opacity:1}50%{opacity:.35}}
-  .fc-n{
-    display:grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:99px;
-    background:var(--line-soft);color:var(--ink);font-size:12px;font-weight:800;
-    font-variant-numeric:tabular-nums;
-  }
-  .tcard.fc.lv-red .fc-n{background:var(--red);color:#fff}
-  .tcard.fc.lv-amber .fc-n{background:#d69a45;color:#241d0c}
-  .fc-do{
-    display:flex;align-items:flex-start;gap:8px;margin-top:10px;
-    font-size:13px;font-weight:700;line-height:1.35;min-width:0;
-  }
-  .fc-act{display:flex;align-items:flex-start;gap:6px;min-width:0}
-  .fc-act svg{margin-top:2px;flex:0 0 auto}
-  .fc-act > span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .tcard.fc.lv-red .fc-do{color:#f0b3ab}
-  .tcard.fc.lv-amber .fc-do{color:#e8bd7d}
-  .tcard.fc.lv-gold .fc-do{color:var(--gold-soft)}
-  .fc-do.fc-clear{color:#8fe0b0;font-weight:700}
-  .fc-late{
-    margin-left:auto;flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
-    font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
-    background:var(--red);color:#fff;border-radius:5px;padding:2px 6px;
-  }
-  .fc-more{margin-top:6px;font-size:11.5px;font-weight:700;color:var(--ink-3)}
-  .fc-ord{
-    margin-left:auto;display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;
-    font-size:10.5px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;
-    color:#8fe0b0;
-  }
-  .tcard.fc .tc-bill{margin-top:auto}
-
-  /* the numbered sequence in an open table */
-  .fq-wrap .todo-row{align-items:center}
-  .fq-n{
-    flex:0 0 auto;display:grid;place-items:center;width:26px;height:26px;border-radius:99px;
-    background:var(--line-soft);color:var(--ink-2);
-    font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;
-  }
-  .todo-row.fq.red   .fq-n{background:rgba(216,72,63,.24);color:#f0b3ab}
-  .todo-row.fq.amber .fq-n{background:rgba(214,154,69,.24);color:#e8bd7d}
-  .todo-row.fq.late  .fq-n{background:#d69a45;color:#241d0c}
-  .todo-row.fq.settling .fq-n{opacity:.45}
-
-  /* the layout switch in Settings */
-  .ly-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:12px}
-  .ly-opt{
-    display:flex;flex-direction:column;gap:4px;padding:14px;border-radius:12px;text-align:left;
-    background:var(--card);border:1px solid var(--line-soft);color:var(--ink);
-  }
-  .ly-opt.on{border-color:var(--gold-line);background:rgba(217,180,95,.07)}
-  .ly-opt:hover{border-color:var(--gold-line)}
-  .ly-opt b{font-size:13.5px;font-weight:800}
-  .ly-opt i{font-style:normal;font-size:11.5px;color:var(--ink-3);line-height:1.5}
-  body.light .ly-opt{background:#fff}
-
   /* ─────────── design guide ───────────
      Its own screen, because a prototype that explains itself is worth more
      than one that has to be explained. */
@@ -913,6 +845,14 @@
   .lv-amber .gd-lv{background:rgba(214,154,69,.18);color:#e8bd7d}
   .lv-gold  .gd-lv{background:rgba(217,180,95,.14);color:var(--gold-soft)}
   .gd-slac{white-space:nowrap;font-weight:800;font-variant-numeric:tabular-nums;color:#e8bd7d}
+  .fq-num{
+    flex:0 0 auto;display:grid;place-items:center;width:24px;height:24px;border-radius:99px;
+    background:var(--line-soft);color:var(--ink-2);font-size:12px;font-weight:800;
+    font-variant-numeric:tabular-nums;
+  }
+  .gd-a .gd-lv.lv-red{background:rgba(216,72,63,.18);color:#f0b3ab}
+  .gd-a .gd-lv.lv-amber{background:rgba(214,154,69,.18);color:#e8bd7d}
+  .gd-a .gd-lv.lv-gold{background:rgba(217,180,95,.14);color:var(--gold-soft)}
   .lv-gold .gd-slac{color:var(--ink-3);font-weight:700}
   body.light .gd-ph{background:#fff}
   @media (max-width:900px){ .gd-tbl th:nth-child(3),.gd-tbl td:nth-child(3){display:none} }
@@ -1817,6 +1757,21 @@ const guests = {
     sentiment:'positive',
     promos:['1-for-1 mains, weekdays before 7pm','Complimentary dessert on 4+ covers'],
     voucher:{ label:'SGD15 off the next visit', why:'Spends above average and is due back within a month' } },
+  /* The showcase. Every field the engine reads is populated here, so Table 01
+     raises one of very nearly everything Pulse can say — the fastest way to
+     see the whole vocabulary at once, and to judge whether it is too much. */
+  dem: { id:'dem', tastes:['spicy','beef'], name:'Rohan Mehta', phone:'+65 9022 XXXX', initials:'R',
+    rating:3.2, lastVisit:'6 weeks ago', visits:9, avgSpend:118,
+    summary:'Nine visits, always the tasting menu and always a big red.',
+    score:{ pct:2, label:'Top 2% of your guests' },
+    last:{ when:'6 weeks ago', meal:'Dinner', pax:4, spend:472.00, rated:3 },
+    sentiment:'mixed',
+    prevIssue:'Mains arrived cold and the wine was never topped up',
+    occasion:'Anniversary',
+    promos:['Chef\u2019s table, two seats held until 8pm'],
+    voucher:{ label:'SGD40 off the next visit', why:'Top 2% of spend and a poor last visit' },
+    notes:['Seating: hates the table by the door'] },
+
   ana: { id:'ana', name:'Ana', phone:'+65 8811 XXXX', initials:'A', rating:4.2, lastVisit:'2 months ago', visits:2, avgSpend:38,
     occasion:'Birthday',
     summary:'Prefers lighter dishes and sparkling water.' },
@@ -1932,7 +1887,15 @@ const RECOS = [
    lastDrinkMin = minutes since a drink was last ordered
    Both come from order data. Pulse does not know what is on the table.   */
 let tables = [
-  { id:'01', sec:'Indoor', status:'vacant' },
+  /* Table 01 is the showcase — a live concern, a cart never sent, a dish
+     opened over and over, a long gap since the last order and the last drink,
+     an occasion, a promotion, a voucher, a poor last visit and a top-2% guest,
+     all at once. It is deliberately the busiest table Pulse can produce. */
+  { id:'01', sec:'Indoor', status:'seated', guest:'dem', others:true, pax:4, mins:78,
+    bill:212.50, server:'Maria', ticket:2, dishes:5,
+    lastOrderMin:31, lastDrinkMin:24,
+    sw:{ menuOpenMin:8, itemsViewed:6, cartItems:2, cartMin:5, repeatItem:'Wagyu Ribeye', repeatViews:4 },
+    call:{ types:['concern'], min:4, seq:4 } },
   // sat down and has not even opened the menu — probably waiting for someone
   { id:'02', sec:'Indoor', status:'seated', guest:'irf', others:true, pax:2, mins:14, bill:0, server:'Aisha', ticket:0, dishes:0,
     sw:{ menuOpenMin:0, itemsViewed:0 } },
@@ -2036,12 +1999,15 @@ const FEATURES = [
   { n:'A new order announces itself', p:2, own:'SW', sup:'Pulse', built:1,
     ui:'A toast naming the table, the item count and the value; an ORDER IN chip on the card until a waiter opens it, or six minutes, whichever comes first',
     note:'The only good news Pulse gets. It also clears the unsent cart and retires the actions chasing that table for not ordering' },
-  { n:'Two floor layouts — Detailed and Focus', p:2, own:'Pulse', built:1, hero:1,
-    ui:'Settings, Floor layout. Detailed shows everything Pulse knows on the card; Focus shows one thing to do and counts the rest, and turns the open table into a numbered sequence',
-    note:'Same card size either way. Focus answers "what do I do next here" rather than "what does Pulse know about this table"' },
-  { n:'Several things at one table, in order', p:2, own:'Pulse', built:1,
-    ui:'Focus numbers the open table 1, 2, 3 — no sections, no owner tags, no age chips. The order carries all of it',
-    note:'When four things land on one table a waiter needs first, second, third, not four labelled categories' },
+  { n:'One count for everything pending', p:2, own:'Pulse', built:1,
+    ui:'The number on a card\u2019s top right is every action still open, greetings included; its colour comes from the most urgent',
+    note:'Counting only the urgent ones made the number smaller but unanswerable — a waiter could not tell how much the table still needed' },
+  { n:'Never the same instruction twice', p:2, own:'Pulse', built:1,
+    ui:'Two signals landing on one instruction collapse to the higher-priority one',
+    note:'A live concern and a poor last visit both ask a manager to visit the table' },
+  { n:'Table 01 — the showcase', p:3, own:'Pulse', built:1,
+    ui:'Guide, "See everything at once". One table with every field populated, raising nearly the whole vocabulary at Phase 3',
+    note:'Deliberately the busiest table the product can produce, so the volume can be judged in one look' },
   { n:'The request mark on a card — three treatments', p:2, own:'Pulse', built:1,
     ui:'A corner pin, a corner tab, or a pin plus a coloured top edge. Switchable in Settings; all three go red and pulse once a request is past its limit',
     note:'A raised hand, in azure so it is not the app accent. It was a full-width block in the card body, which cost more height than the fact deserved' },
@@ -2170,20 +2136,20 @@ const SIGNALS = [
     why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
     done:'Table watched closely' },
 
-  /* The opening. Retires the moment they order, or hands over to no-order. */
-  { id:'new-table', phase:2, lvl:'amber', who:'waiter', icon:'hand-platter', score:90,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins <= OPENING_MIN,
-    act:'Pour water and hand them menus',
-    why:c => c.mins <= 1 ? 'Just sat down.' : `Seated ${dur(c.mins)}, nothing ordered yet.`,
-    done:'Water and menus done', sla:8 },
-
-  { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'clock', score:82,
-    // Phase 3 replaces this with something sharper off the guest's phone;
-    // until then it is the only thing watching a table that has not ordered
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins > OPENING_MIN && !(state.phase >= 3 && c.hasSw),
+  /* One action for a table that has not ordered, whatever the reason. The
+     job never changes — go and take the order — so only the reason does, and
+     it gets sharper as the data allows. */
+  { id:'no-order', phase:2, lvl:'amber', who:'waiter', icon:'hand-platter', score:90,
+    on:c => c.t.status === 'seated' && !c.t.dishes && c.mins >= 1,
     act:'Go and take their order',
-    why:c => `Seated ${dur(c.mins)}, nothing ordered.`,
-    done:'Order taken' },
+    why:c => {
+      if (state.phase >= 3 && c.hasSw && !c.sw.menuOpenMin && c.mins >= 6)
+        return `Sitting ${dur(c.mins)} and the menu has not been opened once.`;
+      if (c.mins <= 2)  return 'Just sat down.';
+      if (c.mins <= OPENING_MIN) return `Seated ${dur(c.mins)}, nothing ordered yet.`;
+      return `Seated ${dur(c.mins)}, still nothing ordered.`;
+    },
+    done:'Order taken', sla:10 },
 
   { id:'long-stay', phase:2, lvl:'amber', who:'waiter', icon:'hourglass', score:64,
     on:c => c.t.status === 'seated' && c.mins >= 180,
@@ -2228,13 +2194,6 @@ const SIGNALS = [
     act:'Ask them to send their order',
     why:c => `${c.sw.cartItems} items in their cart, never sent — ${c.sw.cartMin} min.`,
     done:'Order sent' },
-
-  // sitting there without even opening the menu
-  { id:'idle-table', phase:3, lvl:'amber', who:'waiter', icon:'armchair', score:89,
-    on:c => c.t.status === 'seated' && !c.t.dishes && c.hasSw && !c.sw.menuOpenMin && c.mins >= 8,
-    act:'Take their order in person',
-    why:c => `Sitting ${dur(c.mins)}, menu never opened.`,
-    done:'Order taken in person' },
 
   // long in the menu, nothing added
   { id:'menu-stall', phase:3, lvl:'amber', who:'waiter', icon:'book-open', score:87,
@@ -2375,9 +2334,19 @@ function signalsFor(t) {
     })
     .filter(x => !x.isDropped);
   const rank = { red:0, amber:1, gold:2 };
-  const open = all.filter(x => !x.isDone)
+  const sorted = all.filter(x => !x.isDone)
     // an action nobody has closed outranks a fresher one of the same severity
     .sort((a,b) => (b.isStale - a.isStale) || rank[a.lvl]-rank[b.lvl] || b.score-a.score);
+  /* Never say the same thing twice. Two signals can land on one instruction —
+     a live concern and a poor last visit both ask a manager to visit the table
+     — and a list that repeats itself reads as broken however true both are.
+     The higher-priority one survives and carries the reason. */
+  const seenAct = new Set();
+  const open = sorted.filter(x => {
+    const key = String(x.act).toLowerCase();
+    if (seenAct.has(key)) return false;
+    seenAct.add(key); return true;
+  });
   const now  = open.filter(x => x.lvl !== 'gold');
   const soft = open.filter(x => x.lvl === 'gold');
   const live = x => !pending[aKey(t.id, x.id)];
@@ -2562,7 +2531,7 @@ function raiseCall(tableId, type) {
   if (state.detailId === tableId) renderDetail(); else renderElsewhere();
   toast(`Table ${t.id} — ${CALL_TYPES[type].label.toLowerCase()}`, callMain(t.call).icon);
 }
-let callSeq = 3;   // the seeded requests already used 0-3
+let callSeq = 4;   // the seeded requests already used 0-4
 /* oldest first — a guest who has waited longest is served first */
 function openCalls() {
   return tables.filter(t => t.call)
@@ -2607,7 +2576,7 @@ function attentionCount() {
 
 const state = { filter:'all', view:'table', q:'', searchOpen:false,
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
-                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, reqStyle:'pin', layout:'detail', 
+                phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, reqStyle:'pin', 
                 theme:'dark' };
 
 /* ══════════════════════════════════════════════════════════════
@@ -2684,90 +2653,33 @@ function reqMark(t) {
     ${icons}${late ? `<i>${c.min}m</i>` : ''}${mgr ? ic('crown','xs') : ''}</span>`;
 }
 
-/* ── Two ways to read the floor ─────────────────────────────────────────────
-   Detailed is everything Pulse knows, on the card. It is honest but it is a
-   lot: a busy table can carry a count badge, a request pin, a bucket label,
-   an order chip, an age chip and an action line at once.
-
-   Focus answers a different question — not "what does Pulse know about this
-   table" but "what do I do next here". One thing, in words, and a count of
-   what is behind it. Same card size either way. */
-const LAYOUTS = [
-  ['detail','Detailed','Everything Pulse knows, on the card. More to read, nothing hidden.'],
-  ['focus','Focus','One thing to do per table, and a count of the rest. Same card, far less to scan.'],
-];
-
-/* What the person holding this tablet does at this table, in the order to do
-   it: work first by urgency, then the things worth saying.
-
-   The manager's own calls are left out — they have their own tab, and keeping
-   them here produced pairs like "get the manager to this table" followed by
-   "visit the table": one concern, told twice, to two different people, in one
-   waiter's list.
-
-   The request itself is the exception. A concern is flagged as the manager's
-   because they own the outcome, but its action is always something the floor
-   does — fetch them. Filtering on who alone made a concern invisible to the
-   waiter, which is the opposite of the point. */
-function agenda(t) {
-  const sig = signalsFor(t);
-  return [...sig.now, ...sig.soft]
-    .filter(a => (a.who !== 'manager' || a.id === 'call') && !pending[aKey(t.id, a.id)]);
-}
-
-function focusCard(t) {
-  const sig = signalsFor(t);
-  const list = agenda(t);
-  const top = list[0], rest = list.length - 1;
-  const lvl = top ? (t.call && top.id === 'call' ? 'red' : top.lvl) : '';
-  const late = sig.stale.length > 0 || (t.call && t.call.min >= REQUEST_SLA);
-  const cls = t.status === 'paid' ? 'paid' : 'seated';
-  return `<div class="tcard fc ${cls} ${lvl?'lv-'+lvl:''} ${late?'is-late':''}" data-id="${t.id}">
-    <div class="tc-head">
-      <span class="tc-id">Table ${t.id}</span>
-      <span class="tc-right">
-        ${list.length > 1 ? `<span class="fc-n">${list.length}</span>` : ''}
-        <span class="tc-doc">${ic('receipt-text','sm')}</span>
-      </span>
-    </div>
-    <div class="tc-name${nameOf(t).length > 15 ? ' long' : ''}">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
-    <div class="tc-meta">
-      <span>${ic('user','xs')} ${t.pax}</span>
-      <span>${ic('clock','xs')} ${dur(t.mins)}</span>
-      ${justOrdered(t) ? `<span class="fc-ord">${ic('utensils-crossed','xs')} ordered</span>` : ''}
-    </div>
-    ${top ? `<div class="fc-do">
-        <span class="fc-act">${ic(top.icon,'xs')} <span>${top.act}</span></span>
-        ${late ? `<span class="fc-late">${ic('timer','xs')} waiting</span>` : ''}
-      </div>
-      ${rest > 0 ? `<div class="fc-more">and ${rest} more</div>` : ''}`
-      : `<div class="fc-do fc-clear">${ic('check-circle','xs')} <span>All good</span></div>`}
-    ${t.bill > 0 ? `<div class="tc-bill">${money(t.bill)}</div>` : ''}
-  </div>`;
-}
-
 function cardHtml(t) {
   if (t.status === 'vacant')
     return `<div class="tcard vacant" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
   if (t.status === 'blocked')
     return `<div class="tcard blocked" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
 
-  if (t.status !== 'vacant' && t.status !== 'blocked' && state.layout === 'focus') return focusCard(t);
   const cls = t.status === 'paid' ? 'paid' : 'seated';
   const sig = signalsFor(t);
   const bkt = bucketOfTable(t);
   // the badge is the single indicator: how many things this table needs, and
   // how loudly. Nobody has closed one for a while -> it reads as late.
-  const tone = sig.liveNow[0] ? sig.liveNow[0].lvl : '';
+  // every pending thing counts — greeting them by name is an action too.
+  // The tone still comes from the most urgent, so the colour says how hard
+  // it presses while the number says how much is left.
+  const live = sig.open.filter(a => !pending[aKey(t.id, a.id)]);
+  const tone = sig.liveNow[0] ? sig.liveNow[0].lvl : (live[0] ? live[0].lvl : '');
   const isLate = sig.stale.length > 0;
-  const isNew = !isLate && sig.liveNow.some(a => a.isNew);
+  const isNew = !isLate && live.some(a => a.isNew);
   return `<div class="tcard ${cls}${t.call && state.phase >= 2 ? ' has-req rq-'+state.reqStyle : ''}" data-id="${t.id}">
     ${t.call && state.phase >= 2 ? reqMark(t) : ''}
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
       <span class="tc-right">
-        ${sig.liveNow.length ? `<span class="tc-count ${tone}${isLate?' late':''}${isNew?' fresh':''}"
-            title="${sig.liveNow.length} to do${isLate?` · ${sig.stale[0].openMin} min unattended`:''}">${sig.liveNow.length}</span>` : ''}
+        ${live.length ? `<span class="tc-count ${tone}${isLate?' late':''}${isNew?' fresh':''}"
+            title="${live.length} still to do here${sig.liveNow.length && sig.liveNow.length !== live.length
+              ? ` · ${sig.liveNow.length} of them need doing now` : ''}${
+              isLate?` · ${sig.stale[0].openMin} min unattended`:''}">${live.length}</span>` : ''}
         <span class="tc-doc">${ic('receipt-text','sm')}</span>
       </span>
     </div>
@@ -2986,51 +2898,7 @@ function recoHtml(r) {
 
 /* The checklist. Three rows at most before it folds — beyond that the
    waiter is reading rather than acting. */
-/* Focus: one numbered sequence, in the order to do it. When four things land
-   on the same table, the thing a waiter needs is not four labelled categories
-   — it is first, second, third. So there are no sections, no Manager tags and
-   no age chips here; the order carries all of it. */
-function focusActions(t) {
-  if (state.phase < 2) return '';
-  const sig = signalsFor(t);
-  const list = agenda(t);
-  const settling = sig.open.some(a => (a.who !== 'manager' || a.id === 'call') && pending[aKey(t.id, a.id)]);
-  if (!list.length && !settling) {
-    const n = sig.done.filter(a => a.who !== 'manager' || a.id === 'call').length;
-    return `<div class="todo all-good"><div class="todo-clear">${ic('check-circle','sm')}
-      <span>All good here</span>${n ? `<i>${n} handled</i>` : ''}</div></div>`;
-  }
-  const CAP = 4;
-  const shown = state.allActions ? list : list.slice(0, CAP);
-  const hidden = list.length - shown.length;
-  const row = (a, i) => {
-    const p = pending[aKey(t.id, a.id)];
-    return `<div class="todo-row fq ${a.isStale?'late':a.lvl} ${p?'settling '+p.kind:''}"
-                 data-k="${t.id}:${a.id}"
-                 data-why="${String(a.why).replace(/"/g,'&quot;')}"
-                 data-done="${String(a.done||'Done').replace(/"/g,'&quot;')}">
-      <button class="todo-x" data-drop="${a.id}" title="Not applicable — dismiss" ${p?'disabled':''}>${ic('x','sm')}</button>
-      <span class="fq-n">${i + 1}</span>
-      <div class="todo-b">
-        <span class="todo-a">${a.act}</span>
-        <span class="todo-w">${p ? (p.kind==='done' ? val(a.done,null)||'Done' : 'Dismissed — it will not be raised again') : a.why}</span>
-      </div>
-      ${p ? `<button class="todo-undo" data-undo="${a.id}">${ic('undo-2','xs')} Undo</button>`
-          : `<button class="tick-hit" data-do="${a.id}" title="Mark done"><span class="tick">${ic('check')}</span></button>`}
-    </div>`;
-  };
-  return `<div class="todo fq-wrap">
-    <div class="todo-h"><b>Do these, in this order</b>
-      <span class="todo-prog">${sig.done.filter(a => a.who !== 'manager' || a.id === 'call').length} of ${
-        sig.all.filter(a => a.who !== 'manager' || a.id === 'call').length} done</span></div>
-    ${shown.map(row).join('')}
-    ${hidden ? `<button class="todo-more" id="act-more">+ ${hidden} more</button>` : ''}
-    ${state.allActions && list.length > CAP ? `<button class="todo-more" id="act-more">Show fewer</button>` : ''}
-  </div>`;
-}
-
 function actionsHtml(t) {
-  if (state.layout === 'focus') return focusActions(t);
   // Phase 1 shows who is at the table and nothing more — no checklist to
   // render, and no pretending the table is fine when nobody has looked.
   if (state.phase < 2) return '';
@@ -3634,10 +3502,10 @@ const GUIDE_SCREENS = [
 /* Plain names for the engine's ids, and a plain phrasing for the actions
    whose text is computed per table. */
 const GD_ACTION_NAMES = {
-  call:'A guest request', recovery:'Last visit went wrong', 'new-table':'The opening ten minutes',
-  'no-order':'Seated, nothing ordered', 'long-stay':'On the table a long time',
+  call:'A guest request', recovery:'Last visit went wrong',
+  'no-order':'Seated and has not ordered', 'long-stay':'On the table a long time',
   greet:'A returning guest', suggest:'A taste we know about',
-  'cart-unsent':'Cart built, order never placed', 'idle-table':'Menu never opened',
+  'cart-unsent':'Cart built, order never placed',
   'menu-stall':'Long in the menu, nothing added', 'course-gap':'A long gap since anything was ordered',
   'drink-refill':'A long gap since a drink was ordered', 'repeat-item':'One dish opened again and again',
   browsing:'Lingering in one part of the menu', occasion:'An occasion', promo:'A promotion they qualify for',
@@ -3811,6 +3679,25 @@ function guideHtml() {
         </div>`).join('')}
     </div>
 
+    <div class="set-h" style="margin-top:30px">See everything at once — Table 01</div>
+    <div class="set-sub"><strong>Table 01 is the showcase.</strong> Every field the engine reads is filled in on that guest, so at Phase 3 it raises one of very nearly
+      everything Pulse can say — a live concern, a cart never sent, a dish opened over and over, a long gap since the last order and the last drink,
+      an anniversary, a promotion, a voucher, a poor last visit and a top-2% guest. It is deliberately the busiest table the product can produce,
+      so you can judge in one look whether the vocabulary is too much. Open it, and the checklist shows the first five in order with the rest one tap away.</div>
+    <div class="gd-rows">
+      ${(() => { const t = T('01'); const sig = signalsFor(t);
+        if (!sig.open.length) return `<div class="mg-empty">${ic('check-circle','sm')} Nothing on Table 01 right now — turn on Phase 3 in Settings.</div>`;
+        return sig.open.map((a,i) => `<div class="gd-row">
+          <span class="gd-a"><span class="fq-num">${i+1}</span><span class="gd-lv lv-${a.lvl}">${
+            a.lvl==='red'?'Intervene':a.lvl==='amber'?'A task':'Say it'}</span></span>
+          <span class="gd-b"><b>${a.act}</b><i>${a.why}</i></span>
+          <span class="gd-c">${GD_ACTION_NAMES[a.id]||a.id}${a.who==='manager'?' · the manager\'s':''}</span>
+        </div>`).join(''); })()}
+    </div>
+    <p class="gd-pbnote" style="margin-top:12px">${ic('info','xs')} The count on a card's top right is <strong>every</strong> pending action, greetings included —
+      it answers "how much does this table still need". Its colour comes from the most urgent one, so the number says how much and the colour says how hard it presses.
+      No instruction is ever listed twice: a live concern and a poor last visit both ask a manager to visit, and only the higher-priority one is shown.</p>
+
     <div class="set-h" style="margin-top:30px">How a request marks its card</div>
     <div class="set-sub">A raised hand on the card's own corner, in the colour of what was asked for — azure for the plain call, so it is never confused with the app's gold accent.
       It lands with a pop and keeps a slow ring breathing out of it while the guest waits. Past ${REQUEST_SLA} minutes the mark goes red, the ring quickens and the card breathes with it.
@@ -3920,13 +3807,6 @@ function settingsHtml() {
       ${[1,2,3].map(pn => cell(pn, `Phase ${pn} · ${PHASE_META[pn].verb}`, PHASE_META[pn].blurb)).join('')}
     </div>
 
-    <div class="set-h" style="margin-top:28px">Floor layout</div>
-    <div class="set-sub">Two ways to read the same floor, and the one most worth trying. Detailed shows everything Pulse knows; Focus shows one thing to do per table and counts the rest. The cards are the same size either way — it is what goes in them that changes, on the floor and inside an open table.</div>
-    <div class="ly-opts">
-      ${LAYOUTS.map(([id,name,desc]) => `<button class="ly-opt ${state.layout===id?'on':''}" data-layout="${id}">
-        <b>${name}${state.layout===id?' · running now':''}</b><i>${desc}</i>
-      </button>`).join('')}
-    </div>
     ${state.phase >= 2 ? `<div class="set-h" style="margin-top:26px">Guest requests</div>
     <div class="set-sub">${state.phase >= 3
       ? 'Five buttons on the guest\'s phone, no free text. Trigger one to see the handoff to the floor.'
@@ -4153,9 +4033,6 @@ document.addEventListener('click', e => {
     if (sel && sel.value) orderArrived(sel.value, +items, +total);
     renderView(); return;
   }
-  const ly = e.target.closest('[data-layout]');
-  if (ly) { state.layout = ly.dataset.layout; renderView();
-    toast(`${LAYOUTS.find(x=>x[0]===state.layout)[1]} layout`, state.layout==='focus'?'crosshair':'layout-grid'); return; }
   const rs = e.target.closest('[data-rqstyle]');
   if (rs) { state.reqStyle = rs.dataset.rqstyle; renderView(); toast(`Request mark: ${REQ_STYLES.find(x=>x[0]===state.reqStyle)[1]}`, 'hand'); return; }
   const ff = e.target.closest('[data-ff]');
