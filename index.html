@@ -2311,7 +2311,6 @@ const SETUP = {
   'promo':        { sent:'“Mention the promotion” — whenever a live promotion applies and nothing is ordered.' },
   'mgr-recovery': { raise:{k:'mgrSpend',    unit:'avg spend', lo:0, hi:300, step:10, lbl:'Only above'},
                     sent:'“Visit the table” — for a guest whose last visit fell short, and only above this average spend.' },
-  'concern-mgr':  { sent:'“Visit the table” — the moment a concern is raised from the table.' },
   'mgr-occasion': { sent:'“Mark the occasion” — whenever an occasion is on the booking or the profile.' },
   'vip-welcome':  { sent:'“Visit the table” — whenever the guest resolves to high value.' },
 };
@@ -2500,12 +2499,6 @@ const SIGNALS = [
     on:c => c.g && c.g.prevIssue && c.bucket === 'risk' && (c.g.avgSpend||0) >= CFG.t.mgrSpend,
     act:'Visit the table',
     why:'High-value guest, last visit fell short.',
-    done:'You visited the table' },
-
-  { id:'concern-mgr', phase:3, lvl:'red', who:'manager', mgrRank:0, icon:'circle-alert', score:99,
-    on:c => !!c.call && callIsMgr(c.call),
-    act:'Visit the table',
-    why:'A concern raised from their phone.',
     done:'You visited the table' },
 
   { id:'mgr-occasion', phase:3, lvl:'gold', who:'manager', mgrRank:1, icon:'party-popper', score:80,
@@ -3004,7 +2997,8 @@ function cardHtml(t) {
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
       ${atRisk(t) && t.status === 'seated' ? `<span class="tc-watch" title="Last visit went wrong — this table is being kept close">${ic('heart-pulse','xs')} At risk</span>` : ''}
       ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
-      ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
+      ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' && !(bkt === 'risk' && atRisk(t) && t.status === 'seated')
+        ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
     ${(() => {
        // the corner mark says a request is waiting, so the line prefers the
@@ -3644,11 +3638,14 @@ function managerQueue() {
     }
 
     const mgrSig = signalsFor(t).open.filter(a => a.who === 'manager' && a.id !== 'call');
+    /* The risk line below says the same thing with the issue and the check
+       count attached, so this one would be the shorter of two duplicates. */
+    const covered = id => id === 'mgr-recovery' && bucketOfTable(t) === 'risk';
     mgrSig.forEach(a => {
       const r = a.mgrRank != null ? a.mgrRank : 1;
       if (r === 0) nFix++; else nGreet++;
       rank = Math.min(rank, r); if (a.lvl === 'red') tone = tone || 'red';
-      whys.push({ icon:a.icon, text:a.why });
+      if (!covered(a.id)) whys.push({ icon:a.icon, text:a.why });
       actions.push({ r, html:`<button class="mg-btn" data-do-mgr="${t.id}|${a.id}">${a.act}</button>` });
     });
 
@@ -3844,7 +3841,7 @@ const GD_ACTION_NAMES = {
   browsing:'Lingering in one part of the menu', occasion:'An occasion', promo:'A promotion they qualify for',
   'mgr-occasion':'An occasion, for the manager to mark',
   voucher:'A next-visit voucher', 'mgr-recovery':'High-value guest let down last time',
-  'concern-mgr':'A concern, for the manager', 'vip-welcome':'A top spender',
+  'vip-welcome':'A top spender',
 };
 const GD_ACTION_ACTS = {
   suggest:'Recommend the closest dish to their taste, or lead with their usual',
@@ -4762,6 +4759,33 @@ function syncPhaseChip() {
 })();
 actionSeen['12:recovery'] = -18;
 syncPhaseChip(); renderSecMenu(); renderGrid(); icons();
+
+/* Deep links, so a screen can be demonstrated or captured without clicking
+   through to it:  ?phase=3&view=setup&theme=light&table=01&scroll=600  */
+(function deepLink() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has('phase') && !q.has('view') && !q.has('theme') && !q.has('table')) return;
+  const ph = +q.get('phase');
+  if (ph >= 1 && ph <= 3) { state.phase = ph; syncPhaseChip(); }
+  if (q.get('theme') === 'light' || q.get('theme') === 'dark') {
+    state.theme = q.get('theme');
+    document.body.classList.toggle('light', state.theme === 'light');
+  }
+  const v = q.get('view');
+  if (v && ['table','manager','order','menu','settings','guide','setup'].includes(v)) {
+    state.view = v;
+    document.querySelectorAll('#bnav button').forEach(b =>
+      b.classList.toggle('on', b.dataset.v === (v === 'setup' ? 'settings' : v)));
+  }
+  renderView();
+  const tid = q.get('table');
+  if (tid && T(tid)) openDetail(tid);
+  const sc = +q.get('scroll');
+  if (sc) requestAnimationFrame(() => {
+    const el = q.get('table') ? document.querySelector('#veil-detail .content, #dm-body') : document.getElementById('content');
+    if (el) el.scrollTop = sc;
+  });
+})();
 </script>
 </body>
 </html>
