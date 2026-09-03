@@ -344,6 +344,22 @@
     border-radius:5px;padding:2px 6px;text-transform:uppercase;
   }
   .tc-late{background:rgba(214,154,69,.2);color:#e8bd7d}
+  /* a table whose last visit went wrong stays marked for the whole visit —
+     the state is not something a waiter can tick away */
+  .tc-watch{
+    display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    border-radius:6px;padding:3px 7px;
+    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+  }
+  /* and between checks it says when the next one is due, so the table reads
+     as held rather than forgotten */
+  .tc-held{
+    display:flex;align-items:center;gap:6px;margin-top:8px;
+    font-size:11px;font-weight:700;color:#8fe0b0;
+  }
+  body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
+  body.light .tc-held{color:#1d6b45}
   /* the one bit of good news on a floor — green, brief, and it clears itself
      the moment the waiter opens the table */
   .tc-new-order{
@@ -1206,6 +1222,29 @@
     font-size:12.5px;font-weight:800;
   }
   .todo-undo:hover{background:rgba(217,180,95,.28)}
+  /* the watch on an at-risk table, above its checklist */
+  .wch{
+    margin-bottom:11px;padding:13px 15px;border-radius:12px;
+    background:linear-gradient(180deg,rgba(216,72,63,.1),transparent 70%),var(--card);
+    border:1px solid #6b332c;
+  }
+  .wch-h{display:flex;align-items:center;gap:8px;font-size:13.5px}
+  .wch-h svg{color:#f0b3ab;flex:0 0 auto}
+  .wch-h b{font-weight:800}
+  .wch-h span{
+    margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    background:rgba(255,255,255,.06);color:var(--ink-2);border-radius:99px;padding:3px 9px;white-space:nowrap;
+  }
+  .wch p{margin-top:6px;font-size:12.5px;color:var(--ink-2);line-height:1.5}
+  .wch-f{
+    display:flex;align-items:center;gap:7px;margin-top:9px;padding-top:9px;
+    border-top:1px solid rgba(255,255,255,.07);
+    font-size:12px;font-weight:700;color:#f0b3ab;
+  }
+  .wch-f svg{flex:0 0 auto}
+  body.light .wch{background:linear-gradient(180deg,rgba(184,54,46,.07),transparent 70%),#fff;border-color:#e0b3ae}
+  body.light .wch-h svg,body.light .wch-f{color:#9c3a2f}
+
   .todo-sub{
     display:flex;align-items:center;gap:6px;margin:14px 0 8px;
     font-size:10.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
@@ -2130,11 +2169,15 @@ function bucketOfTable(t) {
    ══════════════════════════════════════════════════════════════ */
 const SIGNALS = [
   /* ───────── PHASE 2 · from the guest profile and the POS we already have ───────── */
-  { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-crack', score:96,
-    on:c => c.g && c.g.prevIssue,
-    act:'Check on them twice as often',
-    why:c => `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}.`,
-    done:'Table watched closely' },
+  /* Recurring. Ticking it records a visit and re-arms the clock, so the
+     instruction is always something a waiter can actually go and do now. */
+  { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-pulse', score:96,
+    on:c => atRisk(c.t) && c.t.status === 'seated' && checkDue(c.t),
+    act:c => checks[c.t.id] ? 'Go back and check on them' : 'Go and check on them',
+    why:c => checks[c.t.id]
+      ? `At risk since their last visit. Last checked ${clockMin - checks[c.t.id].at} min ago.`
+      : `Last visit went wrong — ${c.g.prevIssue.toLowerCase()}. Stay close tonight.`,
+    done:c => `Checked on — Pulse will ask again in ${RECHECK_MIN} min` },
 
   /* One action for a table that has not ordered, whatever the reason. The
      job never changes — go and take the order — so only the reason does, and
@@ -2295,6 +2338,21 @@ const val = (v,c) => typeof v === 'function' ? v(c) : v;
 let clockMin = 0;                    // minutes of service, advanced by the tick
 const STALE_MIN = 15;     // Pulse's own actions
 const REQUEST_SLA = 5;    // any guest request, whatever they asked for
+const RECHECK_MIN = 12;   // how often to go back to a table that is at risk
+
+/* Every time a waiter goes back to an at-risk table. A watch, not a task:
+   the count is the evidence that the floor is on it, and the clock is what
+   brings the action back. */
+const checks = {};        // table -> { n, at }  ·  at is in clockMin
+function recordCheck(tid) {
+  const c = checks[tid] || { n:0 };
+  checks[tid] = { n: c.n + 1, at: clockMin };
+  // the next one is genuinely new, so let it flag as such
+  delete actionSeen[aKey(tid, 'recovery')];
+}
+const checkDue    = t => !checks[t.id] || (clockMin - checks[t.id].at) >= RECHECK_MIN;
+const nextCheckIn = t => checks[t.id] ? Math.max(0, RECHECK_MIN - (clockMin - checks[t.id].at)) : 0;
+const atRisk      = t => { const g = t.guest ? guests[t.guest] : null; return !!(g && g.prevIssue); };
 /* How long a thing may sit before Pulse says nobody has picked it up. */
 function staleAfter(s, c) {
   if (s.id === 'call' && c.call) return REQUEST_SLA;
@@ -2479,6 +2537,8 @@ function commitRow(tid, sid) {
 }
 function applyDone(tid, sid) {
   const t = T(tid);
+  /* A check is not a thing you finish — it is a thing you did once more. */
+  if (sid === 'recovery') { recordCheck(tid); return; }
   if (sid === 'call' && t && t.call) {
     // answering the call resolves it outright rather than leaving a tick behind
     t.call = null;
@@ -2513,7 +2573,7 @@ function turnTable(id) {
   const pre = id + ':';
   [doneActions, gestureDone, dismissed, actionSeen].forEach(m =>
     Object.keys(m).forEach(k => { if (k.startsWith(pre)) delete m[k]; }));
-  delete tableSeen[id]; delete chased[id]; delete mgrVisited[id]; delete compsSent[id];
+  delete tableSeen[id]; delete chased[id]; delete mgrVisited[id]; delete compsSent[id]; delete checks[id];
 }
 
 function raiseCall(tableId, type) {
@@ -2687,6 +2747,7 @@ function cardHtml(t) {
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
+      ${atRisk(t) && t.status === 'seated' ? `<span class="tc-watch" title="Last visit went wrong — this table is being kept close">${ic('heart-pulse','xs')} At risk</span>` : ''}
       ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
       ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
     </div>
@@ -2701,6 +2762,8 @@ function cardHtml(t) {
          line.isStale ? `<span class="tc-late">${line.openMin}m</span>` : (line.isNew ? `<span class="tc-new">New</span>` : '')
        }</div>`;
      })()}
+    ${atRisk(t) && t.status === 'seated' && !checkDue(t)
+      ? `<div class="tc-held">${ic('check','xs')} Checked ${checks[t.id].n}× · next in ${nextCheckIn(t)}m</div>` : ''}
     ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
   </div>`;
 }
@@ -2943,7 +3006,15 @@ function actionsHtml(t) {
   };
 
   const staleN = sig.stale.length;
-  return `<div class="todo${staleN?' has-late':''}">
+  const watch = atRisk(t) && t.status === 'seated' ? `<div class="wch">
+      <div class="wch-h">${ic('heart-pulse','sm')} <b>Keeping this table close</b>
+        <span>${checks[t.id] ? `checked ${checks[t.id].n}×` : 'not yet checked'}</span></div>
+      <p>Last visit went wrong — ${guests[t.guest].prevIssue.toLowerCase()}.</p>
+      <div class="wch-f">${checkDue(t)
+        ? `${ic('bell-dot','xs')} A check is due now — it is the first thing on the list below.`
+        : `${ic('clock','xs')} Next check due in ${nextCheckIn(t)} min. Pulse will raise it again.`}</div>
+    </div>` : '';
+  return watch + `<div class="todo${staleN?' has-late':''}">
     <div class="todo-h"><b>${sig.now.length ? 'Do now' : 'What to do'}</b>
       ${staleN ? `<span class="todo-warn">${ic('timer','xs')} ${staleN} overdue</span>` : ''}
       <span class="todo-prog">${doneN} of ${total} done</span></div>
@@ -3331,8 +3402,11 @@ function managerQueue() {
       const r = b === 'risk' ? 0 : 1;          // let down last time is putting it right
       if (r === 0) nFix++; else nGreet++;
       rank = Math.min(rank, r); tone = tone || (b === 'risk' ? 'red' : '');
-      const line = b === 'risk' ? `Last visit went wrong — ${g.prevIssue.toLowerCase()}.`
-                                : `Not been in since ${g.lastVisit}.`;
+      const line = b === 'risk'
+        ? `Last visit went wrong — ${g.prevIssue.toLowerCase()}.` +
+          (checks[t.id] ? ` Floor has checked ${checks[t.id].n}×, last ${clockMin - checks[t.id].at}m ago.`
+                        : ' Nobody has been back yet.')
+        : `Not been in since ${g.lastVisit}.`;
       if (!whys.some(w => w.text === line)) whys.push({ icon:'heart-crack', text:line });
       if (!mgrSig.some(a => (a.mgrRank != null ? a.mgrRank : 1) === r) && !mgrVisited[t.id])
         actions.push({ r, html:`<button class="mg-btn" data-mgr-visit="${t.id}">Visit the table</button>` });
@@ -3672,6 +3746,32 @@ function guideHtml() {
          [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — ${REQUEST_SLA} min for a guest request, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
          ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','Ticked, right-hand side of the row','Strikes through and holds three seconds with Undo in place'],
          ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','Dismissed, left-hand side of the row','Same grace period, then gone and not raised again']]
+        .map(([a,t,d,e]) => `<div class="gd-row">
+          <span class="gd-a">${a}</span>
+          <span class="gd-b"><b>${t}</b><i>${d}</i></span>
+          <span class="gd-c">${e}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">A table you have to keep close</div>
+    <div class="set-sub">One state does not fit the lifecycle above, because it is not a task — it is how the table has to be treated all night.
+      When the guest's <strong>last visit went wrong</strong>, Pulse does not ask the floor to “check on them more often”: nobody can do that,
+      and a stance ticked off as a checkbox stops being true the moment it is ticked.
+      Instead <strong>the state stays and the action recurs</strong> — the card carries the mark from sitting down to paying,
+      and on top of it Pulse asks for one thing you can actually do, again every ${RECHECK_MIN} minutes.</div>
+    <div class="gd-rows">
+      ${[[`<span class="tc-watch">${ic('heart-pulse','xs')} At risk</span>`,'The mark stays on the card',
+          'On from the moment they sit to the moment they pay. It has no tick — it is not a job, it is a fact about the table',
+          'Set by one thing only: something specific went wrong last visit. Never inferred from a score'],
+         [`<span class="todo-flag">New</span>`,'The check is the action',
+          '“Go and check on them”, then “Go back and check on them”. A real trip to a real table, so it can be honestly ticked',
+          `Comes back every ${RECHECK_MIN} min, and each time it returns it flags as New — even to a waiter who has looked at this table already`],
+         [`<span class="tc-held">${ic('check','xs')} Checked 2× · next in 7m</span>`,'Ticking it records the visit',
+          'It does not close anything. It logs that someone went, and re-arms the clock',
+          'Between checks the card says how many times and how long — so the table reads as held, not as forgotten'],
+         [`<span class="gd-tick done">${ic('user-check','sm')}</span>`,'The manager can see the floor',
+          'The Manager tab adds “Floor has checked 2×, last 5m ago” — or “Nobody has been back yet”',
+          'Phase 3 also puts the guest in Put it right when they are high-value, with a comp already suggested']]
         .map(([a,t,d,e]) => `<div class="gd-row">
           <span class="gd-a">${a}</span>
           <span class="gd-b"><b>${t}</b><i>${d}</i></span>

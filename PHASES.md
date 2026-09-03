@@ -1,334 +1,160 @@
-# Pulse — Phases
+# Pulse — what each phase does
 
-Three phases. The difference is not how much data we hold — it is what Pulse does with it.
+Generated from the running registry in `index.html` — every table below is read out of
+`PHASE_META`, `SIGNALS`, `CALL_TYPES` and `MG_SECTIONS`, so this file cannot drift from the app.
+The same content is on the **Design guide** screen inside the product.
 
-| Phase | Pulse | The waiter | Test of success |
-|---|---|---|---|
-| **1 · Know** | Shows who is at the table, and no more | Reads it and decides | The waiter recognises the guest |
-| **2 · Act** | Says what to do about it | Ticks it done, or dismisses it | The waiter acts without interpreting |
-| **3 · Anticipate** | Watches the phone and the clock | Gets there before the guest asks | Pulse spots it first, and nothing sits ignored |
+Numbers that govern behaviour: a guest request is chased after **5 min**, anything Pulse raised
+itself goes overdue after **15 min**, a table shows at most **5** actions at once, the floor row
+shows at most **4** tables before it collapses into *+N more*, and an at-risk table is checked
+again every **12 min**.
 
-> The prototype carries its own **Design guide** screen, reachable from the bottom nav and split in two.
->
-> **Part one** takes each phase in turn — what it puts on screen, and every action it can raise with the weight and the limit on each. The block for the phase you are running is marked *Running now*.
->
-> **Part two** is the reference that applies to all three: urgency levels, the action lifecycle, an annotated live card, table states, the screens, the palette, and the rules.
->
-> Every element, colour, state and limit on that page is rendered from the product's own code, so it cannot describe a rule that is no longer true.
-
-
-## Phase 1 · Know
-
-**Guest intelligence.** Who is at the table. Everything here is display — Pulse shows what it knows and the waiter decides what it means.
-
-*10 features · 9 live in the prototype · 0 actions the engine can raise*
-
-| | Feature | Where it appears in the UI | Owner | Support | Notes |
-|---|---|---|---|---|---|
-| ✅ | All existing POS functionality in the premium theme | Table grid, allocate sheet, order items, void, payment summary | Pulse | — | — |
-| ✅ | Guest name, masked phone, birthday | Guest card in the table view | Data | — | Static data from CRM |
-| ✅ | New vs returning, visit count, days since last visit | Stat row above the guest card | Data | — | — |
-| ✅ | Usual spend | Stat row | Data | — | — |
-| ✅ | AI guest summary — history, ratings, comments and sentiment | Pulse Summary and Guest Summary cards | Data | — | — |
-| ✅ | Known favourites and reorder, one combined section | Dish Recommendation strip | Data | — | — |
-| ✅ | AI recommendations — 2–3 items, compact | Dish Recommendation strip | Data | — | — |
-| ✅ | Top taste tags | Taste chips on the guest card | Data | — | — |
-| ✅ | Network customer score | Score chip on the guest card | Data | — | — |
-| ◻️ | Pre-shift briefing | — | Data | — | Same APIs, called earlier in the shift |
-
-## Phase 2 · Act
-
-**Action layer.** The same information turned into a checklist. Scores, buckets, recovery, guest requests and a table sitting without ordering all become one thing to do.
-
-*19 features · 16 live in the prototype · 7 actions the engine can raise*
-
-| | Feature | Where it appears in the UI | Owner | Support | Notes |
-|---|---|---|---|---|---|
-| ✅ | Action framework — signal, why it matters, what to do, done | WHAT TO DO checklist at the top of the table view | Pulse | — | — |
-| ✅ | Guest requests — five fixed kinds | Capsule row above the floor, one per table with its kind and wait; red strip on the card; top of the checklist; and a waiting-elsewhere bar inside any open table | SW | Pulse | Concern, question, waiter, water, cutlery. No free text on the guest side, so Pulse never shows a description |
-| ✅ | Action lifecycle — new, unattended, done or dismissed **·Hero** | New flag on an action raised mid-meal, an age chip once it passes its own limit, an Overdue group in the floor row, and a dismiss × on every row | Pulse | — | Answers the two ways an action gets lost: unnoticed when it appears, or ignored after. Each kind has its own patience |
-| ✅ | Manager view — only what is actually a manager’s job | Manager tab: a guest is unhappy · needs you at the table · nobody has picked these up · waiting on your approval · a roster of the rest | Pulse | Data | Water, cutlery, questions and "called the waiter" are errands and never reach this screen. Every row carries a decision, never an Open table link |
-| ✅ | Comp and voucher approvals | Gold approve buttons on the manager card for the gesture Pulse suggests, reversible for five seconds | Pulse | CRM | — |
-| ✅ | On the house — the manager’s own call **·Hero** | A dashed control on every manager card opens six things they can send: dessert, a round, champagne, a starter, coffee, or a next-visit voucher | Pulse | CRM | Pulse suggests a gesture; the manager decides. The sheet names the occasion and any concern so the judgement is informed |
-| ✅ | Customer scoring and guest bucketing | Score chip, bucket label on the guest card and on the floor card | Data | Pulse | — |
-| ✅ | Service recovery from past feedback **·Hero** | Red checklist row: prioritise this table | Data | Pulse | — |
-| ✅ | Table taking no action — seated without ordering | Amber checklist row at 20 minutes | Data | Pulse | Timing computed in Pulse. Phase 3 replaces it with something sharper once we can see the phone |
-| ✅ | One greeting and one suggestion, not four rows | — | Pulse | Data | — |
-| ✅ | The opening ten minutes | Amber row on a freshly seated table — pour water and hand them menus — plus a Just seated group in the floor row counting down the window. Retires when they order | Pulse | Data | Chased after 8 minutes. The first ten decide the visit |
-| ✅ | One floor row for everything time-critical **·Hero** | Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall | Pulse | — | Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works |
-| ✅ | Per-request patience **·Hero** | Each request kind carries its own limit before Pulse says nobody picked it up — concern 3 min, question and waiter 6, water and cutlery 10 | Pulse | — | Fifteen minutes for cutlery is defensible; fifteen for an unhappy guest is not |
-| ✅ | Remember this — staff teach the profile | Two taps and a line on the guest card | Pulse | Data | — |
-| ✅ | Section-wise table selection | Section picker in the top bar, combines with the filters | Pulse | — | — |
-| ✅ | Light theme **·Foundation** | Settings, Look | Pulse | — | — |
-| ◻️ | Dynamic QR handling **·Foundation** | — | SW | — | Not a Pulse dashboard surface — SmartWeb side |
-| ◻️ | Reservation integration (SevenRooms) **·Foundation** | Reservation list and seating a booked guest | Pulse | Data, SW | — |
-| ◻️ | Pulse for Pro and Pulse for VIBE | — | Pulse | — | — |
-
-## Phase 3 · Anticipate
-
-**Live behaviour and timing.** The guest’s phone and the clock. A cart built but never sent, a menu open with nothing added, a table nobody has started, a long gap since anything was ordered — and the calls that are the manager’s to make.
-
-*26 features · 13 live in the prototype · 13 actions the engine can raise*
-
-| | Feature | Where it appears in the UI | Owner | Support | Notes |
-|---|---|---|---|---|---|
-| ✅ | Cart built but never placed **·Hero** | Red checklist row naming the item count and how long it has sat unsent | SW | Data, Pulse | An order the kitchen has never seen — the highest-value thing on this list |
-| ✅ | Menu open too long with nothing added | Amber row: go and help them choose, with minutes in the menu and dishes opened | SW | Data, Pulse | — |
-| ✅ | Table nobody has started — menu never opened | Amber row: go and start them off | SW | Data, Pulse | — |
-| ✅ | One dish opened again and again | Amber row naming the dish and the view count | SW | Data, Pulse | — |
-| ✅ | Lingering in one part of the menu | Amber row: offer to choose it with them | SW | Data, Pulse | — |
-| ✅ | Order gap timer — time since anything was last ordered | Amber row: offer the next course, naming the minutes since the last order | Data | Pulse | Order data only. Pulse cannot see whether a plate is on the table, so it does not claim to |
-| ✅ | Drink reorder timing **·Hero** | Amber row: offer another round, naming the minutes since the last drink was ordered | Data | Pulse, SW | Order data only — not glass level |
-| ✅ | Managerial touchpoints | Visit the table — on the manager card and as a Manager row in the checklist | Pulse | Data | Judgement, not errands, so it only appears once the live layer is on |
-| ✅ | Recommended next-visit voucher **·Hero** | Checklist row: offer the voucher | CRM | Data, Pulse | A next-visit play, not a tonight play |
-| ✅ | Available promotions | Promotions card on the guest column, plus a checklist row to mention it | CRM | Data, Pulse | Staff informs the guest — Pulse cannot apply it |
-| ✅ | Occasion and staff notes | Occasion chip and Staff Notes card | CRM | SW, Pulse | Static data from CRM |
-| ✅ | Table state labels — at risk, lapsed, high value | Bucket label on the floor card | Data | Pulse | — |
-| ◻️ | Restaurant and dish feedback collection | Rating shown on the profile once collected | SW | Data, Pulse | — |
-| ◻️ | Preferred table | Shown when allocating a table and when taking a reservation | Data | Pulse | — |
-| ✅ | Staff notes after the visit | Optional note sheet when closing a table — a category and one line, saved to the guest | Data | Pulse | Skippable by design. Storage should sit with CRM |
-| ◻️ | Allergies and dislikes | — | Data | SW, Pulse | Needs a collection route first |
-| ◻️ | Action log — recommended versus what staff did | — | Pulse | Data | The dismiss reason is the missing half of this |
-| ◻️ | Visit frequency trend | — | Data | Pulse | — |
-| ◻️ | Network visits across branches | — | Data | Pulse | — |
-| ◻️ | Slipping regulars list **·Hero** | — | Data | Pulse | Open question: what is the staff action? |
-| ◻️ | MunchMate target history | — | CRM | Data, Pulse | — |
-| ◻️ | Vouchers and promos beyond the above | — | CRM | Pulse | Only if a merchant asks |
-| ◻️ | Table layout management and merging **·Foundation** | — | Pulse | — | — |
-| ◻️ | Ordering through Pulse directly **·Foundation** | — | Pulse | — | — |
-| ◻️ | Order editing for POS-integrated merchants **·Foundation** | — | Pulse | — | — |
-| ◻️ | Own reservation module | — | Pulse | Data, SW | — |
+Two rules hold everywhere. **Every action names a physical act** a waiter can perform — never an
+instruction to think or to pay closer attention. And **Pulse never says what the data cannot
+support**: the card says *last ordered 34 min ago*, not *the plates are sitting*.
 
 ---
 
-## Built for landscape
+## Phase 1 · Know — display only
 
-A tablet held in landscape is wide and short, so the scarce axis is **height** — and the fixed bands were taking too much of it. At 1024×768 the top bar, floor row and nav together came to 38% of the screen.
+Pulse shows what it already knows about the guest and asks for nothing. No action is raised at
+this phase; the value is recognition at the table.
 
-| | Chrome | Tables visible | Left to scroll |
+Guest name, visit count, average spend, score and bucket chip, tastes, allergies, the last
+visit's date, and the table's own live figures — covers, dishes, tickets, bill, minutes seated.
+All derived, never typed by staff.
+
+## Phase 2 · Act — the same information as a checklist
+
+6 actions.
+
+| id | what it is | level | whose job |
 |---|---|---|---|
-| 1024×768 | 38% → **24%** | 9 → **12** of 21 | 754px → **640px** |
-| 1194×834 · iPad Pro 11" | 26% → **22%** | 11 → **20** of 21 | 420px → **378px** |
-| 1366×1024 · iPad Pro 12.9" | 21% → **18%** | 16 → **20** of 21 | 216px → **174px** |
+| `call` | A guest request | Intervene now | Whoever is closest |
+| `recovery` | Last visit went wrong | Intervene now | Waiter |
+| `long-stay` | On the table a long time | A task to do | Waiter |
+| `no-order` | Seated and has not ordered | A task to do | Waiter |
+| `greet` | A returning guest | Something to say | Waiter |
+| `suggest` | A taste we know about | Something to say | Waiter |
 
-The cards are untouched — same width, height, type and spacing at every size. All of the gain is the bands around them:
+## Phase 3 · Anticipate — the guest's phone and the manager
 
-- top bar 80 → 68px, nav 74 → 60px, tighter content padding
-- below ~1150px the floor row's group labels collapse to their icons, so *Guests waiting · Overdue · Just seated* stay on **one line** instead of wrapping to two. That alone is the single biggest saving at 1024: the row goes 136px → 58px
+13 more actions, plus the request kinds and every manager touchpoint.
 
-Keyed on `orientation: landscape` and a minimum width rather than on height — a 12.9" iPad is 1366×1024, so a height gate would have excluded the very device this is aimed at.
+| id | what it is | level | whose job |
+|---|---|---|---|
+| `cart-unsent` | Cart built, order never placed | Intervene now | Waiter |
+| `concern-mgr` | A concern, for the manager | Intervene now | Manager |
+| `mgr-recovery` | High-value guest let down last time | Intervene now | Manager |
+| `browsing` | Lingering in one part of the menu | A task to do | Waiter |
+| `course-gap` | A long gap since anything was ordered | A task to do | Waiter |
+| `drink-refill` | A long gap since a drink was ordered | A task to do | Waiter |
+| `menu-stall` | Long in the menu, nothing added | A task to do | Waiter |
+| `repeat-item` | One dish opened again and again | A task to do | Waiter |
+| `mgr-occasion` | An occasion, for the manager to mark | Something to say | Manager |
+| `occasion` | An occasion | Something to say | Waiter |
+| `promo` | A promotion they qualify for | Something to say | Waiter |
+| `vip-welcome` | A top spender | Something to say | Manager |
+| `voucher` | A next-visit voucher | Something to say | Waiter |
 
 ---
-
-## The floor row
-
-Three groups above the grid, read left to right, each capped at 4 capsules. It wraps rather than scrolling a group off the edge — a group you cannot see is a group nobody works.
-
-| Group | What is in it |
-|---|---|
-| **Guests waiting** | They raised a hand on their phone. Coloured by kind, with a crown where the manager owns it. **The capsule is just the table number.** Past 5 minutes a small badge appears on its corner with the wait — an overlay, so the capsule never widens |
-| **Overdue** | Work *Pulse* raised and nobody closed, on tables where no guest is already waiting. Longest first, then **+N more** into the Manager tab |
-| **Just seated** | Sat down within the last 10 minutes and has not ordered. Counts down the window |
-
-## Every action, and when Pulse chases it
-
-Each phase adds actions, and each carries its own patience. **Gold is something to say, so it never goes overdue.** A guest request is timed from the moment they pressed the button; everything else from when Pulse raised it.
-
-
-### Phase 2 · Act — 7 actions
-
-| What it is | What the waiter does | Weight | Chased after |
-|---|---|---|---|
-| Last visit went wrong | Check on them twice as often | Intervene | 15 min |
-| A guest request | Depends on the request | Intervene | 3–10 min |
-| The opening ten minutes | Pour water and hand them menus | A task | 8 min |
-| Seated, nothing ordered | Go and take their order | A task | 15 min |
-| On the table a long time | Offer the check | A task | 25 min |
-| A returning guest | Greet them by their first name | Say it | never |
-| A taste we know about | Recommend the closest dish to their taste, or lead with their usual | Say it | never |
-
-### Phase 3 · Anticipate — 13 actions
-
-| What it is | What the waiter does | Weight | Chased after |
-|---|---|---|---|
-| Cart built, order never placed | Ask them to send their order | Intervene | 15 min |
-| High-value guest let down last time | Visit the table | Intervene | 15 min |
-| A concern, for the manager | Visit the table | Intervene | 15 min |
-| Menu never opened | Take their order in person | A task | 15 min |
-| Long in the menu, nothing added | Talk them through the menu | A task | 15 min |
-| A long gap since anything was ordered | Offer the next course | A task | 15 min |
-| A long gap since a drink was ordered | Offer another round | A task | 15 min |
-| One dish opened again and again | Talk them through that dish | A task | 15 min |
-| Lingering in one part of the menu | Offer to choose it with them | A task | 15 min |
-| An occasion | Mention the occasion | Say it | never |
-| A next-visit voucher | Offer the voucher | Say it | never |
-| A promotion they qualify for | Mention the promotion | Say it | never |
-| A top spender | Visit the table | Say it | never |
 
 ## What the guest can send
 
-**At Phase 2 the guest has one button**, and Pulse knows only that it was pressed — not what for. That is honest about the data, and it is one thing for a waiter to learn. **Phase 3 is where the kind arrives.**
+Five buttons on their phone and no free-text field — so Pulse never describes a problem it
+cannot see. Where it does not know, it says so: a concern reads *“They could not say what — go
+and ask.”*
 
-No free-text field on the guest side at any phase, so Pulse never shows a description of the problem. Any request is chased after **5 minutes** — one number, whatever they asked for. A concern is set apart by whose job it is, not by a second clock.
-
-| Request | What the waiter does | Phase | Weight |
+| kind | label | the action | arrives |
 |---|---|---|---|
-| Raised a concern | Hear them out | 3 | A guest is unhappy and cannot say why — red |
-| Has a question | Answer their question | 3 | A guest is stuck and needs a person — violet |
-| Called the waiter | Go to the table | 2 | Someone has to go over — gold |
-| Asked for water | Take water over | 3 | Something to carry — teal |
-| Asked for cutlery | Take cutlery over | 3 | Something to carry — sand |
+| `concern` | Raised a concern | Hear them out | Phase 3 |
+| `query` | Has a question | Answer their question | Phase 3 |
+| `waiter` | Called the waiter | Go to the table | Phase 2 |
+| `water` | Asked for water | Take water over | Phase 3 |
+| `cutlery` | Asked for cutlery | Take cutlery over | Phase 3 |
 
-A table can have several outstanding at once; they collect on one capsule, because one trip handles them all, and the wait counts from the first ask. A **concern** is the manager's to handle — the capsule and the card both say *manager*, and the waiter's own action is to go and get them.
+At **Phase 2 the guest has one button** and Pulse knows only that it was pressed; the kinds
+arrive with Phase 3. Several requests from one table become one capsule, one trip, one tick —
+the wait counts from the first ask and the set takes the tightest limit on it.
+
+## A table you have to keep close
+
+The one state that is not a task. When the guest's last visit went wrong, Pulse does **not** ask
+the floor to check on them more often: nobody can do that, and a stance ticked off as a checkbox
+stops being true the moment it is ticked.
+
+So **the state stays and the action recurs.**
+
+- **`At risk` sits on the card** from sitting down to paying, and has no tick. It is a fact about
+  the table, not a job. Set by one thing only — something specific went wrong last visit; never
+  inferred from a score.
+- **The check is the action.** *Go and check on them* → *Go back and check on them*. A real trip
+  to a real table, so it can be honestly ticked.
+- **Ticking it records the visit** instead of closing anything: it logs that someone went and
+  re-arms the clock. The action returns every 12 min and flags as **New** each time — even to a
+  waiter who has already looked at this table.
+- **Between checks the card reads `Checked 2× · next in 7m`**, so the table looks held rather
+  than forgotten.
+- **The manager can see the floor:** *Floor has checked 2×, last 5m ago* — or *Nobody has been
+  back yet*. At Phase 3 a high-value guest who was let down also appears in *Put it right* with a
+  comp already suggested.
 
 ## What happens to an action
 
-| State | When | How it shows |
+| state | means | shown as |
 |---|---|---|
-| New | Raised after the waiter had already looked at this table | Flag on the row, ring on the card badge |
-| Open | Being worked | Plain row |
-| Overdue | Past its own limit with nobody closing it | Age chip on the row and the card, an Overdue group in the floor row, and a section in the Manager tab |
-| Done | Ticked — right of the row | Strikes through, holds three seconds with Undo in place, then collapses |
-| Dismissed | Dismissed — left of the row | Same three-second grace, then gone and not raised again |
+| New | raised after the waiter had already looked at this table | ring on the card badge, flag on the row |
+| Open | being worked | plain row, badge counts it |
+| Overdue | past its own limit with nobody closing it — 5 min for a guest request, 15 for anything Pulse raised itself | age chip on the card, an Overdue group in the floor row, a section in the Manager tab |
+| Done | ticked, right-hand side of the row | strikes through and holds three seconds with Undo in place |
+| Dismissed | dismissed, left-hand side of the row | same grace period, then gone and not raised again |
 
-At most **5 rows** show at once, work first. When nothing is open the section closes quietly to *All good here*.
+Lateness is an additive ring, never a colour change — a red concern never becomes amber because
+it aged.
 
+## The manager's tab
 
-## Occasions, and what a manager can do about one
+Three sections, in this order, holding only cases a manager can act on.
 
-A birthday, an anniversary, a celebration. The waiter is told to mention it; the **manager** is told too, in *Meet and greet*, because they are the only person who can authorise putting something on the table.
+1. **Put it right** — A concern raised from their phone in the last few minutes, or a guest whose last visit went badly. Either way it is yours to fix.
+2. **Meet and greet** — Top spenders, regulars, and guests who have not been in for a while. A hello from the manager lands differently.
+3. **Nobody has picked these up** — Past its limit with no one closing it. Push it to the section, or take it on yourself.
 
-Each occasion offers two different decisions — one for tonight, one for the next visit:
+A question or a called waiter never reaches the manager; that is floor work. A concern, a
+high-value guest who was let down, and anything nobody has picked up do. Each row carries at most
+two decisions plus one *On the house* control, badged with the number of comps Pulse would
+suggest for that guest.
 
-| Occasion | Tonight | Next visit |
-|---|---|---|
-| Birthday | A dessert with a candle | 20% off their next visit |
-| Anniversary | Two glasses of champagne | 20% off their next visit |
-| Engagement | Champagne for the table | 20% off their next visit |
-| Celebration | A dessert to share, or a round of prosecco | 20% off their next visit |
-| Business | Coffee and petits fours | 20% off their next visit |
+## Occasions
 
-All of it sits behind the single **On the house** control on the manager's row, badged with how many suggestions are waiting. The sheet names the occasion, and any concern, so the call is an informed one — and the manager can still ignore every suggestion and pick anything from the full list.
-
-## How many things a table still needs
-
-The number on a card's top right is **every** pending action, greetings included. Counting only the urgent ones made it smaller but unanswerable — a waiter could not tell how much the table still needed. Its colour comes from the most urgent one, so the number says *how much* and the colour says *how hard it presses*.
-
-**No instruction is ever listed twice.** Two signals can land on the same words — a live concern and a poor last visit both ask a manager to visit the table — and a list that repeats itself reads as broken however true both entries are. The higher-priority one survives and carries the reason.
-
-**One action for a table that has not ordered**, whatever the reason. The job never changes, so only the reason does:
-
-| When | Go and take their order — because |
-|---|---|
-| Just seated | Just sat down. |
-| Within ten minutes | Seated 4m, nothing ordered yet. |
-| Longer | Seated 22m, still nothing ordered. |
-| Phase 3, menu never opened | Sitting 14m and the menu has not been opened once. |
-
-This replaced three separately worded actions — *pour water and hand them menus*, *go and take their order* and *take their order in person* — which were the same job described three ways, and which one you saw depended on the phase and on whether the guest had opened the QR.
-
-## Table 01 — see everything at once
-
-Every field the engine reads is filled in on Table 01's guest, so at Phase 3 it raises **ten actions** — nearly the whole vocabulary in one place:
-
-| | Action | Weight |
-|---|---|---|
-| 1 | Get the manager to this table | Intervene |
-| 2 | Visit the table | Intervene · the manager's |
-| 3 | Check on them twice as often | Intervene |
-| 4 | Ask them to send their order | Intervene |
-| 5 | Offer the next course | A task |
-| 6 | Offer another round | A task |
-| 7 | Talk them through the Wagyu Ribeye | A task |
-| 8 | Mention the anniversary | Say it |
-| 9 | Mark the occasion | Say it · the manager's |
-| 10 | Offer SGD40 off the next visit | Say it |
-
-It is deliberately the busiest table the product can produce, so the volume can be judged in one look. The card shows the count and the top action; opening it shows the first five in order with the rest one tap away. The **Guide** lists all ten with their reasons, under *See everything at once*.
-
-## How a request marks its card
-
-A raised hand on the card's own corner, in the colour of what was asked for — **azure** for the plain call, so it is never confused with the app's gold accent, and never with the sand of a cutlery request.
-
-It lands with a pop and keeps a slow ring breathing out of it while the guest waits. Past 5 minutes the mark goes red, the ring quickens, and the card breathes with it. All motion is off under `prefers-reduced-motion`.
-
-Three treatments, switchable in **Settings → How a request marks its card**, because this is the most-looked-at element on the floor:
-
-| Treatment | What it is |
-|---|---|
-| **Corner pin** | A round mark riding the card's top edge. Quietest — the icon carries it |
-| **Corner tab** | A squarer tab dropped from the top-right edge, with the wait once it is late |
-| **Edge and pin** | The pin plus a coloured rule along the top. Loudest, reads from furthest |
-
-The request used to be a full-width block in the card body. That cost more height than the fact deserved, and it said the same thing twice — the corner mark now carries the request, which frees the body line for the *next* thing to do.
+A birthday, anniversary, engagement, celebration or business dinner puts a specific gift in the
+manager's hands — a dessert with a candle, two glasses of champagne, coffee and petits fours —
+plus *Offer 20% off their next visit*, always available. The manager can comp anything manually
+as well.
 
 ## When an order arrives
 
-Everything else Pulse reports is something that has *not* happened. This is the one piece of good news, and it changes what a waiter does next — stop walking over, start watching the pass.
+Any table sending an order raises a toast naming the table, the item count and the value; the
+card's figures move and the table reads as *just ordered* for six minutes, which suppresses the
+gap-since-last-order actions.
 
-| What happens | Why |
-|---|---|
-| A toast names the table, the item count and the value | Once, not repeatedly |
-| An **ORDER IN** chip sits on the card | Until a waiter opens that table, or 6 minutes pass — whichever is first |
-| The unsent cart clears | It went through, so nothing is sitting in it |
-| Actions chasing that table for not ordering retire | The order is in; the nudge did its job |
-| The order-gap clock restarts at zero | The next nudge is measured from this order, not the one before |
+## Built for landscape tablet
 
-## What the manager sees, and why
-
-Three sections, not five. Errands never reach this screen — water, cutlery, a question and "called the waiter" are the floor's job. A guest unhappy *now* and a guest let down *last time* are the same job, so they share a section.
-
-| Section | The rule |
-|---|---|
-| Put it right | A concern raised from their phone in the last few minutes, or a guest whose last visit went badly. Either way it is yours to fix. |
-| Meet and greet | Top spenders, regulars, and guests who have not been in for a while. A hello from the manager lands differently. |
-| Nobody has picked these up | Past its limit with no one closing it. Push it to the section, or take it on yourself. |
-
-Each table is one dense row — who, why, and at most **two** decisions, on one line. There is a single money control, **On the house**, and it opens a sheet that leads with what Pulse suggests and then lets the manager pick anything. Three differently-worded comp buttons on a row was three ways to say the same thing.
+The primary device is a tablet held landscape. Only the chrome was tightened for it — topbar, nav
+and controls give back vertical space. The cards themselves are untouched at every size.
 
 ---
 
-## Merged
-
-| Was | Now | Why |
-|---|---|---|
-| Phase 3 "See live" and Phase 4 "Deepen" | One Phase 3 · Anticipate | Turning them on separately gave no distinct value |
-| "Welcome them back by name" + "Make them feel remembered" | One greeting whose reason adapts | Same act, different reason |
-| "Lead with their usual" + "Recommend the {dish}" | One suggestion | The closest dish to their taste, or their usual. Never both |
-
 ## Removed from the plan
 
-| Item | Why |
+| dropped | why |
 |---|---|
-| Last visit details | Not important right now |
-| Multi-guest handling | Covered by the party avatars in Phase 1 |
-| Reorder and recommendations split by category | One combined strip is enough |
-| QR feedback sentiment as its own pill | Folded into the guest summary |
-| "On my way" on a request | A waiter walking to a table does not stop to tell the tablet |
-| Crown badge on the floor card | Competed with the action count. One indicator per card |
-| Gold "just seated" card treatment | Made a table with nothing to do look louder than one with three things to do |
-| "+2" beside the top action | The count badge already says how many |
-| "Walk-in" as a table name | A table with no profile is a Guest |
-| Per-action icons on unattended capsules | Seven glyphs nobody was taught |
-| "The plates are sitting" / "glasses are empty" | Order data, not service data |
-| Toast-based undo on a checklist row | Undo sits in the row, where the thumb already is |
-| Green "done" rows stacking under the open ones | They refilled the space you just cleared |
-| Errands in the Manager tab | Water, cutlery and questions are the floor’s job |
-| "Open table" as a manager action | Navigation is not a decision |
-| The checklist at Phase 1 | Phase 1 is display only. An empty checklist implied nothing needed doing |
-| "Clear and turn the table" | A settled table is already green with a green bill |
-| One shared 15-minute limit for everything | Fifteen for cutlery is defensible; fifteen for an unhappy guest is not |
-| "Prioritise this table" / "Check in" / "Settle them in" | Instructions to think, not to act. Now: check on them twice as often · go and take their order · pour water and hand them menus |
-| "Waited too long" as a label | Overdue says it in one word |
-| The same table in both Guests waiting and Overdue | One table, one group. A guest sitting there waiting is the more urgent fact, and the request capsule carries its own delay |
-| Eight different escalation limits | Two: five minutes for a guest request, fifteen for something Pulse raised itself. A rule you cannot recall is a rule nobody follows |
-| The wait printed inside every request capsule | Just the table number. The wait appears as a corner badge only once it is past five minutes |
-| All five request kinds at Phase 2 | One button at Phase 2 — Pulse knows it was pressed, not what for. The kinds arrive with Phase 3 |
-| Five manager sections | Three. A concern now and a bad last visit are the same job |
-| The Focus layout | Removed. Two layouts to maintain and explain, for a decluttering that belonged in the one layout |
-| Three ways to say "take their order" | One action, four reasons |
-| A count that ignored greetings | Every pending action counts. The colour carries urgency instead |
-| Three comp buttons on a manager row | One "On the house" control. The row was mostly empty space and the buttons all said "give something away" |
-| Manager cards 150px tall | Dense rows at 62px. A manager reads this standing between tables |
-
-✅ live in the prototype  ◻️ specified, not built
+| *“Check on them twice as often”* | A stance for the whole visit dressed up as a checkbox. It could not be performed, so ticking it meant nothing — and once ticked, the table stopped being flagged at all. Replaced by a persistent mark plus a recurring check. |
+| Free-text guest descriptions | The guest's phone has five buttons and no text field, so Pulse cannot know what is wrong. It says so instead of guessing. |
+| *“The plates are sitting”* / *“the meal has staled”* | Only order data exists. |
+| A second clock for concerns | One limit for every request. A concern is set apart by whose job it is, not by a second timer. |
+| Focus / easy-to-consume layout toggle | A second layout to maintain for the same screen. The one layout was simplified instead. |
+| A crown *and* a gold card for the same guest | One indicator per card. |
+| The sentiment chip | Nothing in the data supports it. |
+| Clear-and-close table flow | Not needed for the story this prototype tells. |
+| Phases 3 and 4 as separate steps | Merged — anticipation and the manager's tools ship together. |
