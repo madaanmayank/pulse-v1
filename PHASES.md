@@ -175,6 +175,22 @@ A table can have several outstanding at once; they collect on one capsule, becau
 At most **5 rows** show at once, work first. When nothing is open the section closes quietly to *All good here*.
 
 
+## Occasions, and what a manager can do about one
+
+A birthday, an anniversary, a celebration. The waiter is told to mention it; the **manager** is told too, in *Meet and greet*, because they are the only person who can authorise putting something on the table.
+
+Each occasion offers two different decisions — one for tonight, one for the next visit:
+
+| Occasion | Tonight | Next visit |
+|---|---|---|
+| Birthday | A dessert with a candle | 20% off their next visit |
+| Anniversary | Two glasses of champagne | 20% off their next visit |
+| Engagement | Champagne for the table | 20% off their next visit |
+| Celebration | A dessert to share, or a round of prosecco | 20% off their next visit |
+| Business | Coffee and petits fours | 20% off their next visit |
+
+All of it sits behind the single **On the house** control on the manager's row, badged with how many suggestions are waiting. The sheet names the occasion, and any concern, so the call is an informed one — and the manager can still ignore every suggestion and pick anything from the full list.
+
 ## How a request marks its card
 
 A raised hand on the card's own corner, in the colour of what was asked for — **azure** for the plain call, so it is never confused with the app's gold accent, and never with the sand of a cutlery request.

@@ -1714,6 +1714,7 @@ const guests = {
     promos:['1-for-1 mains, weekdays before 7pm','Complimentary dessert on 4+ covers'],
     voucher:{ label:'SGD15 off the next visit', why:'Spends above average and is due back within a month' } },
   ana: { id:'ana', name:'Ana', phone:'+65 8811 XXXX', initials:'A', rating:4.2, lastVisit:'2 months ago', visits:2, avgSpend:38,
+    occasion:'Birthday',
     summary:'Prefers lighter dishes and sparkling water.' },
   vik: { id:'vik', tastes:['chicken','spicy'], name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:64,
     summary:'Regular for weekday lunch. Usually orders chicken.',
@@ -1721,6 +1722,7 @@ const guests = {
     last:{ when:'5 days ago', meal:'Lunch', pax:2, spend:96.00, rated:4 },
     sentiment:'positive',
     promos:['Set lunch, SGD28 per head'],
+    occasion:'Anniversary',
     voucher:{ label:'Free side on the next visit', why:'Six visits and climbing' } },
   jes: { id:'jes', tastes:['light'], name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
     summary:'Always finishes with dessert. Sits alone, likes it quiet.',
@@ -2162,7 +2164,7 @@ const SIGNALS = [
   { id:'occasion', phase:3, lvl:'gold', who:'waiter', icon:'party-popper', score:86,
     on:c => c.g && c.g.occasion,
     act:c => `Mention the ${c.g.occasion.toLowerCase()}`,
-    why:c => `${c.g.name.split(' ')[0]} is here for a ${c.g.occasion.toLowerCase()}.`,
+    why:c => `${c.g.name.split(' ')[0]} is here for ${anA(c.g.occasion.toLowerCase())}.`,
     done:'Occasion mentioned' },
 
   { id:'voucher', phase:3, lvl:'gold', who:'waiter', icon:'ticket', score:62,
@@ -2190,6 +2192,12 @@ const SIGNALS = [
     act:'Visit the table',
     why:'A concern raised from their phone.',
     done:'You visited the table' },
+
+  { id:'mgr-occasion', phase:3, lvl:'gold', who:'manager', mgrRank:1, icon:'party-popper', score:80,
+    on:c => c.g && c.g.occasion,
+    act:'Mark the occasion',
+    why:c => `${c.g.name.split(' ')[0]} is here for ${anA(c.g.occasion.toLowerCase())} — yours to decide what goes on the table.`,
+    done:'You marked the occasion' },
 
   { id:'vip-welcome', phase:3, lvl:'gold', who:'manager', mgrRank:2, icon:'crown', score:77,
     on:c => c.bucket === 'vip',
@@ -3029,6 +3037,33 @@ function openPay() {
 const gestureDone = {};
 /* A gesture is something only a manager can authorise. Each is tied to a
    reason, so nothing is comped without one. */
+/* Occasions come from CRM, so the article has to be worked out rather than
+   written in — "a anniversary" is the kind of thing that makes a prototype
+   look unfinished. */
+const anA = w => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
+
+/* What a manager can put on a table for an occasion. Two shapes, because the
+   two are different decisions: something tonight, and a reason to come back. */
+const OCCASION_GIFTS = {
+  birthday:    [['gift-cake',  'cake-slice', 'Send a dessert with a candle']],
+  anniversary: [['gift-fizz',  'martini',    'Send two glasses of champagne']],
+  engagement:  [['gift-fizz',  'martini',    'Send champagne for the table']],
+  celebration: [['gift-cake',  'cake-slice', 'Send a dessert to share'],
+                ['gift-fizz',  'martini',    'Send a round of prosecco']],
+  business:    [['gift-coffee','coffee',     'Send coffee and petits fours']],
+};
+function occasionGifts(g) {
+  const key = (g.occasion || '').toLowerCase();
+  const now = OCCASION_GIFTS[key] || [['gift-cake','cake-slice','Send a dessert to share']];
+  const why = `${g.name.split(' ')[0]} is here for ${anA(key)}.`;
+  return [
+    ...now.map(([id,icon,label]) => ({ id, icon, label, why })),
+    // and the offer, which costs nothing tonight and buys the next visit
+    { id:'gift-offer', icon:'ticket', label:'Offer 20% off their next visit',
+      why:`Mark the ${key} with a reason to come back.` },
+  ];
+}
+
 function gesturesFor(t) {
   const g = t.guest ? guests[t.guest] : null;
   if (!g) return [];
@@ -3038,8 +3073,8 @@ function gesturesFor(t) {
   // the voucher offer itself is Phase 3, so authorising one is too
   if (g.voucher && state.phase >= 3) out.push({ id:'comp-voucher', icon:'ticket',
     label:`Authorise ${g.voucher.label}`, why:g.voucher.why + '.' });
-  if (g.occasion && state.phase >= 3) out.push({ id:'comp-occasion', icon:'cake',
-    label:'Send a complimentary dessert', why:`${g.name.split(' ')[0]} is here for a ${g.occasion.toLowerCase()}.` });
+  // an occasion gets two calls: something now, and something for next time
+  if (g.occasion && state.phase >= 3) occasionGifts(g).forEach(x => out.push(x));
   return out.filter(x => !gestureDone[t.id + ':' + x.id]);
 }
 function doGesture(tid, gid, label) {
@@ -3066,7 +3101,7 @@ function openComp(id) {
   const t = T(id), g = t && t.guest ? guests[t.guest] : null;
   document.getElementById('cp-title').textContent = `On the house — Table ${id}`;
   document.getElementById('cp-sub').textContent = g
-    ? `${g.name.split(' ')[0]}${g.occasion ? ` · here for a ${g.occasion.toLowerCase()}` : ''}${t.call && callIsMgr(t.call) ? ' · raised a concern' : ''}`
+    ? `${g.name.split(' ')[0]}${g.occasion ? ` · here for ${anA(g.occasion.toLowerCase())}` : ''}${t.call && callIsMgr(t.call) ? ' · raised a concern' : ''}`
     : 'Choose what goes to the table with your compliments.';
   const sug = t ? gesturesFor(t) : [];
   document.getElementById('cp-sug').innerHTML = sug.length
@@ -3346,6 +3381,7 @@ const GD_ACTION_NAMES = {
   'menu-stall':'Long in the menu, nothing added', 'course-gap':'A long gap since anything was ordered',
   'drink-refill':'A long gap since a drink was ordered', 'repeat-item':'One dish opened again and again',
   browsing:'Lingering in one part of the menu', occasion:'An occasion', promo:'A promotion they qualify for',
+  'mgr-occasion':'An occasion, for the manager to mark',
   voucher:'A next-visit voucher', 'mgr-recovery':'High-value guest let down last time',
   'concern-mgr':'A concern, for the manager', 'vip-welcome':'A top spender',
 };
@@ -3396,7 +3432,8 @@ const GUIDE_PHASES = {
          ['Live QR behaviour','A cart built and never sent, a menu open with nothing added, a table nobody has started, one dish opened over and over'],
          ['Timing from order data','A long gap since anything was ordered, or since a drink was'],
          ['Managerial touchpoints','Visit the table — judgement, not errands, so it waits for this phase'],
-         ['Occasion and promotions','The occasion chip, the promotions card, and a next-visit voucher to offer'],
+         ['Occasions the manager can mark','A birthday, an anniversary, a celebration — it reaches the Manager tab with something to send tonight and an offer for next time'],
+         ['Promotions and vouchers','The promotions card, and a next-visit voucher to offer'],
          ['Bucket label on the floor card','At risk · Lapsed · VIP, visible without opening the table'],
          ['A note when a table closes','Optional, one line, the moment staff know something Pulse does not'],
        ] },
