@@ -320,9 +320,12 @@
   /* a long name steps down a size instead of losing its last word */
   .tc-name.long{font-size:18px;line-height:1.18}
   .tc-name .others{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0}
-  .tc-meta{display:flex;align-items:center;gap:14px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500}
+  /* Covers, time and one state tag. It wraps as a row rather than letting
+     any one item break inside itself — "1h 20m" split over two lines is
+     unreadable, and a tag on its own second line is not. */
+  .tc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500}
   .tc-meta svg{width:15px;height:15px}
-  .tc-meta span{display:inline-flex;align-items:center;gap:5px}
+  .tc-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
   .tc-meta svg{color:var(--ink-2)}
   /* one indicator, one line — the card must still be readable in a glance */
   .tc-right{display:inline-flex;align-items:center;gap:7px}
@@ -358,6 +361,41 @@
   }
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
+
+  /* ── the floor in two sections: a queue, then the room ─────────── */
+  /* The centring lives here now, not on each grid. `.grid` carries
+     `margin:0 auto`, and an auto cross-axis margin on a flex item cancels
+     its stretch — nested, each grid then sized itself to max-content and
+     ran off the right of its section. */
+  .gwrap{display:flex;flex-direction:column;gap:26px;max-width:1420px;margin:0 auto;width:100%}
+  .gsec .grid{max-width:none;margin:0;width:100%}
+  .gsec{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .gsec-h{display:flex;align-items:center;gap:9px;min-width:0}
+  .gsec-t{
+    display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;white-space:nowrap;
+    font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--ink-3);
+  }
+  .gsec-t svg{width:13px;height:13px}
+  .gsec-n{
+    flex:0 0 auto;min-width:21px;height:21px;padding:0 6px;border-radius:99px;
+    display:grid;place-items:center;font-size:11px;font-weight:800;
+    font-variant-numeric:tabular-nums;background:var(--chip);color:var(--ink-2);
+  }
+  /* the queue is the one with a claim on your attention, so it is the one
+     that gets the accent — the map below is just the room */
+  .gsec-need .gsec-t{color:#e8a099}
+  .gsec-need .gsec-n{background:rgba(216,72,63,.15);color:#f0b3ab}
+  .gsec-r{flex:1 1 auto;height:1px;background:var(--line-soft);min-width:12px}
+  .gsec-empty{
+    display:flex;align-items:center;gap:8px;padding:13px 16px;
+    border:1px solid var(--line-soft);border-radius:12px;background:var(--card);
+    font-size:13px;font-weight:600;color:var(--ink-3);
+  }
+  .gsec-empty svg{width:14px;height:14px;color:var(--green);flex:0 0 auto}
+  body.light .gsec-need .gsec-t{color:#9c332b}
+  body.light .gsec-need .gsec-n{background:#fbeceb;color:#8e2a23}
+
   .tc-vip{
     flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
     font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
@@ -491,7 +529,10 @@
     50%{box-shadow:0 0 0 3px rgba(216,72,63,.22)}
   }
   .rq.late .ci{color:#fff}
-  .tcard.has-req:has(.rq.late){border-color:#8e3a31}
+  /* The mark goes red and keeps its pulse; the card's own border does not.
+     A red rule around the whole card competes with the mark for the same
+     fact, and on a floor of twenty cards the border is the one that turns
+     the grid into a warning. */
   .tcard.rq-edge.has-req:has(.rq.late){color:var(--red)}
   body.light .rq-p{border-color:#fff}
 
@@ -2943,13 +2984,6 @@ function visibleTables() {
                .sort((a,b) => (b.call?1:0) - (a.call?1:0)
                            || rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]);
   }
-  /* A guest who has pressed a button is waiting on a person, so their table
-     comes first — you should never have to hunt the grid for it. Everything
-     else keeps the room's own order, so the floor stays a map. */
-  const asked = list.filter(t => t.call && state.phase >= 2);
-  if (asked.length && state.filter !== 'attention')
-    list = [...asked, ...list.filter(t => !(t.call && state.phase >= 2))];
-
   const q = state.q.trim().toLowerCase();
   if (q) list = list.filter(t =>
     ('table ' + t.id).includes(q) || t.id.replace(/^0/,'').includes(q) ||
@@ -3127,6 +3161,41 @@ function renderCallBar() {
   icons();
 }
 
+/* Tables that need a person, most pressing first. Same test as the Attention
+   filter and the count beside it, so the floor, the chip and this queue can
+   never disagree: a table qualifies when its top action is work rather than
+   a talking point. A greeting is not attention. */
+function attentionTables(list) {
+  const rank = { red:0, rec:1 };
+  return list
+    .filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'rec'; })
+    .sort((a, b) =>
+      // someone who pressed a button is waiting on a person — they lead
+      (b.call ? 1 : 0) - (a.call ? 1 : 0)
+      || rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]
+      || (signalsFor(b).stale.length ? 1 : 0) - (signalsFor(a).stale.length ? 1 : 0)
+      || ((signalsFor(b).top && signalsFor(b).top.score) || 0)
+       - ((signalsFor(a).top && signalsFor(a).top.score) || 0));
+}
+
+/* The floor is two things at once, so it is drawn as two.
+     ATTENTION   a worklist — who needs a person, in the order they need one
+     ALL TABLES  a map of the room, in the room's own order, never re-sorted
+   A table needing attention appears in both: the queue is where you work,
+   the map is where you look for Table 12. */
+function gridSection(kind, list, title, icon, empty) {
+  return `<div class="gsec gsec-${kind}">
+    <div class="gsec-h">
+      <span class="gsec-t">${ic(icon,'xs')} ${title}</span>
+      ${list.length ? `<span class="gsec-n">${list.length}</span>` : ''}
+      <span class="gsec-r"></span>
+    </div>
+    ${list.length
+      ? `<div class="grid">${list.map(cardHtml).join('')}</div>`
+      : `<div class="gsec-empty">${ic('check','xs')} ${empty}</div>`}
+  </div>`;
+}
+
 function renderGrid() {
   renderCallBar();
   const g = document.getElementById('grid');
@@ -3135,6 +3204,21 @@ function renderGrid() {
   const badge = document.getElementById('attn-cnt');
   if (badge) { badge.textContent = cnt; badge.style.display = cnt ? '' : 'none'; }
   const list = visibleTables();
+  /* Sections only on the whole floor. Searching or filtering is already a
+     question with one answer, and two headings over one answer is noise. */
+  const sectioned = state.filter === 'all' && !state.q.trim() && state.phase >= 2;
+
+  if (sectioned) {
+    g.className = 'gwrap';
+    const need = attentionTables(list);
+    g.innerHTML =
+      gridSection('need', need, 'Needs attention', 'circle-alert',
+                  'Nothing needs you — every table on the floor is running fine.')
+    + gridSection('all', list, 'All tables', 'layout-grid', 'No tables in this section.');
+    icons(); return;
+  }
+
+  g.className = 'grid';
   g.innerHTML = list.length
     ? list.map(cardHtml).join('')
     : (state.filter === 'attention'
@@ -3882,6 +3966,7 @@ const GD_ACTION_ACTS = {
 
 const GUIDE_RULES = [
   ['Never make the waiter read', 'Every action is one line of what to do and one line of why. If a screen needs a paragraph, the screen is wrong.'],
+  ['A card never turns red', 'The request mark goes red and pulses; the card\u2019s own border does not. A red rule around a whole card competes with the mark for the same fact, and twenty of them turns the grid itself into a warning.'],
   ['One indicator per card', 'A floor card carries a single count badge. No second glyph competing with it — that is why the crown and the gold "just seated" treatment were removed.'],
   ['A default is a decision, not a law', 'Every number Pulse acts on ships with a considered default and is a merchant\u2019s to change in Setup, one screen, no engineering. What cannot be changed is the shape: three levels, two limits, five rows.'],
   ['Three levels, three questions', 'Red asks is something wrong, teal asks is there something to offer, gold asks who is at this table. Amber is not a level — it means nobody has closed this. A colour that covers two ideas covers neither.'],
@@ -4119,6 +4204,34 @@ function guideHtml() {
           <span class="gd-a">${a}</span>
           <span class="gd-b"><b>${t}</b><i>${d}</i></span>
           <span class="gd-c"></span>
+        </div>`).join('')}
+    </div>
+
+    <div class="set-h" style="margin-top:30px">The floor is two things at once</div>
+    <div class="set-sub">A worklist and a map of the room, which want opposite things: the worklist must re-order itself
+      constantly, and the map must never move. Drawing them as one screen meant one of the two was always wrong, so the
+      floor is drawn as two sections.</div>
+    <div class="gd-rows">
+      ${[[`<span class="gsec-t" style="color:#e8a099">${ic('circle-alert','xs')} Needs attention</span>`,
+          'A worklist, re-ordered every minute',
+          'Only tables where something has to be done. A guest who pressed a button leads, then problems, then offers, then whatever nobody has closed',
+          'A greeting is not attention — a table whose only action is “Greet them as Jessica” stays out of it'],
+         [`<span class="gsec-t">${ic('layout-grid','xs')} All tables</span>`,
+          'A map, in the room\u2019s own order',
+          'Every table, always in the same place, never re-sorted for any reason',
+          'Table 12 is where Table 12 was last time you looked, which is the only way a waiter learns the screen'],
+         [`<span class="gsec-n" style="background:rgba(216,72,63,.15);color:#f0b3ab">${attentionCount()}</span>`,
+          'One count, three places',
+          'The queue\u2019s heading, the Attention filter and the chip beside it are the same test, so they cannot disagree',
+          'A table needing attention appears in both sections: the queue is where you work, the map is where you look'],
+         [`<span class="gsec-empty" style="padding:6px 10px;font-size:11.5px">${ic('check','xs')} Nothing needs you</span>`,
+          'And it closes softly',
+          'An empty queue says so rather than disappearing, so a quiet floor reads as a fact and not a loading state',
+          'The same treatment the Manager tab uses for an empty section']]
+        .map(([a,t,d,e]) => `<div class="gd-row">
+          <span class="gd-a">${a}</span>
+          <span class="gd-b"><b>${t}</b><i>${d}</i></span>
+          <span class="gd-c">${e}</span>
         </div>`).join('')}
     </div>
 
