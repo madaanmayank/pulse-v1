@@ -187,6 +187,8 @@
   .cap-go b{font-variant-numeric:tabular-nums;font-weight:800}
   .cap-go i{font-style:normal;font-weight:700;font-size:11.5px;opacity:.7;font-variant-numeric:tabular-nums}
   .cap-ic{display:inline-flex;align-items:center;gap:3px;flex:0 0 auto}
+  /* Closes the request. Icon only — five capsules with a word on each
+     overflows the strip, and the strip staying scannable is the point. */
   .cap-x{
     flex:0 0 auto;width:40px;min-height:40px;display:grid;place-items:center;
     border-left:1px solid var(--line);color:var(--ink-2);
@@ -332,10 +334,12 @@
   }
   .tc-count.red{background:var(--red);color:#fff}
   .tc-count.rec{background:var(--teal);color:#04231f}
-  /* nobody has closed anything here for a while — a ring around whatever
-     severity the table already had, never a repaint of it */
-  .tc-count.late{box-shadow:0 0 0 3px rgba(214,154,69,.45)}
-  .tc-count.late:not(.red){background:#d69a45;color:#241d0c}
+  /* The badge is one colour: gold, always, however urgent the table is.
+     Severity is carried by the tags beside the name — a request has its own
+     mark and colour, at risk and VIP have their own chips — so the number
+     is free to mean only one thing: how much is left to do here.
+     Lateness rings it; the age chip on the action line says how long. */
+  .tc-count.late{box-shadow:0 0 0 3px rgba(214,154,69,.5)}
   /* something appeared since the waiter last looked at this table */
   .tc-count.fresh{outline:2px solid var(--gold-soft);outline-offset:2px}
   .tc-act.late{color:#e8bd7d}
@@ -354,6 +358,13 @@
   }
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
+  .tc-vip{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
+    font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    padding:2px 6px;border-radius:5px;white-space:nowrap;
+    background:rgba(217,180,95,.14);border:1px solid var(--gold-line);color:var(--gold-soft);
+  }
+  .tc-vip svg{width:11px;height:11px}
   .tc-held{
     display:flex;align-items:center;gap:6px;margin-top:8px;
     font-size:11px;font-weight:700;color:#8fe0b0;
@@ -362,6 +373,7 @@
   body.light .tc-act.rec{color:#0d7a6e}
   body.light .lv-rec .gd-lv,body.light .gd-a .gd-lv.lv-rec{background:#e2f6f3;color:#0b6f64}
   body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
+  body.light .tc-vip{background:#faf3e0;border-color:#dcc39a;color:#7d5c14}
   body.light .tc-held{color:#1d6b45}
   /* the one bit of good news on a floor — green, brief, and it clears itself
      the moment the waiter opens the table */
@@ -1919,9 +1931,10 @@ const guests = {
   ana: { id:'ana', name:'Ana', phone:'+65 8811 XXXX', initials:'A', rating:4.2, lastVisit:'2 months ago', visits:2, avgSpend:38,
     occasion:'Birthday',
     summary:'Prefers lighter dishes and sparkling water.' },
-  vik: { id:'vik', tastes:['chicken','spicy'], name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:64,
+  /* The floor's one top spender, so the VIP tag is reachable in the demo. */
+  vik: { id:'vik', tastes:['chicken','spicy'], name:'vivek', phone:'+65 9134 XXXX', initials:'V', rating:4.4, lastVisit:'5 days ago', visits:6, avgSpend:78,
     summary:'Regular for weekday lunch. Usually orders chicken.',
-    score:{ pct:10, label:'Top 10% of your guests' },
+    score:{ pct:8, label:'Top 8% of your guests' },
     last:{ when:'5 days ago', meal:'Lunch', pax:2, spend:96.00, rated:4 },
     sentiment:'positive',
     promos:['Set lunch, SGD28 per head'],
@@ -2930,6 +2943,13 @@ function visibleTables() {
                .sort((a,b) => (b.call?1:0) - (a.call?1:0)
                            || rank[signalsFor(a).lvl] - rank[signalsFor(b).lvl]);
   }
+  /* A guest who has pressed a button is waiting on a person, so their table
+     comes first — you should never have to hunt the grid for it. Everything
+     else keeps the room's own order, so the floor stays a map. */
+  const asked = list.filter(t => t.call && state.phase >= 2);
+  if (asked.length && state.filter !== 'attention')
+    list = [...asked, ...list.filter(t => !(t.call && state.phase >= 2))];
+
   const q = state.q.trim().toLowerCase();
   if (q) list = list.filter(t =>
     ('table ' + t.id).includes(q) || t.id.replace(/^0/,'').includes(q) ||
@@ -2984,9 +3004,8 @@ function cardHtml(t) {
     <div class="tc-head">
       <span class="tc-id">Table ${t.id}</span>
       <span class="tc-right">
-        ${live.length ? `<span class="tc-count ${tone}${isLate?' late':''}${isNew?' fresh':''}"
-            title="${live.length} still to do here${sig.liveNow.length && sig.liveNow.length !== live.length
-              ? ` · ${sig.liveNow.length} of them need doing now` : ''}${
+        ${live.length ? `<span class="tc-count${isLate?' late':''}${isNew?' fresh':''}"
+            title="${live.length} still to do here${
               isLate?` · ${sig.stale[0].openMin} min unattended`:''}">${live.length}</span>` : ''}
         <span class="tc-doc">${ic('receipt-text','sm')}</span>
       </span>
@@ -2997,8 +3016,16 @@ function cardHtml(t) {
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
       ${atRisk(t) && t.status === 'seated' ? `<span class="tc-watch" title="Last visit went wrong — this table is being kept close">${ic('heart-pulse','xs')} At risk</span>` : ''}
       ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
-      ${state.phase >= 3 && bkt && BUCKETS[bkt].tone !== 'plain' && !(bkt === 'risk' && atRisk(t) && t.status === 'seated')
-        ? `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>` : ''}
+      ${(() => {
+         /* One tag, in one order of precedence. A guest can be a top spender
+            AND have been let down last time; being let down is the one that
+            changes what a waiter does, so it is the one that shows. */
+         if (!(state.phase >= 3) || !bkt) return '';
+         if (atRisk(t) && t.status === 'seated') return '';        // the At risk chip above already says it
+         if (bkt === 'vip') return `<span class="tc-vip" style="margin-left:auto" title="Spends well above average — worth a manager hello">${ic('crown','xs')} VIP</span>`;
+         if (BUCKETS[bkt].tone === 'plain') return '';
+         return `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>`;
+       })()}
     </div>
     ${(() => {
        // the corner mark says a request is waiting, so the line prefers the
@@ -3007,7 +3034,7 @@ function cardHtml(t) {
          ? (sig.now.find(a => a.id !== 'call') || sig.soft[0] || sig.top)
          : sig.top;
        if (!line) return '';
-       return `<div class="tc-act ${line.isStale?'late':line.lvl}">${ic(line.icon,'xs')} <span>${line.act}</span>${
+       return `<div class="tc-act ${line.isStale?'late':''}">${ic(line.icon,'xs')} <span>${line.act}</span>${
          line.isStale ? `<span class="tc-late">${line.openMin}m</span>` : (line.isNew ? `<span class="tc-new">New</span>` : '')
        }</div>`;
      })()}
@@ -3046,7 +3073,8 @@ function callCap(t) {
       callIsMgr(c) ? `<span class="cap-mgr" title="The manager handles this">${ic('crown','sm')}</span>` : ''}
     </button>
     ${over >= 0 ? `<em class="cap-flag" title="Waiting ${c.min} minutes — past the ${limit}-minute mark">${c.min}m</em>` : ''}
-    <button class="cap-x" data-resolve="${t.id}" title="Handled">${ic('check','sm')}</button>
+    <button class="cap-x" data-resolve="${t.id}"
+      title="Attended — close this request">${ic('check','sm')}</button>
   </span>`;
 }
 
@@ -3985,7 +4013,10 @@ function guideHtml() {
     <div class="gd-part" style="margin-top:38px">${ic('book-open-text','sm')} Part two — how to read any of it</div>
 
     <div class="set-h">How urgent is it</div>
-    <div class="set-sub">Three levels, and each answers a different question — so a waiter never has to weigh two of them against each other.</div>
+    <div class="set-sub">Three levels, and each answers a different question — so a waiter never has to weigh two of them against each other.
+      They colour the <strong>checklist</strong>, where a waiter is choosing what to do next. They deliberately do <strong>not</strong>
+      colour the floor card: there the badge is always gold and the state is carried by a tag, because a grid of twenty cards in three
+      colours is a grid nobody reads.</div>
     <div class="gd-rows">
       ${LVL_ORDER.map(k => `<div class="gd-row">
           <span class="gd-a"><span class="tc-count ${k}">3</span></span>
@@ -4097,11 +4128,11 @@ function guideHtml() {
       <div class="gd-demo">${(() => { const t = tables.find(x => (x.status==='seated') && signalsFor(x).open.length) || tables.find(x => x.status==='seated'); return t ? cardHtml(t) : `<div class="mg-empty">Seat a table to see a live card here.</div>`; })()}</div>
       <ol class="gd-notes">
         <li><b>Table number</b> — always top left, always the same place.</li>
-        <li><b>Count badge</b> — how many things to <em>do</em>, toned by the most urgent, ringed once something is overdue. Talking points are not counted.</li>
+        <li><b>Count badge</b> — how many things are open here. <em>Always gold</em>, however urgent the table is: the number means one thing only, and the tags beside the name carry the state. Ringed once something is overdue.</li>
         <li><b>Guest name</b> — two lines if it needs them, a size smaller if it is long. Never cut. A table with no profile is <em>Guest</em>.</li>
         <li><b>Covers and time</b> — party size and how long they have been sitting.</li>
-        <li><b>Bucket label</b> <span class="gd-ph3">Phase 3</span> — derived, never typed: new, returning, regular, VIP, lapsed, at risk.</li>
-        <li><b>Top action</b> — the single most urgent line, with an age chip once nobody has closed it.</li>
+        <li><b>One state tag</b> <span class="gd-ph3">Phase 3</span> — derived, never typed, and only ever one: <em>At risk</em> beats <em>VIP</em> beats <em>Regular</em> or <em>Lapsed</em>. A top spender who was let down last time reads <em>At risk</em>, because that is the one that changes what a waiter does.</li>
+        <li><b>Top action</b> — the single most urgent line, in the same gold as the badge, with an amber age chip once nobody has closed it. A table that has raised its hand shows the corner mark instead, and the line moves to the next thing.</li>
         <li><b>Bill</b> — green once settled, so a turnable table reads at a glance.</li>
       </ol>
     </div>
@@ -4152,6 +4183,7 @@ function guideHtml() {
     <div class="set-sub">One accent. Red is rationed. Everything else is ink on a warm near-black.</div>
     <div class="gd-sws">
       ${sw('#d9b45f','Gold — the single accent')}
+      ${sw('#d9b45f','Gold — the count badge, always')}
       ${sw('#d8483f','Red — something is wrong')}
       ${sw('#22b8a6','Teal — worth suggesting')}
       ${sw('#d69a45','Amber — nobody has closed this')}
