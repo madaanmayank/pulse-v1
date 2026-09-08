@@ -320,12 +320,18 @@
   /* a long name steps down a size instead of losing its last word */
   .tc-name.long{font-size:18px;line-height:1.18}
   .tc-name .others{font-size:13px;font-weight:600;color:var(--ink-2);letter-spacing:0}
-  /* Covers, time and one state tag. It wraps as a row rather than letting
-     any one item break inside itself — "1h 20m" split over two lines is
-     unreadable, and a tag on its own second line is not. */
-  .tc-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500}
+  /* Covers, time and one tag, on ONE line, always. Nothing wraps and
+     nothing breaks inside itself: "1h 18m" split over two lines is
+     unreadable, and a tag on its own second line wastes a row of a card
+     that only has four. The row fits because only one tag is ever in it —
+     see the precedence in cardHtml. */
+  .tc-meta{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500;min-width:0}
   .tc-meta svg{width:15px;height:15px}
-  .tc-meta span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+  .tc-meta > span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:0 0 auto}
+  /* the tag is the only thing allowed to give, and it ellipsises rather
+     than pushing the time off the card */
+  .tc-meta > .tc-watch,.tc-meta > .tc-vip,.tc-meta > .tc-new-order,.tc-meta > .bkt{
+    flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;display:inline-block}
   .tc-meta svg{color:var(--ink-2)}
   /* one indicator, one line — the card must still be readable in a glance */
   .tc-right{display:inline-flex;align-items:center;gap:7px}
@@ -356,7 +362,7 @@
   .tc-watch{
     display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
     font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    border-radius:6px;padding:3px 7px;
+    border-radius:6px;padding:3px 6px;
     background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
   }
   /* and between checks it says when the next one is due, so the table reads
@@ -398,8 +404,8 @@
 
   .tc-vip{
     flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
-    font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-    padding:2px 6px;border-radius:5px;white-space:nowrap;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    padding:3px 6px;border-radius:6px;white-space:nowrap;
     background:rgba(217,180,95,.14);border:1px solid var(--gold-line);color:var(--gold-soft);
   }
   .tc-vip svg{width:11px;height:11px}
@@ -418,7 +424,7 @@
   .tc-new-order{
     display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
     font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    border-radius:6px;padding:3px 7px;
+    border-radius:6px;padding:3px 6px;
     background:rgba(63,159,107,.18);border:1px solid var(--green-line);color:#8fe0b0;
     animation:orderIn .5s cubic-bezier(.2,.8,.2,1) both;
   }
@@ -3048,15 +3054,23 @@ function cardHtml(t) {
     <div class="tc-meta">
       <span>${ic('user','xs')} ${t.pax}</span>
       <span>${ic('clock','xs')} ${dur(t.mins)}</span>
-      ${atRisk(t) && t.status === 'seated' ? `<span class="tc-watch" title="Last visit went wrong — this table is being kept close">${ic('heart-pulse','xs')} At risk</span>` : ''}
-      ${justOrdered(t) ? `<span class="tc-new-order">${ic('utensils-crossed','xs')} Order in</span>` : ''}
       ${(() => {
-         /* One tag, in one order of precedence. A guest can be a top spender
-            AND have been let down last time; being let down is the one that
-            changes what a waiter does, so it is the one that shows. */
+         /* ONE tag in this row, chosen by precedence, because the row holds
+            covers, the time and exactly one more thing before a 212px card
+            runs out of width. Order of the argument: what changes what a
+            waiter does next, first.
+              At risk    something went wrong last time — stay close
+              Order in   an order just landed and nobody has looked
+              VIP        worth a manager hello
+              Lapsed     make them feel remembered
+            A top spender who was let down reads At risk, not VIP. */
+         if (atRisk(t) && t.status === 'seated')
+           return `<span class="tc-watch" style="margin-left:auto" title="Last visit went wrong — this table is being kept close">At risk</span>`;
+         if (justOrdered(t))
+           return `<span class="tc-new-order" style="margin-left:auto" title="An order arrived and nobody has looked yet">Order in</span>`;
          if (!(state.phase >= 3) || !bkt) return '';
-         if (atRisk(t) && t.status === 'seated') return '';        // the At risk chip above already says it
-         if (bkt === 'vip') return `<span class="tc-vip" style="margin-left:auto" title="Spends well above average — worth a manager hello">${ic('crown','xs')} VIP</span>`;
+         if (bkt === 'vip')
+           return `<span class="tc-vip" style="margin-left:auto" title="Spends well above average — worth a manager hello">VIP</span>`;
          if (BUCKETS[bkt].tone === 'plain') return '';
          return `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>`;
        })()}
@@ -4244,7 +4258,7 @@ function guideHtml() {
         <li><b>Count badge</b> — how many things are open here. <em>Always gold</em>, however urgent the table is: the number means one thing only, and the tags beside the name carry the state. Ringed once something is overdue.</li>
         <li><b>Guest name</b> — two lines if it needs them, a size smaller if it is long. Never cut. A table with no profile is <em>Guest</em>.</li>
         <li><b>Covers and time</b> — party size and how long they have been sitting.</li>
-        <li><b>One state tag</b> <span class="gd-ph3">Phase 3</span> — derived, never typed, and only ever one: <em>At risk</em> beats <em>VIP</em> beats <em>Regular</em> or <em>Lapsed</em>. A top spender who was let down last time reads <em>At risk</em>, because that is the one that changes what a waiter does.</li>
+        <li><b>One tag, on the same line</b> <span class="gd-ph3">Phase 3</span> — derived, never typed, and only ever one, because covers, the time and one tag is exactly what the row holds. <em>At risk</em> beats <em>Order in</em> beats <em>VIP</em> beats <em>Lapsed</em>: what changes what a waiter does next, first. A top spender who was let down reads <em>At risk</em>.</li>
         <li><b>Top action</b> — the single most urgent line, in the same gold as the badge, with an amber age chip once nobody has closed it. A table that has raised its hand shows the corner mark instead, and the line moves to the next thing.</li>
         <li><b>Bill</b> — green once settled, so a turnable table reads at a glance.</li>
       </ol>
