@@ -341,12 +341,15 @@
   .tc-count.fresh{outline:2px solid var(--gold-soft);outline-offset:2px}
   /* a table whose last visit went wrong stays marked for the whole visit —
      the state is not something a waiter can tick away */
+  /* An unhappy face, and nothing else. The words "AT RISK" cost 46px on a
+     212px card and told a waiter less than the face does — and the detail
+     view explains it in full the moment they tap through. */
   .tc-watch{
-    display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
-    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    border-radius:6px;padding:3px 6px;
-    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+    flex:0 0 auto;display:inline-grid;place-items:center;
+    width:24px;height:24px;border-radius:50%;
+    background:rgba(216,72,63,.3);border:1px solid #ab453b;color:#ffb0a4;
   }
+  .tc-watch svg{width:15px;height:15px;stroke-width:2.4}
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
 
@@ -425,12 +428,15 @@
   body.light .gsec-need .gsec-t{color:#9c332b}
   body.light .gsec-need .gsec-n{background:#fbeceb;color:#8e2a23}
 
+  /* VIP keeps its word — a status, not a feeling — and gains a crown so it
+     can never be mistaken for the face beside it. */
   .tc-vip{
     flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
-    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
-    padding:3px 6px;border-radius:6px;white-space:nowrap;
-    background:rgba(217,180,95,.14);border:1px solid var(--gold-line);color:var(--gold-soft);
+    font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 7px 3px 6px;border-radius:6px;white-space:nowrap;
+    background:rgba(217,180,95,.2);border:1px solid var(--gold);color:#f0dca4;
   }
+  .tc-vip svg{width:12px;height:12px}
   .tc-vip svg{width:11px;height:11px}
   .tc-held{
     display:flex;align-items:center;gap:6px;margin-top:8px;
@@ -439,7 +445,8 @@
   body.light .tc-count.rec{background:#0f8e80;color:#fff}
   body.light .lv-rec .gd-lv,body.light .gd-a .gd-lv.lv-rec{background:#e2f6f3;color:#0b6f64}
   body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
-  body.light .tc-vip{background:#faf3e0;border-color:#dcc39a;color:#7d5c14}
+  body.light .tc-vip{background:#f6ebcd;border-color:#c9a94e;color:#6f5010}
+  body.light .tc-watch{background:#fbe3e0;border-color:#d99a92;color:#a8302a}
   body.light .tc-held{color:#1d6b45}
   /* the one bit of good news on a floor — green, brief, and it clears itself
      the moment the waiter opens the table */
@@ -2457,7 +2464,7 @@ const SIGNALS = [
   /* ───────── PHASE 2 · from the guest profile and the POS we already have ───────── */
   /* Recurring. Ticking it records a visit and re-arms the clock, so the
      instruction is always something a waiter can actually go and do now. */
-  { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'heart-pulse', score:96,
+  { id:'recovery', phase:2, lvl:'red', who:'waiter', icon:'frown', score:96,
     on:c => atRisk(c.t) && c.t.status === 'seated' && checkDue(c.t),
     act:c => checks[c.t.id] ? 'Go back and check on them' : 'Go and check on them',
     why:c => checks[c.t.id]
@@ -3094,14 +3101,15 @@ function cardHtml(t) {
               Lapsed     make them feel remembered
             A top spender who was let down reads At risk, not VIP. */
          if (atRisk(t) && t.status === 'seated')
-           return `<span class="tc-watch" style="margin-left:auto" title="Last visit went wrong — this table is being kept close">At risk</span>`;
+           return `<span class="tc-watch" style="margin-left:auto" aria-label="At risk"
+             title="Last visit went wrong — this table is being kept close. Tap the table to see what happened.">${ic('frown','xs')}</span>`;
          if (justOrdered(t))
            return `<span class="tc-new-order" style="margin-left:auto" title="An order arrived and nobody has looked yet">Order in</span>`;
          /* VIP is not phase-gated, for the same reason At risk is not: both are
             read off the guest profile, and a floor that can see one should see
             the other. The softer buckets stay a Phase 3 refinement. */
          if (bkt === 'vip')
-           return `<span class="tc-vip" style="margin-left:auto" title="${vipReason(guests[t.guest]) || 'Worth a manager hello'} — worth a manager hello">VIP</span>`;
+           return `<span class="tc-vip" style="margin-left:auto" title="${vipReason(guests[t.guest]) || 'Worth a manager hello'} — worth a manager hello">${ic('crown','xs')} VIP</span>`;
          if (!(state.phase >= 3) || !bkt) return '';
          if (BUCKETS[bkt].tone === 'plain') return '';
          return `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>`;
@@ -3408,7 +3416,7 @@ function actionsHtml(t) {
 
   const staleN = sig.stale.length;
   const watch = atRisk(t) && t.status === 'seated' ? `<div class="wch">
-      <div class="wch-h">${ic('heart-pulse','sm')} <b>Keeping this table close</b>
+      <div class="wch-h">${ic('frown','sm')} <b>Keeping this table close</b>
         <span>${checks[t.id] ? `checked ${checks[t.id].n}×` : 'not yet checked'}</span></div>
       <p>Last visit went wrong — ${guests[t.guest].prevIssue.toLowerCase()}.</p>
       <div class="wch-f">${checkDue(t)
@@ -4350,7 +4358,7 @@ function guideHtml() {
       Instead <strong>the state stays and the action recurs</strong> — the card carries the mark from sitting down to paying,
       and on top of it Pulse asks for one thing you can actually do, again every ${RECHECK_MIN} minutes.</div>
     <div class="gd-rows">
-      ${[[`<span class="tc-watch">${ic('heart-pulse','xs')} At risk</span>`,'The mark stays on the card',
+      ${[[`<span class="tc-watch">${ic('frown','xs')}</span>`,'The face stays on the card',
           'On from the moment they sit to the moment they pay. It has no tick — it is not a job, it is a fact about the table',
           'Set by one thing only: something specific went wrong last visit. Never inferred from a score'],
          [`<span class="todo-flag">New</span>`,'The check is the action',
