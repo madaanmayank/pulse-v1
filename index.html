@@ -142,7 +142,6 @@
   .lg-sw.seated{border-color:#e6e2d6}
   .lg-sw.fresh{border-color:var(--gold)}
   .lg-sw.paid{border-color:var(--green-line);background:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(63,159,107,.14) 5px 10px),#14201a}
-  .lg-sw.blocked{border-color:#1e2023;background:repeating-linear-gradient(-45deg,transparent 0 5px,rgba(255,255,255,.03) 5px 10px),#121316}
   .lg-sw.bill{background:var(--bill-bg);border-color:transparent}
 
   .content{flex:1 1 auto;min-height:0;overflow-y:auto;padding:6px 18px 22px}
@@ -286,15 +285,7 @@
   .tcard.vacant .tc-vac{font-size:25px;font-weight:700;color:#e9e7e1}
   .tcard.vacant:hover{border-color:var(--gold-line)}
 
-  /* blocked / unavailable */
-  .tcard.blocked{
-    align-items:center;justify-content:center;
-    background:
-      repeating-linear-gradient(-45deg,transparent 0 9px,rgba(255,255,255,.022) 9px 18px),
-      #121316;
-    border-color:#1e2023;cursor:not-allowed;
-  }
-  .tcard.blocked .tc-vac{font-size:25px;font-weight:700;color:#4a4c51}
+
 
   /* occupied */
   .tcard.seated{border-color:#e6e2d6}
@@ -307,9 +298,6 @@
 
   .tc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
   .tc-id{font-size:13px;font-weight:600;color:var(--ink-2)}
-  .tc-doc{color:var(--gold);opacity:.9;display:inline-flex}
-  .tc-doc svg{width:19px;height:19px}
-  .tcard.paid .tc-doc{color:var(--green)}
   /* the guest's name is their identity — let a long one take two lines
      rather than cutting it off mid-word */
   .tc-name{
@@ -1656,10 +1644,7 @@
   body.light .tcard{background:#fff;border-color:var(--line-soft);box-shadow:0 1px 2px rgba(60,50,30,.05)}
   body.light .tcard.vacant{background:#faf8f3;border-color:#e8e3d8}
   body.light .tcard.vacant .tc-vac{color:#3a3630}
-  body.light .tcard.blocked{
-    background:repeating-linear-gradient(-45deg,transparent 0 9px,rgba(0,0,0,.035) 9px 18px),#f0ede6;
-    border-color:#e4dfd4}
-  body.light .tcard.blocked .tc-vac{color:#b0aaa0}
+
   body.light .tcard.seated{border-color:#3a3630}
   body.light .tcard.paid{
     background:repeating-linear-gradient(-45deg,transparent 0 9px,rgba(44,125,82,.09) 9px 18px),#eef7f1;
@@ -2109,7 +2094,7 @@ const RECOS = [
   { name:'Chocolate lava cake',                            price:8.00,  reorder:0, icon:'cake-slice' },
 ];
 
-/* status: vacant | seated | paid | blocked
+/* status: vacant | seated | paid
    sw = what the guest's phone is doing right now (Phase 3)
         menuOpenMin  minutes the menu has been open · 0 = never opened
         itemsViewed  dishes opened
@@ -2141,7 +2126,7 @@ let tables = [
     sw:{ menuOpenMin:9, itemsViewed:7 },
     call:{ types:['water','cutlery'], min:1, seq:2 } },
   { id:'06', sec:'Indoor', status:'seated', guest:'jes', pax:1, mins:135, bill:25.00, server:'Aisha', ticket:1, dishes:2 },
-  { id:'07', sec:'Indoor', status:'blocked' },
+  { id:'07', sec:'Indoor', status:'vacant' },
   { id:'08', sec:'Indoor', status:'paid', guest:null, others:true, pax:4, mins:135, bill:86.00, server:'Jason', ticket:2, dishes:6 },
   // built a cart and never sent it — the kitchen has no idea
   { id:'09', sec:'Patio', status:'seated', guest:'max', others:true, pax:2, mins:23, bill:0, server:'Maria', ticket:0, dishes:0,
@@ -2153,8 +2138,8 @@ let tables = [
   // a long gap since they last ordered anything
   { id:'13', sec:'Patio', status:'seated', guest:'ana', others:true, pax:2, mins:96, bill:112.40, server:'Tom', ticket:2, dishes:6,
     lastOrderMin:34 },
-  { id:'14', sec:'Outdoor', status:'blocked' },
-  { id:'15', sec:'Outdoor', status:'blocked' },
+  { id:'14', sec:'Outdoor', status:'vacant' },
+  { id:'15', sec:'Outdoor', status:'vacant' },
   // no drinks ordered for a long stretch
   { id:'16', sec:'Outdoor', status:'seated', guest:null, others:true, pax:5, mins:74, bill:143.20, server:'Jason', ticket:3, dishes:7,
     lastDrinkMin:26 },
@@ -2722,7 +2707,7 @@ const tableSeen  = {};               // "table"        -> clockMin it first show
 const dismissed  = {};               // "table:signal" -> true
 
 function signalsFor(t) {
-  if (!t || t.status === 'vacant' || t.status === 'blocked') return { open:[], now:[], soft:[], liveNow:[], done:[], top:null, lvl:null, all:[], stale:[] };
+  if (!t || t.status === 'vacant') return { open:[], now:[], soft:[], liveNow:[], done:[], top:null, lvl:null, all:[], stale:[] };
   const g = t.guest ? guests[t.guest] : null;
   const c = { t, g, sw: t.sw || {}, mins: t.mins || 0, bucket: g ? bucketOf(g) : null,
               call: t.call || null, hasSw: !!t.sw };
@@ -2799,7 +2784,7 @@ function markTableSeen(tid) {
    wire from the POS; here it can be triggered so the handoff is demonstrable. */
 function orderArrived(tableId, items, total) {
   const t = T(tableId);
-  if (!t || t.status === 'vacant' || t.status === 'blocked') return;
+  if (!t || t.status === 'vacant') return;
   t.dishes = (t.dishes || 0) + items;
   t.ticket = (t.ticket || 0) + 1;
   t.bill   = +((t.bill || 0) + total).toFixed(2);
@@ -2933,7 +2918,7 @@ function turnTable(id) {
 
 function raiseCall(tableId, type) {
   const t = T(tableId);
-  if (!t || !CALL_TYPES[type] || t.status === 'vacant' || t.status === 'blocked') return;
+  if (!t || !CALL_TYPES[type] || t.status === 'vacant') return;
   if (t.call) {
     // asked for something else while still waiting — keep the original wait,
     // because that is how long they have actually been sitting there
@@ -3041,7 +3026,7 @@ function visibleTables() {
   if (q) list = list.filter(t =>
     ('table ' + t.id).includes(q) || t.id.replace(/^0/,'').includes(q) ||
     (t.guest && guests[t.guest].name.toLowerCase().includes(q)) ||
-    (t.status !== 'vacant' && t.status !== 'blocked' && 'guest'.includes(q))
+    (t.status !== 'vacant' && 'guest'.includes(q))
   );
   return list;
 }
@@ -3071,8 +3056,6 @@ function reqMark(t) {
 function cardHtml(t) {
   if (t.status === 'vacant')
     return `<div class="tcard vacant" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
-  if (t.status === 'blocked')
-    return `<div class="tcard blocked" data-id="${t.id}"><div class="tc-vac">Table ${t.id}</div></div>`;
 
   const cls = t.status === 'paid' ? 'paid' : 'seated';
   const sig = signalsFor(t);
@@ -3094,7 +3077,6 @@ function cardHtml(t) {
         ${live.length ? `<span class="tc-count${isLate?' late':''}${isNew?' fresh':''}"
             title="${live.length} still to do here${
               isLate?` · ${sig.stale[0].openMin} min unattended`:''}">${live.length}</span>` : ''}
-        <span class="tc-doc">${ic('receipt-text','sm')}</span>
       </span>
     </div>
     <div class="tc-name${nameOf(t).length > 15 ? ' long' : ''}">${nameOf(t)}${t.others ? ' <span class="others">&amp; others</span>' : ''}</div>
@@ -3447,7 +3429,7 @@ function actionsHtml(t) {
 }
 
 function openDetail(id) {
-  const t = T(id); if (!t || t.status === 'vacant' || t.status === 'blocked') return;
+  const t = T(id); if (!t || t.status === 'vacant') return;
   state.detailId = id;
   state.allActions = false;
   markTableSeen(id);
@@ -4483,7 +4465,7 @@ function guideHtml() {
     <div class="set-h" style="margin-top:30px">Table states</div>
     <div class="gd-states">
       ${[['vacant','Vacant','Tap to seat a guest'],['seated','Seated','Service running'],
-         ['paid','Settled','Bill paid — free to clear'],['blocked','Blocked','Not in service tonight']]
+         ['paid','Settled','Bill paid — free to clear']]
         .map(([c,t,d]) => `<div class="gd-state"><span class="lg-sw ${c==='seated'?'':c}"></span><b>${t}</b><i>${d}</i></div>`).join('')}
     </div>
 
@@ -4819,7 +4801,6 @@ function legendHtml() {
       ${item('seated','Occupied')}
       ${item('fresh','Just allocated')}
       ${item('paid','Bill paid — ready to turn')}
-      ${item('blocked','Not in service')}
       ${item('bill','Running bill')}
     </div>`;
 }
@@ -5064,7 +5045,7 @@ document.addEventListener('click', e => {
   const card = e.target.closest('.tcard');
   if (card) {
     const t = T(card.dataset.id);
-    if (!t || t.status === 'blocked') return;
+    if (!t) return;
     if (t.status === 'vacant') openAllocate(t.id); else openDetail(t.id);
     return;
   }
