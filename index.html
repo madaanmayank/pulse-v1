@@ -362,6 +362,47 @@
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
 
+
+  /* ── the Guide's two pages ─────────────────────────────────────── */
+  .gtabs{display:flex;gap:8px;margin:0 0 22px;flex-wrap:wrap}
+  .gtab{
+    display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 16px;
+    border:1px solid var(--line);border-radius:10px;background:var(--chip);
+    color:var(--ink-3);font:inherit;font-size:13px;font-weight:800;cursor:pointer;
+  }
+  .gtab svg{width:15px;height:15px}
+  .gtab:hover{color:var(--ink-2);border-color:var(--gold-line)}
+  .gtab.on{background:rgba(217,180,95,.13);border-color:var(--gold);color:var(--gold-soft)}
+  /* one feature block: what it is, a live card, the cases it covers */
+  .w2{border:1px solid var(--line);border-radius:14px;background:var(--card);
+    padding:18px 20px 20px;margin:0 0 16px}
+  .w2-h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+  .w2-n{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--gold);
+    font-variant-numeric:tabular-nums}
+  .w2-h b{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .w2-l{font-size:14.5px;color:var(--ink-2);line-height:1.55;margin:0 0 15px;max-width:66ch;font-weight:500}
+  .w2-grid{display:grid;gap:18px;align-items:start}
+  @media (min-width:760px){.w2-grid{grid-template-columns:214px minmax(0,1fr);gap:22px}}
+  .w2-demo{min-width:0}
+  .w2-demo .tcard{pointer-events:none;cursor:default}
+  .w2-cap{margin-top:9px;font-size:11.5px;color:var(--ink-3);line-height:1.5;font-weight:600}
+  .w2-see{
+    margin-top:10px;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;
+    border:1px solid var(--gold-line);border-radius:9px;background:rgba(217,180,95,.1);
+    color:var(--gold-soft);font:inherit;font-size:12px;font-weight:800;cursor:pointer;
+  }
+  .w2-see:hover{background:rgba(217,180,95,.18)}
+  .w2-see svg{width:14px;height:14px}
+  .w2-cases{min-width:0}
+  .w2-cases h6{margin:0 0 9px;font-size:10.5px;font-weight:800;letter-spacing:.11em;
+    text-transform:uppercase;color:var(--gold)}
+  .w2-cases ul{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+  .w2-cases li{font-size:13.5px;line-height:1.55;color:var(--ink-2);padding-left:19px;position:relative}
+  .w2-cases li::before{content:'';position:absolute;left:3px;top:8px;width:5px;height:5px;
+    border-radius:1px;background:var(--gold);opacity:.6}
+  .w2-cases li b{color:var(--ink);font-weight:700}
+  body.light .gtab.on{background:#faf3e0;border-color:#c9a94e;color:#7d5c14}
+
   /* ── the floor in two sections: a queue, then the room ─────────── */
   /* The centring lives here now, not on each grid. `.grid` carries
      `margin:0 auto`, and an auto cross-axis margin on a flex item cancels
@@ -2948,7 +2989,7 @@ function attentionCount() {
   return tables.filter(t => { const l = signalsFor(t).lvl; return l === 'red' || l === 'rec'; }).length;
 }
 
-const state = { filter:'all', view:'table', q:'', searchOpen:false,
+const state = { filter:'all', view:'table', q:'', searchOpen:false, guidePage:'design',
                 allocId:null, allocPax:4, detailId:null, activeGuest:null, allActions:false,
                 phase:2, legendOpen:false, rmPhase:1, section:'all', secOpen:false, closeId:null, clCat:null, compId:null, reqStyle:'pin', 
                 theme:'dark' };
@@ -4030,6 +4071,179 @@ const GUIDE_PHASES = {
        ] },
 };
 
+/* ══════════════════════════════════════════════════════════════
+   PHASE 2 WALKTHROUGH — the Guide's second page
+   ──────────────────────────────────────────────────────────────
+   Written for someone who has never seen the product and is not
+   technical: what each feature does, a live card so they can see it
+   rather than imagine it, and the situations it actually covers.
+   The cards are rendered by the real cardHtml() at Phase 2, so this
+   page cannot drift from the floor.
+   ══════════════════════════════════════════════════════════════ */
+function atPhase2(fn) {
+  const keep = state.phase;
+  state.phase = 2;
+  try { return fn(); } finally { state.phase = keep; }
+}
+
+const WALK = [
+  { n:1, title:'The guest calls a waiter', table:'05',
+    lead:'The guest taps one button on their phone. It shows up instantly at the top of the staff screen and on that table’s card, and stays there until someone marks it attended.',
+    cap:'The blue hand on the corner means they have called.',
+    cases:[
+      ['A guest presses the button.','It appears in two places at once — a capsule at the top of the screen and a mark on the card. Whichever a waiter is looking at, they see it.'],
+      ['Nobody goes for five minutes.','The capsule turns red, starts showing the wait, and the table appears on the manager’s screen.'],
+      ['They press it again while waiting.','It stays one job, and the clock keeps running from the first press, so the wait stays honest.'],
+      ['A waiter goes over.','Attended clears it from every screen at the same moment, so two waiters never both walk over.'],
+      ['We only know they pressed it — not what they want.','There is no text box on the guest’s phone, so the app never guesses at a problem. Asking for water, cutlery or raising a complaint comes next phase.'],
+    ]},
+  { n:2, title:'What to do next', table:'01',
+    lead:'Everything waiting at one table, gathered into one list and put in order, so nobody has to work out what matters most.',
+    cap:'Five things waiting here. Tap the table to see what they are.',
+    cases:[
+      ['Several things are true at once.','They become one ordered list, not five alerts. Problems first, then things worth offering, then things worth saying.'],
+      ['Something has been waiting too long.','It jumps above newer things of the same kind.'],
+      ['A lot is happening at one table.','The list shows the top five and puts the rest behind one tap.'],
+      ['Two waiters open the same table.','They see the same list in the same order, so they agree on what comes first.'],
+      ['Something new arrives mid-shift.','A ring appears around the gold number, so a table already glanced at does not get glanced past.'],
+      ['A job genuinely does not apply.','The cross on the left dismisses it for that visit. Without that, staff learn to ignore the whole list.'],
+      ['Someone taps the wrong thing.','Ticking and dismissing can both be undone for a couple of seconds.'],
+    ]},
+  { n:3, title:'Guests we let down last time', table:'12',
+    lead:'Someone whose last visit went badly is sitting down again. The staff are told, in plain words, what went wrong — and then reminded to keep checking on them.',
+    cap:'The red AT RISK tag stays for the whole visit. It cannot be ticked away.',
+    cases:[
+      ['A guest with a bad last visit walks in.','The tag goes on as soon as they are seated and stays until they pay. It is a fact about the table, not a job.'],
+      ['Staff need to know what happened.','One sentence — "waited 25 minutes between starters and mains" — so the waiter knows what not to repeat.'],
+      ['Someone needs to check on them.','A job appears, and comes back every 20 minutes for as long as they are in.'],
+      ['A waiter goes over and ticks it.','The table does not stop being flagged. The card then reads "Checked 2× · next in 7m", so anyone can see it is being looked after.'],
+      ['Nobody has been over at all.','The manager’s screen says exactly that: "Nobody has been back yet."'],
+    ]},
+  { n:4, title:'Our best customers', table:'17',
+    lead:'Two different kinds of good customer, and either one on its own earns the tag: someone who spends well, and someone who simply keeps coming back.',
+    cap:'A gold VIP tag, and a job on the manager’s screen to go and say hello.',
+    cases:[
+      ['They spend well.','An average bill at or above the set amount. The app says why: "Spends SGD78 on average, well above the house."'],
+      ['They come often.','At or above the set number of visits, whatever they spend: "11 visits — one of the faces of this room."'],
+      ['A regular who spends an ordinary amount.','Still a VIP — which a spend-only rule would have missed completely.'],
+      ['A VIP we also let down last time.','The card shows AT RISK only. Putting things right matters more than saying hello.'],
+      ['The restaurant disagrees with our numbers.','Both bars are theirs to change in Setup, with nobody from our side involved.'],
+    ]},
+  { n:5, title:'Nobody has taken their order', table:'21',
+    lead:'A table has been sitting a while and nothing has been ordered. The most common complaint in a busy restaurant, and the one guests forgive least.',
+    cap:'Sitting eleven minutes with nothing ordered.',
+    cases:[
+      ['Ten minutes seated, nothing ordered.','A job appears. Before that they are still settling, and their first ten minutes show separately at the top as Just seated.'],
+      ['The wording firms up as time passes.','"Seated 8m, nothing ordered yet" becomes "Seated 19m, still nothing ordered." Same job, sharper reason.'],
+      ['They order anything at all.','Even one drink clears it — the table has been picked up, which is the whole point.'],
+      ['It is one job, not four.','An earlier version asked separately for a menu, water, taking the order and talking them through it. That is four lines for one trip.'],
+    ]},
+  { n:6, title:'Nobody has ordered in a while', table:'13',
+    lead:'A table that has stopped ordering has either finished or been forgotten. The app cannot tell which — but a waiter can, in ten seconds, if somebody sends them.',
+    cap:'An hour and a half in. Tap it to see how long since they last ordered.',
+    cases:[
+      ['Nothing new ordered for a long stretch.','A waiter is sent to offer the next course.'],
+      ['Drinks are watched separately.','On a shorter clock, because they turn over faster and carry the profit.'],
+      ['It never claims to know more than it does.','It can see when an order was placed, not the plates. So it says "last ordered 34 min ago", never "the mains are going cold".'],
+      ['A table has just ordered.','It stays quiet for five minutes, so nobody is chased for not ordering seconds after they ordered.'],
+      ['Three hours at the table.','A separate job appears — offer the check. And if it is a long, happy celebration, the waiter dismisses it.'],
+    ]},
+];
+
+function phase2Html() {
+  const card = id => { const t = T(id); return t ? atPhase2(() => cardHtml(t)) : ''; };
+  const block = f => `<div class="w2">
+    <div class="w2-h"><span class="w2-n">${f.n}</span><b>${f.title}</b></div>
+    <p class="w2-l">${f.lead}</p>
+    <div class="w2-grid">
+      <div class="w2-demo">
+        ${card(f.table)}
+        <div class="w2-cap">${f.cap}</div>
+        <button class="w2-see" data-walk-open="${f.table}">${ic('arrow-up-right','xs')} Open Table ${f.table}</button>
+      </div>
+      <div class="w2-cases">
+        <h6>Situations this covers</h6>
+        <ul>${f.cases.map(([a,b]) => `<li><b>${a}</b> ${b}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </div>`;
+
+  return `<div class="setwrap">
+    <div class="set-h">Pulse Phase 2, feature by feature</div>
+    <div class="set-sub">Written for anyone seeing this for the first time. A restaurant already knows
+      who is at table 12, what they spent last time, and whether something went wrong on their last
+      visit — and today none of it reaches the person standing at the table. Pulse puts it on the
+      tablet the staff already use and turns it into one clear thing to do next.
+      <strong>Every card below is the live app</strong>, drawn at Phase 2, so this page cannot drift
+      from the floor.</div>
+
+    <div class="note" style="margin-top:18px">
+      <h4>How to read a table card</h4>
+      <p style="margin:0"><b>The gold number</b> is how many things are waiting at that table — it
+      is always gold, because the number tells you how much, not how bad. <b>A blue hand</b> on the
+      corner means the guest has pressed the button. <b>One tag</b> beside the name says what kind of
+      table it is. The card never lists the jobs: it tells you how many, and you tap it to see what.</p>
+    </div>
+
+    ${WALK.map(block).join('')}
+
+    <div class="set-h" style="margin-top:30px">The top of the screen</div>
+    <div class="set-sub">Everything urgent sits in one strip above the tables, so the floor is scanned
+      rather than searched. <strong>Guests waiting</strong> is every table that has pressed the button.
+      <strong>Unattended</strong> is anything the floor has left too long. <strong>Just seated</strong>
+      is tables in their first ten minutes — a heads-up, not a telling-off. Each group shows four
+      tables and collapses the rest into <em>+N more</em>, which opens the manager’s screen.</div>
+    <div class="set-sub" style="margin-top:10px">Below it the floor splits in two:
+      <strong>Needs attention</strong> holds only tables where something has to be done, most urgent
+      first, and <strong>All tables</strong> is the room in its real order and never re-arranges
+      itself. A to-do list has to keep re-ordering; a map has to stay still. A busy table appears in
+      both — the top is where you work, the bottom is where you look things up.</div>
+
+    <div class="set-h" style="margin-top:30px">The manager’s screen</div>
+    <div class="set-sub">One list of only the tables that need someone senior, each appearing once
+      under the most important reason. <strong>Put it right</strong> for guests we let down or who have
+      just complained. <strong>Meet and greet</strong> for best customers and regulars.
+      <strong>Nobody has picked these up</strong> for anything the floor has left. Every row has an
+      <em>On the house</em> button — the app suggests a round of drinks for a guest we let down, or
+      20% off their next visit for anyone, with the full list behind it. It deliberately suggests
+      nothing for a guest who has just complained: that guest needs a manager to come and listen.</div>
+    <button class="w2-see" data-walk-view="manager">${ic('arrow-up-right','xs')} Open the manager’s screen</button>
+
+    <div class="set-h" style="margin-top:30px">Every number belongs to the restaurant</div>
+    <div class="set-sub">Nothing in this document is fixed. Every timing, every threshold and every
+      feature’s on/off switch sits in one Setup screen, which the restaurant can change themselves
+      with nobody from our side involved. Each row explains in a sentence what its number measures, so
+      a control never has to be guessed at.</div>
+    <div class="gd-rows" style="margin-top:12px">
+      ${[['Time to answer a guest who calls', REQUEST_SLA + ' min'],
+         ['Before a job counts as left too long', STALE_MIN + ' min'],
+         ['Sitting without ordering', CFG.t.noOrder + ' min'],
+         ['Nothing ordered for', CFG.t.courseGap + ' min'],
+         ['No drink for', CFG.t.drinkGap + ' min'],
+         ['Been at the table a long time', Math.round(CFG.t.longStay/60) + ' hours'],
+         ['Check on an at-risk guest every', CFG.t.recheck + ' min'],
+         ['VIP if they spend at least', money(CFG.t.vipSpend)],
+         ['…or if they have visited at least', CFG.t.vipVisits + ' times'],
+         ['Jobs shown on one table', MAX_SHOW],
+         ['Tables shown in the top strip', NB_CAP],
+         ['How long “just seated” lasts', OPENING_MIN + ' min']]
+        .map(([k,v]) => `<div class="gd-row">
+          <span class="gd-a"><span class="gd-slac">${v}</span></span>
+          <span class="gd-b"><b>${k}</b></span>
+          <span class="gd-c">Set by the restaurant</span>
+        </div>`).join('')}
+    </div>
+    <button class="w2-see" data-walk-view="setup">${ic('sliders-horizontal','xs')} Open Setup</button>
+
+    <div class="set-h" style="margin-top:30px">What is not in this phase</div>
+    <div class="set-sub">Everything that needs to know what the guest is doing on their phone right
+      now: asking for water, cutlery or raising a complaint; a guest who filled a basket but never
+      sent the order; a guest stuck in the menu or opening the same dish over and over. Birthdays,
+      anniversaries, vouchers and promotions are held back too — not because they are blocked, but
+      to keep this phase small.</div>
+  </div>`;
+}
+
 function guideHtml() {
   const sw = (v, label) => `<div class="gd-sw"><span class="gd-chip" style="background:${v}"></span><b>${label}</b><i>${v}</i></div>`;
   const demoCall = (types, min) => callCap({ id:'00', sec:'Indoor', call:{ types, min, seq:0 } });
@@ -4649,7 +4863,11 @@ function renderView() {
   } else if (state.view === 'setup') {
     c.innerHTML = setupHtml();
   } else if (state.view === 'guide') {
-    c.innerHTML = guideHtml();
+    const p2 = state.guidePage === 'phase2';
+    c.innerHTML = `<div class="gtabs">
+        <button class="gtab ${p2?'':'on'}" data-gp="design">${ic('book-open-text','sm')} Design guide</button>
+        <button class="gtab ${p2?'on':''}" data-gp="phase2">${ic('presentation','sm')} Phase 2 walkthrough</button>
+      </div>` + (p2 ? phase2Html() : guideHtml());
   } else {
     const [i,t,s] = STUBS[state.view];
     c.innerHTML = `<div class="stub">${ic(i)}<b>${t}</b><span>${s}</span></div>`;
@@ -4753,6 +4971,26 @@ document.addEventListener('click', e => {
   if (e.target.closest('#su-reset')) {
     CFG = clone(CFG_DEF); suApply();
     toast('Back to the shipped defaults', 'rotate-ccw'); return;
+  }
+
+  /* the Guide's page switch, and the walkthrough's live links */
+  const gp = e.target.closest('[data-gp]');
+  if (gp) {
+    state.guidePage = gp.dataset.gp;
+    renderView();
+    document.getElementById('content').scrollTop = 0;
+    return;
+  }
+  const wo = e.target.closest('[data-walk-open]');
+  if (wo) { openDetail(wo.dataset.walkOpen); return; }
+  const wv = e.target.closest('[data-walk-view]');
+  if (wv) {
+    state.view = wv.dataset.walkView;
+    document.querySelectorAll('#bnav button').forEach(b =>
+      b.classList.toggle('on', b.dataset.v === (state.view === 'setup' ? 'settings' : state.view)));
+    renderView();
+    document.getElementById('content').scrollTop = 0;
+    return;
   }
 
   const th = e.target.closest('[data-theme]');
