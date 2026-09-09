@@ -316,10 +316,13 @@
   .tc-meta{display:flex;align-items:center;flex-wrap:nowrap;gap:8px;margin-top:7px;font-size:13px;color:#cfcdc6;font-weight:500;min-width:0}
   .tc-meta svg{width:15px;height:15px}
   .tc-meta > span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex:0 0 auto}
-  /* the tag is the only thing allowed to give, and it ellipsises rather
-     than pushing the time off the card */
+  /* The tag may shrink rather than push the time off the card — but it stays
+     a FLEX box while it does. This rule used to say display:inline-block,
+     which silently cancelled align-items and left every tag's text sitting
+     at the top of its 23px pill. */
   .tc-meta > .tc-watch,.tc-meta > .tc-vip,.tc-meta > .tc-new-order,.tc-meta > .bkt{
-    flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;display:inline-block}
+    flex:0 1 auto;min-width:0;overflow:hidden;
+    display:inline-flex;align-items:center;justify-content:center;line-height:1}
   .tc-meta svg{color:var(--ink-2)}
   /* one indicator, one line — the card must still be readable in a glance */
   .tc-right{display:inline-flex;align-items:center;gap:7px}
@@ -351,12 +354,19 @@
   .tc-watch,.tc-vip,.tc-meta > .bkt{
     height:23px;align-items:center;justify-content:center;
   }
+  /* A solid red circular face, with the eyes and mouth cut out in the
+     pill's own background so they read as holes rather than white strokes
+     drawn on top. --face-bg has to be a SOLID colour for that to work. */
   .tc-watch{
     flex:0 0 auto;display:inline-flex;
     padding:0 6px;border-radius:6px;white-space:nowrap;
-    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+    --face:#e8564b; --face-bg:#2c1614;
+    background:var(--face-bg);border:1px solid #6b332c;
   }
-  .tc-watch svg{width:14px;height:14px;stroke-width:2.3;display:block}
+  .tc-watch .sad{width:16px;height:16px;display:block}
+  .tc-watch .sad-d{fill:var(--face)}
+  .tc-watch .sad-eye{fill:var(--face-bg)}
+  .tc-watch .sad-m{fill:none;stroke:var(--face-bg);stroke-width:2.1;stroke-linecap:round}
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
 
@@ -448,9 +458,12 @@
   }
   body.light .tc-count.rec{background:#0f8e80;color:#fff}
   body.light .lv-rec .gd-lv,body.light .gd-a .gd-lv.lv-rec{background:#e2f6f3;color:#0b6f64}
-  body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
   body.light .tc-vip{background:#faf3e0;border-color:#dcc39a;color:#7d5c14}
-  body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#9c332b}
+  /* One rule for the light face, declaring its own background — a second,
+     older rule used to set a TRANSLUCENT background here, so the cut-out
+     eyes were a solid colour sitting over a see-through pill. */
+  body.light .tc-watch{--face:#c8362c; --face-bg:#fbeae8;
+    background:var(--face-bg);border-color:#e0b3ae}
   body.light .tc-held{color:#1d6b45}
   /* the one bit of good news on a floor — green, brief, and it clears itself
      the moment the waiter opens the table */
@@ -3106,7 +3119,7 @@ function cardHtml(t) {
             A top spender who was let down reads At risk, not VIP. */
          if (atRisk(t) && t.status === 'seated')
            return `<span class="tc-watch" style="margin-left:auto" aria-label="At risk"
-             title="Last visit went wrong — this table is being kept close. Tap the table to see what happened.">${ic('frown','xs')}</span>`;
+             title="Last visit went wrong — this table is being kept close. Tap the table to see what happened.">${SAD_FACE}</span>`;
          if (justOrdered(t))
            return `<span class="tc-new-order" style="margin-left:auto" title="An order arrived and nobody has looked yet">Order in</span>`;
          /* VIP is not phase-gated, for the same reason At risk is not: both are
@@ -3652,6 +3665,15 @@ const gestureDone = {};
 /* Occasions come from CRM, so the article has to be worked out rather than
    written in — "a anniversary" is the kind of thing that makes a prototype
    look unfinished. */
+/* Drawn rather than borrowed: Lucide's frown is an outline, and an outline
+   reads as a pale face ON red instead of a red face. */
+const SAD_FACE = `<svg class="sad" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <circle class="sad-d" cx="12" cy="12" r="11"/>
+    <circle class="sad-eye" cx="8.7" cy="10.1" r="1.45"/>
+    <circle class="sad-eye" cx="15.3" cy="10.1" r="1.45"/>
+    <path class="sad-m" d="M7.8 16.8c1.1-1.8 2.5-2.7 4.2-2.7s3.1.9 4.2 2.7"/>
+  </svg>`;
+
 const anA = w => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
 
 /* What a manager can put on a table for an occasion. Two shapes, because the
@@ -4362,7 +4384,7 @@ function guideHtml() {
       Instead <strong>the state stays and the action recurs</strong> — the card carries the mark from sitting down to paying,
       and on top of it Pulse asks for one thing you can actually do, again every ${RECHECK_MIN} minutes.</div>
     <div class="gd-rows">
-      ${[[`<span class="tc-watch">${ic('frown','xs')}</span>`,'The face stays on the card',
+      ${[[`<span class="tc-watch" style="display:inline-flex;padding:0 6px;height:23px;align-items:center;justify-content:center">${SAD_FACE}</span>`,'The face stays on the card',
           'On from the moment they sit to the moment they pay. It has no tick — it is not a job, it is a fact about the table',
           'Set by one thing only: something specific went wrong last visit. Never inferred from a score'],
          [`<span class="todo-flag">New</span>`,'The check is the action',
