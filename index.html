@@ -347,16 +347,10 @@
      Severity is carried by the tags beside the name — a request has its own
      mark and colour, at risk and VIP have their own chips — so the number
      is free to mean only one thing: how much is left to do here.
-     Lateness rings it; the age chip on the action line says how long. */
+     Lateness rings it; open the table to see how long. */
   .tc-count.late{box-shadow:0 0 0 3px rgba(214,154,69,.5)}
   /* something appeared since the waiter last looked at this table */
   .tc-count.fresh{outline:2px solid var(--gold-soft);outline-offset:2px}
-  .tc-act.late{color:#e8bd7d}
-  .tc-late,.tc-new{
-    flex:0 0 auto;margin-left:auto;font-size:10.5px;font-weight:800;letter-spacing:.04em;
-    border-radius:5px;padding:2px 6px;text-transform:uppercase;
-  }
-  .tc-late{background:rgba(214,154,69,.2);color:#e8bd7d}
   /* a table whose last visit went wrong stays marked for the whole visit —
      the state is not something a waiter can tick away */
   .tc-watch{
@@ -414,7 +408,6 @@
     font-size:11px;font-weight:700;color:#8fe0b0;
   }
   body.light .tc-count.rec{background:#0f8e80;color:#fff}
-  body.light .tc-act.rec{color:#0d7a6e}
   body.light .lv-rec .gd-lv,body.light .gd-a .gd-lv.lv-rec{background:#e2f6f3;color:#0b6f64}
   body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
   body.light .tc-vip{background:#faf3e0;border-color:#dcc39a;color:#7d5c14}
@@ -430,24 +423,10 @@
   }
   @keyframes orderIn{from{opacity:0;transform:translateY(-3px) scale(.94)}to{opacity:1;transform:none}}
   body.light .tc-new-order{background:rgba(63,159,107,.14);color:#1d6b45}
-  .tc-new{background:rgba(217,180,95,.18);color:var(--gold-soft)}
-  .tc-act{
-    display:flex;align-items:flex-start;gap:6px;margin-top:9px;
-    font-size:11.5px;font-weight:700;min-width:0;
-  }
-  .tc-act > svg{margin-top:2px}
-  .tc-act > span:first-of-type{
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-    overflow:hidden;line-height:1.32;
-  }
   .tc-call span{
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
     overflow:hidden;line-height:1.32;
   }
-  .tc-act svg{width:13px;height:13px}
-  .tc-act.red{color:#e8a099}
-  .tc-act.rec{color:#5fd3c4}
-  .tc-act.gold{color:var(--ink-2)}
 
   /* a guest calling is the one thing that must be unmistakable */
   /* ── a table that has raised its hand: a corner mark, not a block ──
@@ -1987,7 +1966,9 @@ const guests = {
     promos:['Set lunch, SGD28 per head'],
     occasion:'Anniversary',
     voucher:{ label:'Free side on the next visit', why:'Six visits and climbing' } },
-  jes: { id:'jes', tastes:['light'], name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:3, avgSpend:42,
+  /* VIP by FREQUENCY, not spend — she is under the spend bar and well over the
+     visit bar, which is the case the spend-only rule used to miss entirely. */
+  jes: { id:'jes', tastes:['light'], name:'Jessica', phone:'+65 8720 XXXX', initials:'J', rating:4.8, lastVisit:'3 weeks ago', visits:11, avgSpend:42,
     summary:'Always finishes with dessert. Sits alone, likes it quiet.',
     last:{ when:'3 weeks ago', meal:'Lunch', pax:1, spend:38.50, rated:5 },
     sentiment:'positive',
@@ -2185,7 +2166,7 @@ const FEATURES = [
     ui:'The capsule, card chip and checklist all name what was asked for, in its own colour: concern, question, waiter, water, cutlery',
     note:'No free text on the guest side, so Pulse never shows a description of the problem. A concern becomes the manager\u2019s' },
   { n:'Action lifecycle — new, unattended, done or dismissed', p:2, own:'Pulse', built:1, hero:1,
-    ui:'New flag on an action raised mid-meal, an age chip once it passes its own limit, an Overdue group in the floor row, and a dismiss × on every row',
+    ui:'New flag on an action raised mid-meal, an age chip once it passes its own limit, a Nobody\u2019s-been group in the floor row, and a dismiss \u00d7 on every row',
     note:'Answers the two ways an action gets lost: unnoticed when it appears, or ignored after' },
   { n:'Manager view — only what is actually a manager\u2019s job', p:2, own:'Pulse', sup:'Data', built:1,
     ui:'Manager tab: a guest is unhappy · needs you at the table · nobody has picked these up · waiting on your approval · a roster of the rest',
@@ -2223,7 +2204,7 @@ const FEATURES = [
     ui:'A corner pin, a corner tab, or a pin plus a coloured top edge. Switchable in Settings; all three go red and pulse once a request is past its limit',
     note:'A raised hand, in azure so it is not the app accent. It was a full-width block in the card body, which cost more height than the fact deserved' },
   { n:'One floor row for everything time-critical', p:2, own:'Pulse', built:1, hero:1,
-    ui:'Guests waiting · Overdue · Just seated — three groups of capsules above the grid, each capped so the row never becomes a wall',
+    ui:'Guests waiting \u00b7 Nobody\u2019s been \u00b7 Just seated \u2014 three groups of capsules above the grid, each capped so the row never becomes a wall',
     note:'Wraps rather than scrolling a group off the edge, because a group you cannot see is a group nobody works' },
   { n:'Two limits, and only two', p:2, own:'Pulse', built:1,
     ui:'A guest request is chased after 5 minutes; something Pulse raised itself after 15. The capsule shows the table number, and the wait only once it is past',
@@ -2294,9 +2275,10 @@ const FEATURES = [
 ];
 const PHASE_META = {
   1:{ verb:'Know', name:'Guest intelligence', blurb:'Who is at the table. Everything here is display — Pulse shows what it knows and the waiter decides what it means.' },
-  2:{ verb:'Act',  name:'Action layer',       blurb:'The same information turned into a checklist. Scores, buckets, recovery, guest requests and a table sitting without ordering all become one thing to do.' },
+  2:{ verb:'Act',  name:'Action layer',
+      blurb:'Everything Pulse can do with the CRM and the POS alone. Scores and buckets, service recovery, a top spender worth meeting, a guest request, a table sitting without ordering, and a long gap since anything was ordered — all of it one thing to do.' },
   3:{ verb:'Anticipate', name:'Live behaviour and timing',
-      blurb:'The guest\u2019s phone and the clock. A cart built but never sent, a menu open with nothing added, a table nobody has started, a long gap since anything was ordered — and the calls that are the manager\u2019s to make.' },
+      blurb:'What only the guest\u2019s own SmartWeb session can tell you. A cart built but never sent, a menu open with nothing added, a table nobody has started, one dish opened again and again \u2014 plus the five kinds of request and the occasion, voucher and promotion extras.' },
 };
 
 
@@ -2372,7 +2354,8 @@ const SETUP = {
   'mgr-recovery': { raise:{k:'mgrSpend',    unit:'avg spend', lo:0, hi:300, step:10, lbl:'Only above'},
                     sent:'“Visit the table” — for a guest whose last visit fell short, and only above this average spend.' },
   'mgr-occasion': { sent:'“Mark the occasion” — whenever an occasion is on the booking or the profile.' },
-  'vip-welcome':  { sent:'“Visit the table” — whenever the guest resolves to high value.' },
+  'vip-welcome':  { raise:{k:'vipSpend',  unit:'avg spend', lo:0, hi:300, step:5, lbl:'VIP above'},
+                    sent:'“Visit the table” — for a top spender, or for a face of the room. Either bar alone makes them a VIP.' },
 };
 /* The floor rules. Not about one action — about how many of them a person
    can hold at once, and the one limit they all share. */
@@ -2389,6 +2372,9 @@ const SETUP_FLOOR = [
   { k:'opening',   lbl:'Lasts',  unit:'min', lo:5, hi:30, step:5,
     lead:'The just-seated window',
     why:'A table this new gets its own group in the strip and softer wording, so arriving never reads as a failure.' },
+  { k:'vipVisits', lbl:'Or from', unit:'visits', lo:2, hi:40, step:1, group:'t',
+    lead:'VIP on visits alone',
+    why:'The other way in. A guest who spends an ordinary amount but keeps coming back is a face of the room, and worth a manager hello for a different reason than a big spender. Either bar alone makes them a VIP.' },
   { k:'orderNews', lbl:'For',    unit:'min', lo:2, hi:20, step:1,
     lead:'A new order stays news',
     why:'How long a table stays marked after an order lands, and how long the gap-since-last-order actions stay quiet.' },
@@ -2406,16 +2392,28 @@ const BUCKETS = {
   new:       { label:'New guest',  tone:'plain', hint:'First time here — make the first impression count.' },
   returning: { label:'Returning',  tone:'plain', hint:'Has been here before. Recognise them.' },
   regular:   { label:'Regular',    tone:'gold',  hint:'Comes often. Greet by name and lead with their usual.' },
-  vip:       { label:'High value', tone:'gold',  hint:'Spends well above average. Worth a manager hello.' },
+  vip:       { label:'VIP',        tone:'gold',  hint:'Spends well above average, or keeps coming back. Worth a manager hello.' },
   lapsed:    { label:'Lapsed',     tone:'amber', hint:'Has not been in for a while. Make them feel remembered.' },
   risk:      { label:'At risk',    tone:'red',   hint:'Last experience fell short. Recover it tonight.' },
 };
+/* A guest earns VIP on EITHER of two counts, because a restaurant values both
+   and they are rarely the same person: the one who spends well above average,
+   and the one who simply keeps coming back. Both are merchant-set defaults.
+   `regular` remains the rung below the frequency bar — comes often, not yet a VIP. */
+function vipReason(g) {
+  if (!g) return null;
+  const spend = (g.avgSpend || 0) >= CFG.t.vipSpend, often = (g.visits || 0) >= CFG.t.vipVisits;
+  if (spend && often) return `Spends SGD${g.avgSpend} on average and has been in ${g.visits} times`;
+  if (spend) return `Spends SGD${g.avgSpend} on average, well above the house`;
+  if (often) return `${g.visits} visits — one of the faces of this room`;
+  return null;
+}
 function bucketOf(g) {
   if (!g || !g.visits) return 'new';
   if (g.prevIssue) return 'risk';
   const gap = daysSince(g.lastVisit);
   if (gap !== null && gap >= 60) return 'lapsed';
-  if ((g.avgSpend || 0) >= 65) return 'vip';
+  if (vipReason(g)) return 'vip';
   if (g.visits >= 5) return 'regular';
   return 'returning';
 }
@@ -2508,14 +2506,14 @@ const SIGNALS = [
     done:'Menu talked through' },
 
   // a long gap since anything was ordered
-  { id:'course-gap', phase:3, lvl:'rec', who:'waiter', icon:'timer', score:85,
+  { id:'course-gap', phase:2, lvl:'rec', who:'waiter', icon:'timer', score:85,
     on:c => (c.t.lastOrderMin||0) >= CFG.t.courseGap && c.t.status === 'seated',
     act:'Offer the next course',
     why:c => `Last ordered ${c.t.lastOrderMin} min ago.`,
     done:'Next course offered' },
 
   // a long gap since the last drink was ordered
-  { id:'drink-refill', phase:3, lvl:'rec', who:'waiter', icon:'wine', score:83,
+  { id:'drink-refill', phase:2, lvl:'rec', who:'waiter', icon:'wine', score:83,
     on:c => (c.t.lastDrinkMin||0) >= CFG.t.drinkGap && c.t.status === 'seated',
     act:'Offer another round',
     why:c => `Last drink ${c.t.lastDrinkMin} min ago.`,
@@ -2555,7 +2553,7 @@ const SIGNALS = [
 
   /* Manager's own calls. Judgement, not errands — so Phase 3, and the action
      says plainly what to do: go to the table. */
-  { id:'mgr-recovery', phase:3, lvl:'red', who:'manager', mgrRank:1, icon:'user-check', score:94,
+  { id:'mgr-recovery', phase:2, lvl:'red', who:'manager', mgrRank:1, icon:'user-check', score:94,
     on:c => c.g && c.g.prevIssue && c.bucket === 'risk' && (c.g.avgSpend||0) >= CFG.t.mgrSpend,
     act:'Visit the table',
     why:'High-value guest, last visit fell short.',
@@ -2567,10 +2565,16 @@ const SIGNALS = [
     why:c => `${c.g.name.split(' ')[0]} is here for ${anA(c.g.occasion.toLowerCase())} — yours to decide what goes on the table.`,
     done:'You marked the occasion' },
 
-  { id:'vip-welcome', phase:3, lvl:'gold', who:'manager', mgrRank:2, icon:'crown', score:77,
+  /* mgrRank 1 = Meet and greet, which is literally "top spenders, regulars, and
+   guests who have not been in for a while". Rank 2 is "nobody has picked these
+   up", where a VIP hello was landing and reading as a failure.
+   And the reason comes from vipReason(), because a guest can be a VIP on
+   FREQUENCY — quoting an average spend that sits below the spend bar is not a
+   reason, it is a contradiction. */
+  { id:'vip-welcome', phase:2, lvl:'gold', who:'manager', mgrRank:1, icon:'crown', score:77,
     on:c => c.bucket === 'vip',
     act:'Visit the table',
-    why:c => `${c.g.name.split(' ')[0]} averages ${money(c.g.avgSpend)} a visit.`,
+    why:c => `${c.g.name.split(' ')[0]} — ${(vipReason(c.g) || 'worth a manager hello').replace(/^./, m => m.toLowerCase())}.`,
     done:'You visited the table' },
 ];
 
@@ -2621,6 +2625,8 @@ const CFG_DEF = {
     repeatViews:3,  // times one dish was opened
     browsing:3,     // minutes inside one part of the menu
     greetVisits:2,  // visits before Pulse asks for a greeting
+    vipSpend:65,    // VIP on average spend at or above this...
+    vipVisits:8,    // ...or on this many visits, whatever they spend
     mgrSpend:60,    // average spend that makes a let-down a manager's call
   },
   g: {
@@ -3061,31 +3067,28 @@ function cardHtml(t) {
             waiter does next, first.
               At risk    something went wrong last time — stay close
               Order in   an order just landed and nobody has looked
-              VIP        worth a manager hello
+              VIP        high spend OR a frequent face — a manager hello
               Lapsed     make them feel remembered
             A top spender who was let down reads At risk, not VIP. */
          if (atRisk(t) && t.status === 'seated')
            return `<span class="tc-watch" style="margin-left:auto" title="Last visit went wrong — this table is being kept close">At risk</span>`;
          if (justOrdered(t))
            return `<span class="tc-new-order" style="margin-left:auto" title="An order arrived and nobody has looked yet">Order in</span>`;
-         if (!(state.phase >= 3) || !bkt) return '';
+         /* VIP is not phase-gated, for the same reason At risk is not: both are
+            read off the guest profile, and a floor that can see one should see
+            the other. The softer buckets stay a Phase 3 refinement. */
          if (bkt === 'vip')
-           return `<span class="tc-vip" style="margin-left:auto" title="Spends well above average — worth a manager hello">VIP</span>`;
+           return `<span class="tc-vip" style="margin-left:auto" title="${vipReason(guests[t.guest]) || 'Worth a manager hello'} — worth a manager hello">VIP</span>`;
+         if (!(state.phase >= 3) || !bkt) return '';
          if (BUCKETS[bkt].tone === 'plain') return '';
          return `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>`;
        })()}
     </div>
-    ${(() => {
-       // the corner mark says a request is waiting, so the line prefers the
-       // next thing — but never at the cost of the card saying nothing at all
-       const line = t.call && state.phase >= 2
-         ? (sig.now.find(a => a.id !== 'call') || sig.soft[0] || sig.top)
-         : sig.top;
-       if (!line) return '';
-       return `<div class="tc-act ${line.isStale?'late':''}">${ic(line.icon,'xs')} <span>${line.act}</span>${
-         line.isStale ? `<span class="tc-late">${line.openMin}m</span>` : (line.isNew ? `<span class="tc-new">New</span>` : '')
-       }</div>`;
-     })()}
+    ${''/* No action line on the card. The count badge already says how many
+           things are open here, the corner mark says a guest has raised their
+           hand, and the tag beside the name says what kind of table it is —
+           spelling the next action out in a sentence repeated that and cost
+           two lines of a 212px card. The action belongs in the table detail. */}
     ${atRisk(t) && t.status === 'seated' && !checkDue(t)
       ? `<div class="tc-held">${ic('check','xs')} Checked ${checks[t.id].n}× · next in ${nextCheckIn(t)}m</div>` : ''}
     ${t.bill > 0 ? `<div class="tc-bill" style="margin-top:11px">${money(t.bill)}</div>` : ''}
@@ -3162,10 +3165,10 @@ function renderCallBar() {
         <span class="nb-caps">${calling.map(callCap).join('')}</span>
       </div>` : '') +
     (late.length ? `<div class="nb-grp late">
-        <span class="nb-lbl">${ic('timer','sm')} Overdue</span>
+        <span class="nb-lbl">${ic('timer','sm')} Unattended</span>
         <span class="nb-caps">${late.slice(0, NB_CAP).map(lateCap).join('')}${
           late.length > NB_CAP ? `<button class="cap late more" data-v-late="1"
-            title="Every overdue table is listed in the Manager tab">+${late.length - NB_CAP} more</button>` : ''}</span>
+            title="Every unattended table is listed in the Manager tab">+${late.length - NB_CAP} more</button>` : ''}</span>
       </div>` : '') +
     (fresh.length ? `<div class="nb-grp opening">
         <span class="nb-lbl">${ic('hand-platter','sm')} Just seated</span>
@@ -3391,7 +3394,7 @@ function actionsHtml(t) {
     </div>` : '';
   return watch + `<div class="todo${staleN?' has-late':''}">
     <div class="todo-h"><b>${sig.now.length ? 'Do now' : 'What to do'}</b>
-      ${staleN ? `<span class="todo-warn">${ic('timer','xs')} ${staleN} overdue</span>` : ''}
+      ${staleN ? `<span class="todo-warn">${ic('timer','xs')} ${staleN} unattended</span>` : ''}
       <span class="todo-prog">${doneN} of ${total} done</span></div>
     ${nowRows.map(row).join('')}
     ${nowRows.length && soft.length ? `<div class="todo-sub">${ic('message-square','xs')} Worth mentioning while you are there</div>` : ''}
@@ -4006,9 +4009,9 @@ const GUIDE_PHASES = {
   2: { icon:'list-checks', adds:'The same information becomes work',
        surfaces:[
          ['The checklist','Do now, then Worth mentioning. Five rows at most, work first'],
-         ['The floor row','Guests waiting · Overdue · Just seated, as capsules above the grid'],
+         ['The floor row','Guests waiting \u00b7 Nobody\u2019s been \u00b7 Just seated, as capsules above the grid'],
          ['Guest requests','One button on the guest\'s phone. Pulse knows it was pressed, not what for — a raised hand on the card corner and a capsule in the floor row'],
-         ['The action lifecycle','New · Overdue · Done · Dismissed, each visible from across the room'],
+         ['The action lifecycle','New \u00b7 Unattended \u00b7 Done \u00b7 Dismissed, each visible from across the room'],
          ['An order arriving','Announces itself once, marks the table green until someone looks, and retires whatever was chasing that table for not having ordered'],
          ['Count badge on the card','How many things to do, toned by the most urgent'],
          ['Score and bucket chips','Top 5% of your guests · Regular · At risk — derived, never typed'],
@@ -4134,7 +4137,7 @@ function guideHtml() {
     <div class="gd-rows">
       ${[['<span class="todo-flag">New</span>','New','Raised after the waiter had already looked at this table','Ring around the card badge, flag on the row'],
          ['<span class="tc-count rec">2</span>','Open','Being worked','Plain row, badge counts it'],
-         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Overdue',`Past its own limit with nobody closing it — ${REQUEST_SLA} min for a guest request, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, an Overdue group in the floor row, and a section in the Manager tab'],
+         [`<span class="todo-age">${ic('timer','xs')} 18m</span>`,'Unattended',`Past its own limit with nobody closing it — ${REQUEST_SLA} min for a guest request, ${STALE_MIN} for something Pulse raised itself`,'Age chip on the card, a Nobody\u2019s-been group in the floor row, and a section in the Manager tab'],
          ['<span class="gd-tick done">'+ic('check','sm')+'</span>','Done','Ticked, right-hand side of the row','Strikes through and holds three seconds with Undo in place'],
          ['<span class="gd-tick drop">'+ic('x','sm')+'</span>','Dismissed','Dismissed, left-hand side of the row','Same grace period, then gone and not raised again']]
         .map(([a,t,d,e]) => `<div class="gd-row">
@@ -4259,7 +4262,6 @@ function guideHtml() {
         <li><b>Guest name</b> — two lines if it needs them, a size smaller if it is long. Never cut. A table with no profile is <em>Guest</em>.</li>
         <li><b>Covers and time</b> — party size and how long they have been sitting.</li>
         <li><b>One tag, on the same line</b> <span class="gd-ph3">Phase 3</span> — derived, never typed, and only ever one, because covers, the time and one tag is exactly what the row holds. <em>At risk</em> beats <em>Order in</em> beats <em>VIP</em> beats <em>Lapsed</em>: what changes what a waiter does next, first. A top spender who was let down reads <em>At risk</em>.</li>
-        <li><b>Top action</b> — the single most urgent line, in the same gold as the badge, with an amber age chip once nobody has closed it. A table that has raised its hand shows the corner mark instead, and the line moves to the next thing.</li>
         <li><b>Bill</b> — green once settled, so a turnable table reads at a glance.</li>
       </ol>
     </div>
@@ -4570,7 +4572,7 @@ function setupHtml() {
     <div class="su-list">
       ${SETUP_FLOOR.map(f => `<div class="su-frow">
         <span class="su-b"><span class="su-n">${f.lead}</span><span class="su-w">${f.why}</span></span>
-        <span class="su-nums">${suStep('g', f)}</span>
+        <span class="su-nums">${suStep(f.group || 'g', f)}</span>
       </div>`).join('')}
     </div>
   </div>`;
@@ -4734,9 +4736,12 @@ document.addEventListener('click', e => {
     const d = +dRaw;
     const f = scope === 'g'   ? SETUP_FLOOR.find(x => x.k === key)
             : scope === 'req' ? { lo:1, hi:30 }
+            /* a 't' key can live in an action's own row OR in a floor rule
+               that happens to move an action threshold, so look in both */
             : (() => { for (const id in SETUP) { const c = SETUP[id];
                         if (c.raise && c.raise.k === key) return c.raise;
-                        if (c.chase && c.chase.k === key) return c.chase; } })();
+                        if (c.chase && c.chase.k === key) return c.chase; }
+                       return SETUP_FLOOR.find(x => x.k === key); })();
     if (!f) return;
     CFG[scope][key] = Math.max(f.lo, Math.min(f.hi, CFG[scope][key] + d));
     suApply(); return;

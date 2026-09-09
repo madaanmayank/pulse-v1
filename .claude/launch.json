@@ -2,10 +2,16 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "pulse",
+      "name": "pulse-phase2,3",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "/Users/mayankmadaan/pulse-prototype"],
-      "port": 5173
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5191",
+        "--directory",
+        "/Users/mayankmadaan/pulse-prototype"
+      ],
+      "port": 5191
     }
   ]
 }
