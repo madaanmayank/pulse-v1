@@ -341,15 +341,22 @@
   .tc-count.fresh{outline:2px solid var(--gold-soft);outline-offset:2px}
   /* a table whose last visit went wrong stays marked for the whole visit —
      the state is not something a waiter can tick away */
-  /* An unhappy face, and nothing else. The words "AT RISK" cost 46px on a
-     212px card and told a waiter less than the face does — and the detail
-     view explains it in full the moment they tap through. */
-  .tc-watch{
-    flex:0 0 auto;display:inline-grid;place-items:center;
-    width:24px;height:24px;border-radius:50%;
-    background:rgba(216,72,63,.3);border:1px solid #ab453b;color:#ffb0a4;
+  /* The same pill as .tc-vip — same padding, same radius, same height —
+     because the two sit in the same place on different cards and a waiter
+     should read them as one system. Only the colour and the content differ:
+     a poor-experience face here, a word there. */
+  /* Both tags are pinned to ONE height. An icon's box is taller than
+     10.5px uppercase text, so left to their content the two pills came out
+     27px and 23px — the same mismatch the shape change was meant to fix. */
+  .tc-watch,.tc-vip,.tc-meta > .bkt{
+    height:23px;align-items:center;justify-content:center;
   }
-  .tc-watch svg{width:15px;height:15px;stroke-width:2.4}
+  .tc-watch{
+    flex:0 0 auto;display:inline-flex;
+    padding:0 6px;border-radius:6px;white-space:nowrap;
+    background:rgba(216,72,63,.16);border:1px solid #6b332c;color:#f0b3ab;
+  }
+  .tc-watch svg{width:14px;height:14px;stroke-width:2.3;display:block}
   /* and between checks it says when the next one is due, so the table reads
      as held rather than forgotten */
 
@@ -428,15 +435,12 @@
   body.light .gsec-need .gsec-t{color:#9c332b}
   body.light .gsec-need .gsec-n{background:#fbeceb;color:#8e2a23}
 
-  /* VIP keeps its word — a status, not a feeling — and gains a crown so it
-     can never be mistaken for the face beside it. */
   .tc-vip{
-    flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;
-    font-size:10.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-    padding:3px 7px 3px 6px;border-radius:6px;white-space:nowrap;
-    background:rgba(217,180,95,.2);border:1px solid var(--gold);color:#f0dca4;
+    flex:0 0 auto;display:inline-flex;gap:4px;
+    font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+    padding:0 6px;border-radius:6px;white-space:nowrap;
+    background:rgba(217,180,95,.14);border:1px solid var(--gold-line);color:var(--gold-soft);
   }
-  .tc-vip svg{width:12px;height:12px}
   .tc-vip svg{width:11px;height:11px}
   .tc-held{
     display:flex;align-items:center;gap:6px;margin-top:8px;
@@ -445,8 +449,8 @@
   body.light .tc-count.rec{background:#0f8e80;color:#fff}
   body.light .lv-rec .gd-lv,body.light .gd-a .gd-lv.lv-rec{background:#e2f6f3;color:#0b6f64}
   body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#8e2a23}
-  body.light .tc-vip{background:#f6ebcd;border-color:#c9a94e;color:#6f5010}
-  body.light .tc-watch{background:#fbe3e0;border-color:#d99a92;color:#a8302a}
+  body.light .tc-vip{background:#faf3e0;border-color:#dcc39a;color:#7d5c14}
+  body.light .tc-watch{background:rgba(184,54,46,.1);border-color:#e0b3ae;color:#9c332b}
   body.light .tc-held{color:#1d6b45}
   /* the one bit of good news on a floor — green, brief, and it clears itself
      the moment the waiter opens the table */
@@ -3109,7 +3113,7 @@ function cardHtml(t) {
             read off the guest profile, and a floor that can see one should see
             the other. The softer buckets stay a Phase 3 refinement. */
          if (bkt === 'vip')
-           return `<span class="tc-vip" style="margin-left:auto" title="${vipReason(guests[t.guest]) || 'Worth a manager hello'} — worth a manager hello">${ic('crown','xs')} VIP</span>`;
+           return `<span class="tc-vip" style="margin-left:auto" title="${vipReason(guests[t.guest]) || 'Worth a manager hello'} — worth a manager hello">VIP</span>`;
          if (!(state.phase >= 3) || !bkt) return '';
          if (BUCKETS[bkt].tone === 'plain') return '';
          return `<span class="bkt ${BUCKETS[bkt].tone}" style="margin-left:auto">${BUCKETS[bkt].label}</span>`;
